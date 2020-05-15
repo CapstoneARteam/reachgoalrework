@@ -41,21 +41,6 @@ class MapView extends Component{
     this.getUserPosition()
   }
 
-  handleLocationFound = (e) => {
-    this.setState({
-      userLocationFound: true,
-      userLocation: e.latlng,
-    })
-  }
-
-  handleClick = () => {
-    const map = this.mapRef.current
-    if (map != null) {
-      map.leafletElement.locate()
-    }
-  }
-
-
   render(){
     const userLocation = this.state.userLocationFound ? (
       <Marker position={this.state.userLocation}>
