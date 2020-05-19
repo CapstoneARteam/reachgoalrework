@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 import MapView from './components/MapView.js'
+import Menu from './components/Menu.js'
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,12 +25,22 @@ function App() {
             <li className="list-inline-item">
               <Link className="text-light" to="/student">Student</Link>
             </li>
+
+            <li className="list-inline-item">
+              <Link className="text-light" to="/menu">Menu</Link>
+            </li>
+
           </ul>
         </nav>
 
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
+          
+          <Route path="/menu">
+            <Menu />
+          </Route>
+
           <Route path="/admin">
             <Admin />
           </Route>
