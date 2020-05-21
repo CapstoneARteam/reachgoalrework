@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
+import { Redirect } from 'react-router'
 
 export default class Menu extends Component{
   constructor(){
@@ -40,7 +41,7 @@ export default class Menu extends Component{
               userID: this.client.auth.authInfo.userId,
               } 
           )
-          //window.location.replace('/menu')
+          //window.location.replace('#/menu')
         } 
    
 
@@ -50,12 +51,7 @@ export default class Menu extends Component{
 
   //login button handler
   async login(){
-  
-
     if (this.client.auth.isLoggedIn) {
-        const currentUser = this.client.auth.user;
-        this.setState({ currentUser });
-        
         this.setState(
             {
               username : this.client.auth.authInfo.userProfile.data.name,
@@ -64,16 +60,15 @@ export default class Menu extends Component{
             }
            
         )
-        
-        
       } else {
+    
+        
         //login using google redirect
         const credential = new GoogleRedirectCredential();
         this.client.auth.loginWithRedirect(credential);
         console.log(this.state)
-
+        
       }
-
   }
 
   async logout(){
@@ -83,6 +78,7 @@ export default class Menu extends Component{
         useremail:"",
         userID:""
     })
+    window.location.replace("#/")
   }
 
   addamodule(){
@@ -115,7 +111,7 @@ export default class Menu extends Component{
         <p>username:   {this.state.username} </p>
         <p>email:   {this.state.useremail}</p>
         <p>userid:   {this.state.userID}</p>
-        <button onClick={this.login}> Login with Google</button>
+        {/* <button onClick={this.login}> Login with Google</button> */}
         <br />
         <button onClick={this.logout}> Log out </button>
         <br />

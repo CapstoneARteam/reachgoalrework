@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 import './App.css';
 import MapView from './components/MapView.js'
 import Menu from './components/Menu.js'
-import Login from './components/Login.js'
 import { Stitch } from 'mongodb-stitch-browser-sdk'
+import Login from './components/Login'
 
 import {
   Switch,
   Route,
-  BrowserRouter as Router,
   HashRouter,
   Link
 } from "react-router-dom";
-import Stitch_init from './components/Stitch';
+
 
 export default class App extends Component {
 
@@ -22,8 +21,6 @@ export default class App extends Component {
     this.client = Stitch.hasAppClient(appId)
       ? Stitch.getAppClient(appId)
       : Stitch.initializeDefaultAppClient(appId)
-
-
     if (this.client.auth.hasRedirectResult()) {
       console.log("has results")
 
@@ -33,44 +30,77 @@ export default class App extends Component {
             username: this.client.auth.authInfo.userProfile.data.name,
             useremail: this.client.auth.authInfo.userProfile.data.email,
             userID: this.client.auth.authInfo.userId,
+
           }
         )
-        //window.location.replace('/menu')
+        window.location.replace('#/')
       }
       )
     }
+    else {
+
+      //window.location.replace('#/login')
+
+    }
+    this.state = {
+
+    }
+
   }
 
+  componentDidMount() {
+
+
+
+  }
+
+  Home = () => {
+    if (this.client.auth.isLoggedIn) {
+      return (
+        <div className="App">
+          <MapView />
+        </div>
+      );
+    }
+    else {
+      return (
+        <div className="Login">
+          <Login />
+        </div>
+      );
+    }
+  }
+
+  
 
   render() {
     return (
-      <HashRouter basename={process.env.PUBLIC_URL}>
+      <HashRouter basename="/">
         <div className="">
           <nav className="bg-dark" style={{ zIndex: 1500 }}>
             <ul className="list-inline text-center" style={{ marginBottom: 0 }}>
               <li className="list-inline-item">
                 <Link className="text-light" to="/">Home</Link>
               </li>
-              <li className="list-inline-item">
+              {/* <li className="list-inline-item">
                 <Link className="text-light" to="/admin">Admin</Link>
               </li>
               <li className="list-inline-item">
                 <Link className="text-light" to="/student">Student</Link>
-              </li>
+              </li> */}
               <li className="list-inline-item">
                 <Link className="text-light" to="/menu">Menu</Link>
-              </li>
+              </li> 
             </ul>
           </nav>
 
           {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
           <Switch>
-            <Route exact path="/" component={MapView} />
+            <Route exact path="/" component={this.Home} />
             <Route exact path="/menu" component={Menu} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/admin" component={Admin} />
-            <Route exact path="/student" component={Student} />
+            <Route exact path="/create_module" component={Create_Modules} />
+            <Route exact path="/view_module" component={View_Modules} />
           </Switch>
         </div>
       </HashRouter>
@@ -78,19 +108,13 @@ export default class App extends Component {
   }
 }
 
-const Home = () => {
-  return (
-    <div className="App">
-      <MapView />
-    </div>
-  );
-}
 
-const Admin = () => {
+
+const Create_Modules = () => {
   return <h2>Admin</h2>;
 }
 
-const Student = () => {
+const View_Modules = () => {
   return <h2>Student</h2>;
 }
 
