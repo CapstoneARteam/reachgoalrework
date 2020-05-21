@@ -20,35 +20,29 @@ export default class Menu extends Component{
   }
 
   componentDidMount(){
-    //init mongodb stitch
-    const appId = "capstonear_app-xkqng"
-    this.client = Stitch.hasAppClient(appId)
-    ? Stitch.getAppClient(appId)
-    : Stitch.initializeDefaultAppClient(appId)
-    const mongodb = this.client.getServiceClient(
-      RemoteMongoClient.factory,
-      "mongodb-atlas"
-    );
-    //select the db in our mongdb atlas cluster
-    this.db = mongodb.db("APP"); 
-    if (this.client.auth.hasRedirectResult()) {
-        this.client.auth.handleRedirectResult().then(user =>{
-            this.setState(
-                {
-                  username : this.client.auth.authInfo.userProfile.data.name,
-                  useremail: this.client.auth.authInfo.userProfile.data.email,
-                  userID: this.client.auth.authInfo.userId,
-                }
-               
-            )
-         
-            
-        }
-            
+
+        //init mongodb stitch
+        const appId = "capstonear_app-xkqng"
+        this.client = Stitch.hasAppClient(appId)
+        ? Stitch.getAppClient(appId)
+        : Stitch.initializeDefaultAppClient(appId)
+        const mongodb = this.client.getServiceClient(
+          RemoteMongoClient.factory,
+          "mongodb-atlas"
         );
-        console.log(this.state)
-        
-    }
+        //select the db in our mongdb atlas cluster
+        this.db = mongodb.db("APP"); 
+        if (this.client.auth.isLoggedIn) {
+          this.setState(
+              {
+              username : this.client.auth.authInfo.userProfile.data.name,
+              useremail: this.client.auth.authInfo.userProfile.data.email,
+              userID: this.client.auth.authInfo.userId,
+              } 
+          )
+          //window.location.replace('/menu')
+        } 
+   
 
   }
 

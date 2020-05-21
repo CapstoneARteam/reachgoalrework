@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-
+import {Stitch, RemoteMongoClient} from 'mongodb-stitch-browser-sdk'
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -39,6 +39,8 @@ class MapView extends Component{
 
   componentDidMount(){
     this.getUserPosition()
+
+    
   }
 
   render(){
