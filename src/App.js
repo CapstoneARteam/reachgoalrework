@@ -4,15 +4,15 @@ import MapView from './components/MapView.js'
 import Menu from './components/Menu.js'
 
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
+  HashRouter,
   Link
 } from "react-router-dom";
 
 function App() {
   return (
-    <Router>
+    <HashRouter basename="/">
       <div className="">
         <nav className="bg-dark" style={{ zIndex: 1500 }}>
           <ul className="list-inline text-center" style={{ marginBottom: 0 }}>
@@ -25,11 +25,9 @@ function App() {
             <li className="list-inline-item">
               <Link className="text-light" to="/student">Student</Link>
             </li>
-
             <li className="list-inline-item">
               <Link className="text-light" to="/menu">Menu</Link>
             </li>
-
           </ul>
         </nav>
 
@@ -52,7 +50,7 @@ function App() {
           </Route>
         </Switch>
       </div>
-    </Router>
+    </HashRouter>
   );
 }
 
