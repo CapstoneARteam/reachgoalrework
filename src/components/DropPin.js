@@ -32,7 +32,7 @@ const DropPin = () => {
                 if (canPlacePin) {
                     setMarkers(
                         [...markers,
-                        <Marker position={[e.latlng.lat, e.latlng.lng]}>
+                        <Marker key={e.latlng} position={[e.latlng.lat, e.latlng.lng]}>
                             <Popup>testing</Popup>
                         </Marker>
                         ]
