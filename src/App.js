@@ -5,6 +5,7 @@ import MapView from './components/MapView.js'
 import Menu from './components/Menu.js'
 import { Stitch , ObjectID} from 'mongodb-stitch-browser-sdk'
 import Login from './components/Login'
+import DropPin from './components/DropPin';
 
 
 
@@ -94,6 +95,9 @@ export default class App extends Component {
               <li className="list-inline-item">
                 <Link className="text-light" to="/menu">Menu</Link>
               </li> 
+              <li className="list-inline-item">
+                <Link className="text-light" to="/droppin">Drop Pin</Link>
+              </li> 
             </ul>
           </nav>
 
@@ -102,6 +106,9 @@ export default class App extends Component {
           <Switch>
             <Route exact path="/" component={this.Home} />
             <Route exact path="/menu" component={Menu} />
+            <Route exact path="/droppin">
+              <DropPin />
+            </Route>
             <Route exact path="/create_module" component={Create_Modules} />
             <Route exact path="/view_module" component={View_Modules} />
           </Switch>
