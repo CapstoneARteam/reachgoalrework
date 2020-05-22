@@ -19,7 +19,7 @@ const floatStyle = {
 const DropPin = () => {
     const [position, setPosition] = useState([45, 45]);
     const [markers, setMarkers] = useState([]);
-    const [canPlcaePin, setCanPlcaePin] = useState(false);
+    const [canPlacePin, setCanPlacePin] = useState(false);
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(pos => {
             const { latitude, longitude } = pos.coords;
@@ -29,7 +29,7 @@ const DropPin = () => {
     return (
         <Map center={position} zoom={13}
             onClick={e => {
-                if (canPlcaePin) {
+                if (canPlacePin) {
                     setMarkers(
                         [...markers,
                         <Marker position={[e.latlng.lat, e.latlng.lng]}>
@@ -37,11 +37,11 @@ const DropPin = () => {
                         </Marker>
                         ]
                     );
-                    setCanPlcaePin(!canPlcaePin);
+                    setCanPlacePin(!canPlacePin);
                 }
             }}
         >
-            <button style={floatStyle} onClick={()=>setCanPlcaePin(!canPlcaePin)}>
+            <button style={floatStyle} onClick={()=>setCanPlacePin(!canPlacePin)}>
                 <div style={{fontSize: "40px"}}>+</div>
             </button>
             <TileLayer
