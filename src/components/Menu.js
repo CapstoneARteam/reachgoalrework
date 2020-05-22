@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
-
+import { ObjectId } from 'mongodb'
 
 export default class Menu extends Component{
   constructor(){
@@ -95,7 +95,7 @@ export default class Menu extends Component{
     if(!this.client.auth.isLoggedIn){
         return
     }
-    this.db.collection("MODULES").find({})
+    this.db.collection("PINS").find({_id: ObjectId("5ebed1bc5992681f357d7948")})
     .asArray()
     .then((stitch_res) => {this.setState({stitch_res})
       console.log(this.state.stitch_res[0])
