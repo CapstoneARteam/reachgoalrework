@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
-import { Redirect } from 'react-router'
+
 
 export default class Menu extends Component{
   constructor(){
@@ -113,14 +113,14 @@ export default class Menu extends Component{
         <p>userid:   {this.state.userID}</p>
         {/* <button onClick={this.login}> Login with Google</button> */}
         <br />
-        <button onClick={this.logout}> Log out </button>
+        <button class="btn btn-primary"  onClick={this.logout}> Log out </button>
         <br />
         <br />
         <input type="text" id ="createmodule" placeholder="module name?" 
         onChange={(event)=> this.setState({temp_module_name: event.target.value})}/>
-        <button onClick={this.addamodule}>Add a Module</button> 
+        <button class="btn btn-primary"  onClick={this.addamodule}>Add a Module</button> 
         <br />
-        <button onClick={this.listmymodules}>List my modules</button>
+        <button class="btn btn-primary" onClick={this.listmymodules}>List my modules</button>
         <ul>
           {this.state.stitch_res.map((info,idx) => {
             return <li key={idx}>{info.name}, created by {info.owner}</li>

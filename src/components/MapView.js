@@ -2,7 +2,9 @@ import React, {Component} from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import {Stitch, RemoteMongoClient} from 'mongodb-stitch-browser-sdk'
+
+
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -46,7 +48,7 @@ class MapView extends Component{
   render(){
     const userLocation = this.state.userLocationFound ? (
       <Marker position={this.state.userLocation}>
-        <Popup>Your location</Popup>
+        <Popup >Your location</Popup>
       </Marker>
     ) : null
 

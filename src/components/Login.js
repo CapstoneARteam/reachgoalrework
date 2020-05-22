@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import './Login.css'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 
 export default class Login extends Component{
@@ -42,11 +43,21 @@ export default class Login extends Component{
     }
 
 
-    render(){
-        return(
-        <div>
-            <button onClick={this.login}>Login with Google</button>
-        </div>
-        )
-    }
+  render() {
+    return (
+      
+          <div class="row justify-content-center" style={{
+            position: "fixed",
+            margin: "auto",
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            height: "50px"
+          }}>
+              <button class="btn btn-primary"onClick={this.login}>Login with Google</button>
+          </div>
+      
+    )
+  }
 }

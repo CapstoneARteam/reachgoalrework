@@ -5,16 +5,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 
-import {
-  Switch,
-  Route,
-  BrowserRouter as Router,
-  HashRouter,
-  Link
-} from "react-router-dom";
-
-
-
 ReactDOM.render(
     <App />,
   document.getElementById('root')
