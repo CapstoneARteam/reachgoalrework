@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './App.css';
 import MapView from './components/MapView.js'
 import Menu from './components/Menu.js'
-import { Stitch } from 'mongodb-stitch-browser-sdk'
+import { Stitch , ObjectID} from 'mongodb-stitch-browser-sdk'
 import Login from './components/Login'
 
 
