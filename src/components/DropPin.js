@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
+import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
+
 
 const floatStyle = {
     position: "fixed",
@@ -26,6 +28,15 @@ const DropPin = () => {
             setPosition([latitude, longitude]);
         })
     }, []);
+    const appId = "capstonear_app-xkqng"
+    const client = Stitch.hasAppClient(appId)
+    ? Stitch.getAppClient(appId)
+    : Stitch.initializeDefaultAppClient(appId)
+    const mongodb = client.getServiceClient(
+      RemoteMongoClient.factory,
+      "mongodb-atlas"
+    );
+    const db = mongodb.db("APP"); 
     return (
         <Map center={position} zoom={13}
             onClick={e => {
@@ -37,6 +48,12 @@ const DropPin = () => {
                         </Marker>
                         ]
                     );
+                    db.collection("PINS")
+                    .insertOne({
+                    name: "test",
+                    long:  e.latlng.lng,
+                    lat: e.latlng.lat
+                    })
                     setCanPlacePin(!canPlacePin);
                 }
             }}
