@@ -13,7 +13,8 @@ class Menu extends Component{
         username:"",
         useremail:"",
         userID:"",
-        stitch_res:[]
+        stitch_res:[],
+        menuOpen: this.props.open,
       }
 
       //bind functions
@@ -48,6 +49,8 @@ class Menu extends Component{
         
         console.log(this.client.auth.authInfo.userProfile.data)
       }
+
+      console.log(this.props.open)
 
     }
   }
@@ -96,7 +99,7 @@ class Menu extends Component{
 
   render(){
     return(
-      <StyledMenu open={this.props.open}>
+      <StyledMenu open={this.props.open} setOpen={this.props.setOpen}>
         <img src={this.state.userImg} style={{
           maxHeigh: '100px',
           maxWidth: '100px',
@@ -115,9 +118,9 @@ class Menu extends Component{
 
         <div>
           <ul style={{listStyleType: 'none', paddingLeft: 0}}>
-            <li><Link to="/">Home</Link></li>
+            <li><a href="#/" onClick={()=> {this.props.setOpen(!this.props.open)}}>Home</a></li>
             <br/>
-            <li><Link to="/droppin">Drop pin</Link></li>
+            <li><a href="#/droppin" onClick={()=> {this.props.setOpen(!this.props.open)}} >Drop pin</a></li>
           </ul>
         </div>
 
@@ -166,7 +169,8 @@ const StyledMenu = styled.nav`
     color: #FFFFF;
     text-decoration: none;
     transition: color 0.3s linear;
-
+  
+    
     @media (max-width: 150px) {
       font-size: 1rem;
       text-align: center;
