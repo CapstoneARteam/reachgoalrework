@@ -4,7 +4,7 @@ import Menu from './Menu'
 import { is } from '@babel/types'
 
 const StyledBurger = styled.button`
-  position: absolute;
+  position: fixed;
   top: 5%;
   right: 2rem;
   display: flex;

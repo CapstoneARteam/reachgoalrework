@@ -24,8 +24,12 @@ const DropPin = () => {
         navigator.geolocation.getCurrentPosition(pos => {
             const { latitude, longitude } = pos.coords;
             setPosition([latitude, longitude]);
+            console.log(pos.coords)
         })
     }, []);
+
+
+      
     return (
         <Map center={position} zoom={13}
             onClick={e => {
@@ -48,6 +52,9 @@ const DropPin = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
             />
+            <Marker position={position}>
+            <Popup >Your location</Popup>
+            </Marker>
             {markers}
         </Map>
     );

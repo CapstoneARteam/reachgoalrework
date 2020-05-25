@@ -100,36 +100,40 @@ class Menu extends Component{
   render(){
     return(
       <StyledMenu open={this.props.open} setOpen={this.props.setOpen}>
+        <div style={{
+          position: 'absolute',
+          top: '2rem',
+        }}>
         <img src={this.state.userImg} style={{
-          maxHeigh: '100px',
-          maxWidth: '100px',
-          position: 'fixed',
-          top: '4rem',
+          maxHeigh: '80px',
+          maxWidth: '80px',
+          top: '1rem',
         }}></img>
 
          <p style={{
-          position: 'fixed',
-          fontSize: '2rem',
-          top: '12rem',
+          fontSize: '1.5rem',
+          top: '30px',
           color: 'white',
           zIndex: 1002,
           }}> Welcome, <br /> {this.state.username} </p>
-
-
-        <div>
+        </div>
+        
           <ul style={{listStyleType: 'none', paddingLeft: 0}}>
             <li><a href="#/" onClick={()=> {this.props.setOpen(!this.props.open)}}>Home</a></li>
             <br/>
             <li><a href="#/droppin" onClick={()=> {this.props.setOpen(!this.props.open)}} >Drop pin</a></li>
           </ul>
-        </div>
+        
+
 
         <a href="#" onClick={this.logout} style={{
-          position: 'fixed',
+          position:'absolute',
           fontSize: '1rem',
-          bottom: 0,
           fontColor: '#00000',
+          bottom: '10rem',
         }}>Log Out </a>
+        
+
       </StyledMenu>
     )
   }
@@ -153,6 +157,7 @@ const StyledMenu = styled.nav`
   position: fixed;
   top: 0;
   right: 0;
+  bottom:0;
   transition: transform 0.3s ease-in-out;
   z-index: 1501;
 
