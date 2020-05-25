@@ -53,13 +53,16 @@ class MapView extends Component{
     ) : null
 
     return (
+      <div id='leaflet-container'>
       <Map center={this.state.currentLocation} zoom={13} maxZoom={18} >
         <TileLayer
+          
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
         />
         {userLocation}     
       </Map>
+      </div>
     );
     }
 }

@@ -8,7 +8,7 @@ import { Stitch , ObjectID} from 'mongodb-stitch-browser-sdk'
 import Login from './components/Login'
 import DropPin from './components/DropPin';
 import NavMenu from './components/Menu/NavMenu'
-
+import {Navbar} from 'react-bootstrap'
 
 import {
   Switch,
@@ -66,16 +66,14 @@ export default class App extends Component {
   Home = () => {
     if (this.client.auth.isLoggedIn) {
       return (
-        <div className="App">
+        <div>
           <MapView />
         </div>
       );
     }
     else {
       return (
-        <div className="Login">
           <Login />
-        </div>
       );
     }
   }
@@ -94,8 +92,22 @@ export default class App extends Component {
     return (
       <HashRouter basename="/">
 
-        <div className="">
+        <div className="" style={{
+          height:'100vh'
+        }}>
           <div>
+          <Navbar className="navbar bg-dark navbar-dark" style={{
+            position:'fixed',
+            width:'100%',
+            height: '50px',
+            zIndex:1500,
+          }}>
+            <Navbar.Brand>
+              CS Capstone
+            </Navbar.Brand>
+          
+            
+          </Navbar>
           {this.NavMenu()}
           </div>
 

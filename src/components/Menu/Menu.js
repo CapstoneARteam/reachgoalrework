@@ -107,12 +107,13 @@ class Menu extends Component{
         <img src={this.state.userImg} style={{
           maxHeigh: '80px',
           maxWidth: '80px',
+          borderRadius: '50%',
           top: '1rem',
         }}></img>
 
          <p style={{
           fontSize: '1.5rem',
-          top: '30px',
+          top: '4rem',
           color: 'white',
           zIndex: 1002,
           }}> Welcome, <br /> {this.state.username} </p>
@@ -149,7 +150,7 @@ const StyledMenu = styled.nav`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #292b2c;
+  background: #343a40;
   transform: ${({ open }) => open ? 'translateX(-100)' : 'translateX(100%)'};
   height: 100vh;
   text-align: left;
