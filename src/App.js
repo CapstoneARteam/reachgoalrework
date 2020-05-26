@@ -9,7 +9,7 @@ import Login from './components/Login'
 import DropPin from './components/DropPin';
 import NavMenu from './components/Menu/NavMenu'
 import {Navbar} from 'react-bootstrap'
-
+import ViewModules, {View_Modules} from './components/ViewModules'
 import {
   Switch,
   Route,
@@ -128,7 +128,7 @@ export default class App extends Component {
               <DropPin />
             </Route>
             <Route exact path="/create_module" component={Create_Modules} />
-            <Route exact path="/view_module" component={View_Modules} />
+            <Route exact path="/viewmodules" component={ViewModules} />
           </Switch>
           </div>
         </div>
@@ -143,8 +143,6 @@ const Create_Modules = () => {
   return <h2>Admin</h2>;
 }
 
-const View_Modules = () => {
-  return <h2>Student</h2>;
-}
+
 
 
