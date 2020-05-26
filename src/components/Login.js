@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import './Login.css'
-import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
+import {Stitch, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 
 export default class Login extends Component{
     constructor(){

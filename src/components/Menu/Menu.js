@@ -3,7 +3,7 @@ import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitc
 import { ObjectId } from 'mongodb'
 import styled from 'styled-components'
 import { withRouter } from 'react-router';
-import { Link } from 'react-router-dom'
+
 
 
 class Menu extends Component{
@@ -99,7 +99,7 @@ class Menu extends Component{
 
   render(){
     return(
-      <StyledMenu open={this.props.open} setOpen={this.props.setOpen}>
+      <StyledMenu open={this.props.open} setOpen={this.props.setOpen} center_container={this.props.center_container}>
         <div style={{
           position: 'absolute',
           top: '2rem',
@@ -120,9 +120,15 @@ class Menu extends Component{
         </div>
         
           <ul style={{listStyleType: 'none', paddingLeft: 0}}>
-            <li><a href="#/" onClick={()=> {this.props.setOpen(!this.props.open)}}>Home</a></li>
+            <li><a href="#/" onClick={()=> {
+              this.props.setOpen(!this.props.open)
+              this.props.center_container.center_container.current.style.opacity = 1
+              }}>Home</a></li>
             <br/>
-            <li><a href="#/droppin" onClick={()=> {this.props.setOpen(!this.props.open)}} >Drop pin</a></li>
+            <li><a href="#/droppin" onClick={()=> {
+              this.props.setOpen(!this.props.open)
+              this.props.center_container.center_container.current.style.opacity = 1
+              }} >Drop pin</a></li>
           </ul>
         
 

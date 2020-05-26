@@ -4,7 +4,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import MapView from './components/MapView.js'
 import Menu from './components/Menu/Menu.js'
-import { Stitch , ObjectID} from 'mongodb-stitch-browser-sdk'
+import { Stitch} from 'mongodb-stitch-browser-sdk'
 import Login from './components/Login'
 import DropPin from './components/DropPin';
 import NavMenu from './components/Menu/NavMenu'
@@ -14,9 +14,8 @@ import {
   Switch,
   Route,
   HashRouter,
-  Link
 } from "react-router-dom";
-import { thisExpression } from '@babel/types';
+
 
 
 export default class App extends Component {
@@ -45,10 +44,18 @@ export default class App extends Component {
       isLoggedIn : false,
     }
 
+    //refs
+   
+    this.center_container = React.createRef()
+
+    
+    
+
     this.NavMenu = this.NavMenu.bind(this)
   }
 
   componentDidMount() {
+    
 
   }
 
@@ -80,8 +87,10 @@ export default class App extends Component {
 
   NavMenu = () => {
     if (this.client.auth.isLoggedIn) {
+      
+
       return (
-        <NavMenu />
+        <NavMenu center_container={this.center_container}/>
       );
     }
   }
@@ -111,7 +120,7 @@ export default class App extends Component {
           {this.NavMenu()}
           </div>
 
-          <div>
+          <div ref={this.center_container} className='myclass'>
           <Switch>
             <Route exact path="/">{this.Home}</Route>
             <Route exact path="/menu" component={Menu} />

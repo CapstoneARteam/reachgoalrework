@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import Menu from './Menu'
-import { is } from '@babel/types'
+
 
 const StyledBurger = styled.button`
   position: fixed;
@@ -46,9 +46,16 @@ const StyledBurger = styled.button`
   }
 `
 
-const Burger = ({ open, setOpen }) => {
+const Burger = ({ open, setOpen, center_container }) => {
+  console.log(center_container.center_container.current)
   return (
-    <StyledBurger open={open} onClick={() => setOpen(!open)}>
+    <StyledBurger open={open} onClick={() => {
+      setOpen(!open)
+      if(!open)
+        center_container.center_container.current.style.opacity = .5 
+      else
+        center_container.center_container.current.style.opacity = 1
+    }}>
       <div />
       <div />
       <div />
@@ -59,13 +66,13 @@ const Burger = ({ open, setOpen }) => {
 
 
 
-const NavMenu = () => {
+const NavMenu = (center_container) => {
     const [open, setOpen] = React.useState(false);
- 
+
     return (
         <div>
-        <Burger open={open} setOpen={setOpen} />
-        <Menu open={open} setOpen={setOpen}/>
+        <Burger open={open} setOpen={setOpen} center_container={center_container} />
+        <Menu open={open} setOpen={setOpen} center_container={center_container}/>
         </div>
     )
 }
