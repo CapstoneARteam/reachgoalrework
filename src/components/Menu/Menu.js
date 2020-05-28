@@ -23,19 +23,21 @@ class Menu extends Component{
       this.addamodule = this.addamodule.bind(this)
       this.listmymodules = this.listmymodules.bind(this)
       console.log(props)
+      const appId = "capstonear_app-xkqng"
+      if (Stitch.hasAppClient(appId)){
+        this.client = Stitch.getAppClient(appId)
+        const mongodb = this.client.getServiceClient(
+          RemoteMongoClient.factory,
+          "mongodb-atlas"
+        );
+        //select the db in our mongdb atlas cluster
+        this.db = mongodb.db("APP");
+      }
   }
 
   async componentDidMount(){
     //init mongodb stitch
-    const appId = "capstonear_app-xkqng"
-    if (Stitch.hasAppClient(appId)){
-      this.client = Stitch.getAppClient(appId)
-      const mongodb = this.client.getServiceClient(
-        RemoteMongoClient.factory,
-        "mongodb-atlas"
-      );
-      //select the db in our mongdb atlas cluster
-      this.db = mongodb.db("APP");
+  
       
       if (this.client.auth.isLoggedIn && this.client.auth.authInfo.userProfile) {
         this.setState(
@@ -51,7 +53,6 @@ class Menu extends Component{
       }
 
 
-    }
   }
 
 
