@@ -111,7 +111,7 @@ export default class App extends Component {
             height: '50px',
             zIndex:1500,
           }}>
-            <Navbar.Brand>
+            <Navbar.Brand href='#/'>
               CS Capstone
             </Navbar.Brand>
           
@@ -120,7 +120,11 @@ export default class App extends Component {
           {this.NavMenu()}
           </div>
 
-          <div ref={this.center_container} className='myclass'>
+          <div ref={this.center_container} className='mid_container' style={{
+              postion: 'fixed',
+              top: '50px',
+             
+          }}>
           <Switch>
             <Route exact path="/">{this.Home}</Route>
             <Route exact path="/menu" component={Menu} />
