@@ -23,19 +23,21 @@ class Menu extends Component{
       this.addamodule = this.addamodule.bind(this)
       this.listmymodules = this.listmymodules.bind(this)
       console.log(props)
+      const appId = "capstonear_app-xkqng"
+      if (Stitch.hasAppClient(appId)){
+        this.client = Stitch.getAppClient(appId)
+        const mongodb = this.client.getServiceClient(
+          RemoteMongoClient.factory,
+          "mongodb-atlas"
+        );
+        //select the db in our mongdb atlas cluster
+        this.db = mongodb.db("APP");
+      }
   }
 
   async componentDidMount(){
     //init mongodb stitch
-    const appId = "capstonear_app-xkqng"
-    if (Stitch.hasAppClient(appId)){
-      this.client = Stitch.getAppClient(appId)
-      const mongodb = this.client.getServiceClient(
-        RemoteMongoClient.factory,
-        "mongodb-atlas"
-      );
-      //select the db in our mongdb atlas cluster
-      this.db = mongodb.db("APP");
+  
       
       if (this.client.auth.isLoggedIn && this.client.auth.authInfo.userProfile) {
         this.setState(
@@ -50,9 +52,7 @@ class Menu extends Component{
         console.log(this.client.auth.authInfo.userProfile.data)
       }
 
-      console.log(this.props.open)
 
-    }
   }
 
 
@@ -119,16 +119,15 @@ class Menu extends Component{
           }}> Welcome, <br /> {this.state.username} </p>
         </div>
         
-          <ul style={{listStyleType: 'none', paddingLeft: 0}}>
-            <li><a href="#/" onClick={()=> {
-              this.props.setOpen(!this.props.open)
-              this.props.center_container.center_container.current.style.opacity = 1
-              }}>Home</a></li>
+          <ul style={{listStyleType: 'none', paddingLeft: 0}} onClick={ ()=> {
+            this.props.center_container.center_container.current.style.opacity = 1
+            this.props.setOpen(!this.props.open)
+          }}>
+            <li><a href="#/">Home</a></li>
             <br/>
-            <li><a href="#/droppin" onClick={()=> {
-              this.props.setOpen(!this.props.open)
-              this.props.center_container.center_container.current.style.opacity = 1
-              }} >Drop pin</a></li>
+            <li><a href="#/droppin">Drop pin</a></li>
+            <br/>
+            <li><a href="#/viewmodules">My Modules</a></li>
           </ul>
         
 

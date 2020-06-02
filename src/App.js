@@ -9,7 +9,7 @@ import Login from './components/Login'
 import DropPin from './components/DropPin';
 import NavMenu from './components/Menu/NavMenu'
 import {Navbar} from 'react-bootstrap'
-
+import ViewModules, {View_Modules} from './components/ViewModules'
 import {
   Switch,
   Route,
@@ -111,7 +111,7 @@ export default class App extends Component {
             height: '50px',
             zIndex:1500,
           }}>
-            <Navbar.Brand>
+            <Navbar.Brand href='#/'>
               CS Capstone
             </Navbar.Brand>
           
@@ -120,7 +120,11 @@ export default class App extends Component {
           {this.NavMenu()}
           </div>
 
-          <div ref={this.center_container} className='myclass'>
+          <div ref={this.center_container} className='mid_container' style={{
+              postion: 'fixed',
+              top: '50px',
+             
+          }}>
           <Switch>
             <Route exact path="/">{this.Home}</Route>
             <Route exact path="/menu" component={Menu} />
@@ -128,7 +132,7 @@ export default class App extends Component {
               <DropPin />
             </Route>
             <Route exact path="/create_module" component={Create_Modules} />
-            <Route exact path="/view_module" component={View_Modules} />
+            <Route exact path="/viewmodules" component={ViewModules} />
           </Switch>
           </div>
         </div>
@@ -143,8 +147,6 @@ const Create_Modules = () => {
   return <h2>Admin</h2>;
 }
 
-const View_Modules = () => {
-  return <h2>Student</h2>;
-}
+
 
 
