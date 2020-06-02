@@ -32,62 +32,47 @@ export default class ViewModules extends Component{
     }
 
     async get_image(){
-       
-
-
-      
 
     }
-
 
     add_module_cards(){
         
         const mds= this.state.modules.map(function(module,idx) {
           
             return (
-           
-            <Card style={{
-                display:'block',
-                maxHeight: '25rem',
-                margin : '.5rem',
-                
-                maxWidth:'23rem',
-                
-            }} key={idx}>
-                <Card.Body>
-                    <Card.Img variant="top" src= "https://capstoneusercontent.s3.amazonaws.com/ar.png" />
-                    <Card.Title>{module.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">by someone</Card.Subtitle>
-                    <Card.Text>
-                        this is the description of this OMSI module
-                    </Card.Text>
-                    <button className="btn btn-primary">View Module</button>
-                </Card.Body>
-            </Card>
-           
+                <div className="col-md-6 col-lg-4 col-xl-3">
+                    <Card style={{
+                        display: 'block',
+                        maxHeight: '25rem',
+                        margin: '.5rem',
+                    }} key={idx}>
+                        <Card.Body>
+                            <Card.Img variant="top" src="https://capstoneusercontent.s3.amazonaws.com/ar.png" />
+                            <Card.Title>{module.name}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-muted">by someone</Card.Subtitle>
+                            <Card.Text>
+                                this is the description of this OMSI module
+                            </Card.Text>
+                            <button className="btn btn-primary">View Module</button>
+                        </Card.Body>
+                    </Card>
+                </div>
             )
         })
-        return(
+        return (
             <div style={{
-                left : '10px',
-                right : '10px',
                 top: '50px',
                 bottom: '0px',
-                position: 'absolute',
-            }}>
-            <CardDeck style={{
-                top : '10px',
-                width : '100%',
-                justifyContent : 'flex-start',
                 position: 'relative',
-                display: 'flex',
-                flexFlow: 'row wrap',
-                alignItems: 'stretch'
-            }}>
-                {mds}
-            </CardDeck>
+            }}
+                className="container"
+            >
+                <CardDeck style={{
+                    top: '10px',
+                }}>
+                    {mds}
+                </CardDeck>
             </div>
-               
         )
     }
 
