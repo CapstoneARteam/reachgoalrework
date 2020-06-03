@@ -36,11 +36,6 @@ export default class ManageModules extends Component {
     }
 
     list_modules() {
-        const update_module = (event, idx) => {
-            event.preventDefault()
-            this.state.modules[idx].name = event.target.value
-        }
-
         const mds= this.state.modules.map((module,idx) => {  
             return (
                 <div key={idx}>
@@ -48,7 +43,8 @@ export default class ManageModules extends Component {
                         <Col  sm={{ size: 4, offset: 3 }}>
                             <FormGroup>
                                 <Input type="text" defaultValue={module.name} onChange={(event) => {
-                                    update_module(event, idx)
+                                    event.preventDefault()
+                                    this.state.modules[idx].name = event.target.value
                                 }}/>
                             </FormGroup>
                         </Col>
@@ -97,7 +93,7 @@ export default class ManageModules extends Component {
                     {this.list_modules()}
                     <Row>
                         <Col sm={{size: 'auto', offset: 3}}>
-                            <Button onClick={this.save_modules}>Add Module</Button>
+                            <Button onClick={this.add_module}>Add Module</Button>
                         </Col>
                     </Row>
                     <Row>
