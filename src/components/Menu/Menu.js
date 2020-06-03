@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
 import styled from 'styled-components'
-import { withRouter } from 'react-router';
+
 
 
 
@@ -99,12 +99,14 @@ class Menu extends Component{
 
   render(){
     return(
-      <StyledMenu open={this.props.open} setOpen={this.props.setOpen} center_container={this.props.center_container}>
+      <StyledMenu open={this.props.open} setOpen={this.props.setOpen} center_container={this.props.center_container} style={{
+        
+      }}>
         <div style={{
           position: 'absolute',
           top: '2rem',
         }}>
-        <img src={this.state.userImg} style={{
+        <img src={this.state.userImg} alt="test" style={{
           maxHeigh: '80px',
           maxWidth: '80px',
           borderRadius: '50%',
@@ -132,7 +134,7 @@ class Menu extends Component{
         
 
 
-        <a href="#" onClick={this.logout} style={{
+        <a href='#/logout' onClick={this.logout} style={{
           position:'absolute',
           fontSize: '1rem',
           fontColor: '#00000',

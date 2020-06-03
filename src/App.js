@@ -10,7 +10,7 @@ import DropPin from './components/DropPin';
 import NavMenu from './components/Menu/NavMenu'
 import Module from './components/Module'
 import {Navbar} from 'react-bootstrap'
-import ViewModules, {View_Modules} from './components/ViewModules'
+import ViewModules from './components/ViewModules'
 import {
   Switch,
   Route,
@@ -114,8 +114,6 @@ export default class App extends Component {
             <Navbar.Brand href='#/'>
               CS Capstone
             </Navbar.Brand>
-          
-            
           </Navbar>
           {this.NavMenu()}
           </div>

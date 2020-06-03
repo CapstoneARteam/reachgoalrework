@@ -1,5 +1,5 @@
-import React, { Component, createRef } from 'react'
-import {useHistory} from 'react-router-dom'
+import React, { Component} from 'react'
+
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import {Container} from 'react-bootstrap'
 import 'leaflet/dist/leaflet.css'
@@ -67,7 +67,7 @@ export default class Module extends Component {
         })
         .asArray()
         .then((module_info) => {
-            if(module_info === undefined || module_info.length == 0)
+            if(module_info === undefined || module_info.length === 0)
             {
                 console.log(module_info)
                 return

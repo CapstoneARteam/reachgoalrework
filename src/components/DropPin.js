@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
+import {Stitch, RemoteMongoClient} from "mongodb-stitch-browser-sdk"
 import { Modal } from 'react-bootstrap'
 
 const appId = "capstonear_app-xkqng"

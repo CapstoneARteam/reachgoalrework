@@ -1,8 +1,7 @@
-import React, { Component, createRef } from 'react'
-import {useHistory} from 'react-router-dom'
-import {Card, Tab, Tabs, CardGroup, CardDeck, Form, Button} from 'react-bootstrap'
+import React, { Component, } from 'react'
+import {Card, Tab, Tabs, CardDeck, Form, Button} from 'react-bootstrap'
 import {Stitch,RemoteMongoClient,  } from "mongodb-stitch-browser-sdk"
-import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
+//import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
 
 export default class ViewModules extends Component{
 
