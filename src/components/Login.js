@@ -23,7 +23,7 @@ export default class Login extends Component{
   
             }
           )
-          window.location.replace('#/')
+          window.location.assign('#/')
         }
         )
       }

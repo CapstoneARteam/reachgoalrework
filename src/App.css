@@ -16,7 +16,7 @@
 .leaflet-container{
   width: 100%;
 
-  top: 50px;
+  top: 0px;
   bottom: 0px;
   overflow: hidden;
   position: absolute;

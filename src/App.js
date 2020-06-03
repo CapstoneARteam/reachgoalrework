@@ -8,20 +8,22 @@ import { Stitch} from 'mongodb-stitch-browser-sdk'
 import Login from './components/Login'
 import DropPin from './components/DropPin';
 import NavMenu from './components/Menu/NavMenu'
+import Module from './components/Module'
 import {Navbar} from 'react-bootstrap'
 import ViewModules, {View_Modules} from './components/ViewModules'
 import {
   Switch,
   Route,
   HashRouter,
+
 } from "react-router-dom";
 
 
 
 export default class App extends Component {
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     const appId = "capstonear_app-xkqng"
     this.client = Stitch.hasAppClient(appId)
       ? Stitch.getAppClient(appId)
@@ -31,7 +33,7 @@ export default class App extends Component {
       console.log("has results")
 
       this.client.auth.handleRedirectResult().then(user => {
-        window.location.reload()
+        window.location.assign('/')
       }
       )
     }
@@ -99,11 +101,9 @@ export default class App extends Component {
 
   render() {
     return (
-      <HashRouter basename="/">
+      <HashRouter basename="/" >
 
-        <div className="" style={{
-          height:'100vh'
-        }}>
+       
           <div>
           <Navbar className="navbar bg-dark navbar-dark" style={{
             position:'fixed',
@@ -120,10 +120,13 @@ export default class App extends Component {
           {this.NavMenu()}
           </div>
 
-          <div ref={this.center_container} className='mid_container' style={{
-              postion: 'fixed',
+          <div ref={this.center_container} className='center_container' style={{
+              position: 'fixed',
               top: '50px',
-             
+              bottom: '0',
+              width:"100%",
+              height:'calc(100% - 50px)',
+              
           }}>
           <Switch>
             <Route exact path="/">{this.Home}</Route>
@@ -133,9 +136,10 @@ export default class App extends Component {
             </Route>
             <Route exact path="/create_module" component={Create_Modules} />
             <Route exact path="/viewmodules" component={ViewModules} />
+            <Route  path='/module/:id' component={Module}/>
           </Switch>
           </div>
-        </div>
+       
       </HashRouter>
     );
   }

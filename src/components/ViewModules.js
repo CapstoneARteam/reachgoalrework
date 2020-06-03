@@ -1,4 +1,5 @@
 import React, { Component, createRef } from 'react'
+import {useHistory} from 'react-router-dom'
 import {Card, Tab, Tabs, CardGroup, CardDeck, Form, Button} from 'react-bootstrap'
 import {Stitch,RemoteMongoClient,  } from "mongodb-stitch-browser-sdk"
 import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
@@ -102,9 +103,7 @@ export default class ViewModules extends Component{
                 <div className="col-md-6 col-lg-4 col-xl-3" key={idx}>
                     <Card style={{
                         display: 'block',
-                       
                         Height: '20rem',
-                        
                         Width: '25rem',
                         margin: '0.25rem',
                     }} >
@@ -143,10 +142,18 @@ export default class ViewModules extends Component{
         
         return(
             <div style={{
+                position:'absolute',
+                top: '0px',
+                bottom:'0px',
+                width: '100%',
+                overflowY: 'scroll'
+            }}>
+            <div style={{
                 top:'10px',
                 position:'relative',
                 marginLeft: 'auto',
-                marginRight: 'auto'
+                marginRight: 'auto',
+                
             }
             }>
 
@@ -171,7 +178,8 @@ export default class ViewModules extends Component{
                             </Form.Group>
 
                             <Button variant="primary" onClick={ ()=>{
-                                window.location.replace('#/module?id=' + this.goto_module_id.current.value)
+                                
+                                window.location.assign('#/module/' + this.goto_module_id.current.value)
                             }
                             }>
                                 View Module
@@ -182,7 +190,7 @@ export default class ViewModules extends Component{
 
                 </Tabs>
             </div>
-            
+            </div>
         )
     }
 

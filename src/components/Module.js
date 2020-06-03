@@ -1,21 +1,87 @@
 import React, { Component, createRef } from 'react'
+import {useHistory} from 'react-router-dom'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import {Container} from 'react-bootstrap'
 import 'leaflet/dist/leaflet.css'
-import {Stitch,RemoteMongoClient,  } from "mongodb-stitch-browser-sdk"
+import {Stitch,RemoteMongoClient } from "mongodb-stitch-browser-sdk"
+import {ObjectId} from 'mongodb'
 
 export default class Module extends Component {
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
         this.state = {
-            current_position:[]
+            current_position:[],
+            module_info: {
+                name:'',
+                owner_email: '',
+                owner_id: '',
+                owner_name: '',
+                description: '',
+            },
         }
 
         this.getUserPosition = this.getUserPosition.bind(this)
+        this.fetch_userinfo = this.fetch_userinfo.bind(this)
+
+        const appId = "capstonear_app-xkqng"
+        if (Stitch.hasAppClient(appId)) {
+            this.client = Stitch.getAppClient(appId)
+            const mongodb = this.client.getServiceClient(
+                RemoteMongoClient.factory,
+                "mongodb-atlas"
+              );
+              //select the db in our mongdb atlas cluster
+              this.db = mongodb.db("APP");
+            console.log("client")
+        }
+        else{
+            this.client = Stitch.initializeAppClient(appId)
+            console.log("client init")
+        }
     }
 
     componentDidMount(){
+        
         this.getUserPosition()
+        this.fetch_userinfo()
+        const appId = "capstonear_app-xkqng"
+        if (Stitch.hasAppClient(appId)) {
+            this.client = Stitch.getAppClient(appId)
+            const mongodb = this.client.getServiceClient(
+                RemoteMongoClient.factory,
+                "mongodb-atlas"
+              );
+              //select the db in our mongdb atlas cluster
+              this.db = mongodb.db("APP");
+            console.log("client")
+        }
+        else{
+            this.client = Stitch.initializeAppClient(appId)
+            console.log("client init")
+        }
+    }
+
+    async fetch_userinfo(){
+        await this.db.collection("MODULES").find({
+            _id: ObjectId(this.props.match.params.id)
+        })
+        .asArray()
+        .then((module_info) => {
+            if(module_info === undefined || module_info.length == 0)
+            {
+                console.log(module_info)
+                return
+            }
+            this.setState({module_info: module_info[0]}
+            )
+          console.log(module_info)
+        }
+        )
+        .catch((err) => {this.setState({error: err})
+         console.log(err)
+        }
+        )
+       
     }
 
     getUserPosition(){
@@ -48,10 +114,45 @@ export default class Module extends Component {
         )   
     }
 
+
+
     render(){
+      
         return(
             <Container>
-                info of the module
+                name: 
+                <br />
+                {this.state.module_info.name}
+                <br />
+                <br />
+
+                owner_email: 
+                <br />
+                {this.state.module_info.owner_email}
+                <br />
+                <br />
+
+                owner_name: 
+                <br />
+                {this.state.module_info.owner_name}
+                <br />
+                <br />
+
+                owner_id: 
+                <br />
+                {this.state.module_info.owner_id}
+                <br />
+                <br />
+
+                description: 
+                <br />
+                {this.state.module_info.description}
+                <br />
+                <br />
+              
+
+
+                <button className='btn btn-primary'>start module</button>
             </Container>
         )
     }
