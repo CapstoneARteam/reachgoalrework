@@ -78,7 +78,7 @@ class Menu extends Component{
   addamodule(){
     this.db.collection("MODULES")
     .insertOne({
-      userID: this.state.userID,
+      owner_id: this.state.userID,
       name: this.state.temp_module_name,
       owner: this.state.useremail,
     })
@@ -134,12 +134,12 @@ class Menu extends Component{
         
 
 
-        <a href="#" onClick={this.logout} style={{
+        <a href="#/" onClick={this.logout} style={{
           position:'absolute',
           fontSize: '1rem',
           fontColor: '#00000',
           bottom: '10rem',
-        }}>Log Out </a>
+        }}>Log Out</a>
         
 
       </StyledMenu>
