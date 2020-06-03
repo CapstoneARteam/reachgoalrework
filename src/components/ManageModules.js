@@ -59,7 +59,7 @@ export default class ManageModules extends Component {
         this.db.collection("MODULES").find()
         .toArray()
         .then(res => {
-            console.log(res)
+            console.log("Load response: ",res)
 
             this.setState({modules: res})
         })
@@ -71,7 +71,7 @@ export default class ManageModules extends Component {
         this.db.collection("MODULES")
             .deleteOne(query)
             .then(res => {
-                console.log(res)
+                console.log("Delete response: ",res)
 
                 // Reload updated module list
                 this.load_modules()
@@ -94,11 +94,11 @@ export default class ManageModules extends Component {
         this.db.collection("MODULES")
             .insertOne(query)
             .then(res => {
-                console.log(res)
+                console.log("Add response: ",res)
 
                 // Save the other modules in case something changed
+                // Later should be replaced with a route to the "Edit Module" view
                 this.save_modules()
-                this.load_modules() // Later should be replaced with a route to the "Edit Module" view
             })
             .catch(console.error);
     }
@@ -116,7 +116,7 @@ export default class ManageModules extends Component {
             return this.db.collection("MODULES").updateOne(query, update, options)
         }))
         .then(res => {
-            console.log(res)
+            console.log("Save response: ", res)
 
             // Later this should navigate back to the home screen. This is just for testing purposes
             this.load_modules()
