@@ -128,6 +128,8 @@ class Menu extends Component{
             <li><a href="#/droppin">Drop pin</a></li>
             <br/>
             <li><a href="#/viewmodules">My Modules</a></li>
+            <br/>
+            <li><a href="#/managemodules">Edit Modules</a></li>
           </ul>
         
 
