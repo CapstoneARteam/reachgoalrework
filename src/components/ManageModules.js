@@ -34,7 +34,7 @@ export default class ManageModules extends Component {
                     <Row form>
                         <Col  sm={{ size: 4, offset: 3 }}>
                             <FormGroup>
-                                <Input type="text" defaultValue={module.name} onChange={(event) => {
+                                <Input type="text" defaultValue={module.name} onChange={event => {
                                     event.preventDefault()
                                     this.state.modules[idx].name = event.target.value
                                 }}/>
@@ -44,7 +44,7 @@ export default class ManageModules extends Component {
                             <Button>Edit</Button>
                         </Col>
                         <Col sm={{ size: 1}}>
-                            <Button onClick={(event) => {
+                            <Button onClick={event => {
                                 event.preventDefault()
                                 this.delete_module(module._id)
                             }}>Delete</Button>
@@ -58,11 +58,10 @@ export default class ManageModules extends Component {
     load_modules() {
         this.db.collection("MODULES").find()
         .toArray()
-        .then( (res) => {
+        .then(res => {
             console.log(res)
 
             this.setState({modules: res})
-            console.log("Modules: ", res)
         })
         .catch(console.error);
     }
@@ -71,7 +70,7 @@ export default class ManageModules extends Component {
         const query = {"_id": module_id}
         this.db.collection("MODULES")
             .deleteOne(query)
-            .then( (res) => {
+            .then(res => {
                 console.log(res)
 
                 // Reload updated module list
@@ -94,7 +93,7 @@ export default class ManageModules extends Component {
 
         this.db.collection("MODULES")
             .insertOne(query)
-            .then( (res) => {
+            .then(res => {
                 console.log(res)
 
                 // Save the other modules in case something changed
@@ -116,7 +115,7 @@ export default class ManageModules extends Component {
             
             return this.db.collection("MODULES").updateOne(query, update, options)
         }))
-        .then( (res) => {
+        .then(res => {
             console.log(res)
 
             // Later this should navigate back to the home screen. This is just for testing purposes
