@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, createRef } from 'react'
 import {Card, Tab, Tabs, CardGroup, CardDeck, Form, Button} from 'react-bootstrap'
 import {Stitch,RemoteMongoClient,  } from "mongodb-stitch-browser-sdk"
 import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
@@ -14,7 +14,12 @@ export default class ViewModules extends Component{
             shared_modules:[],
             img1:'',
             stitch_res:[],
+        
         }
+
+        //refs
+        this.goto_module_id = React.createRef()
+
         this.add_module_cards = this.add_module_cards.bind(this)
         this.fetch_modules = this.fetch_modules.bind(this)
 
@@ -94,13 +99,15 @@ export default class ViewModules extends Component{
 
         const mds= this.state.modules[type].map(function(module,idx) {
             return (
-                <div className="col-md-6 col-lg-4 col-xl-3">
+                <div className="col-md-6 col-lg-4 col-xl-3" key={idx}>
                     <Card style={{
                         display: 'block',
-                        maxHeight: '25rem',
-                        minWidth:'20rem',
-                        marginBottom: '0.5rem',
-                    }} key={idx}>
+                       
+                        Height: '20rem',
+                        
+                        Width: '25rem',
+                        margin: '0.25rem',
+                    }} >
                         <Card.Body>
                             <Card.Img variant="top" src="https://capstoneusercontent.s3.amazonaws.com/ar.png" />
                             <Card.Title>{module.name}</Card.Title>
@@ -132,9 +139,11 @@ export default class ViewModules extends Component{
     }
 
     render(){
+
+        
         return(
             <div style={{
-                top:'50px',
+                top:'10px',
                 position:'relative',
                 marginLeft: 'auto',
                 marginRight: 'auto'
@@ -158,11 +167,13 @@ export default class ViewModules extends Component{
                         <Form>
                             <Form.Group controlId="formModuleId">
                                 <Form.Label>Module ID:</Form.Label>
-                                <Form.Control type="module_id" placeholder="Enter module id" />
-                               
+                                <Form.Control type="string" placeholder="Enter module id" ref={this.goto_module_id} />
                             </Form.Group>
 
-                            <Button variant="primary" type="submit">
+                            <Button variant="primary" onClick={ ()=>{
+                                window.location.replace('#/module?id=' + this.goto_module_id.current.value)
+                            }
+                            }>
                                 View Module
                             </Button>
                         </Form>
