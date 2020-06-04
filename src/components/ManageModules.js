@@ -67,14 +67,12 @@ export default class ManageModules extends Component {
                                 color="danger"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    if (
-                                        window.confirm(
-                                            'Are you sere you want to delete module "' +
-                                                module.name +
-                                                '"?'
-                                        )
-                                    )
-                                        this.delete_module(idx);
+                                    var del = window.confirm(
+                                        'Are you sere you want to delete "' +
+                                            module.name +
+                                            '"?'
+                                    );
+                                    if (del) this.delete_module(idx);
                                 }}
                             >
                                 Delete
