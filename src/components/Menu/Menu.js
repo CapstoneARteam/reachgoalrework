@@ -195,4 +195,4 @@ const StyledMenu = styled.nav`
   }
 `
 
-export default withRouter(Menu)
+export default Menu
