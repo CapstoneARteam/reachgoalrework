@@ -32,7 +32,7 @@ export default class ManageModules extends Component {
             return (
                 <div key={idx}>
                     <Row form>
-                        <Col sm={{ size: 8 }}>
+                        <Col xs="6">
                             <FormGroup>
                                 <Input
                                     type="text"
@@ -117,7 +117,7 @@ export default class ManageModules extends Component {
 
     add_module() {
         const query = {
-            name: "name",
+            title: "title",
             owner_id: this.client.auth.authInfo.userId,
             owner_name: this.client.auth.authInfo.userProfile.name,
             owner_email: this.client.auth.authInfo.userProfile.email,
@@ -183,11 +183,7 @@ export default class ManageModules extends Component {
                 }}
                 className="container"
             >
-                <div
-                    style={{
-                        width: "500px",
-                    }}
-                >
+                <div>
                     <Form
                         onSubmit={(event) => {
                             event.preventDefault();
