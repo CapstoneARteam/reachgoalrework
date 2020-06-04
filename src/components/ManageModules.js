@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import {  Form, FormGroup, Input, Row, Col, Button} from 'reactstrap';
+import { useHistory } from "react-router-dom"
+import {  Form, FormGroup, Input, Row, Col, Button} from 'reactstrap'
 import {Stitch, RemoteMongoClient} from "mongodb-stitch-browser-sdk"
 
 export default class ManageModules extends Component {
@@ -8,10 +9,10 @@ export default class ManageModules extends Component {
         this.state = {modules: []}
 
         this.list_modules = this.list_modules.bind(this)
-        this.add_module = this.add_module.bind(this)
-        this.save_modules = this.save_modules.bind(this)
         this.load_modules = this.load_modules.bind(this)
         this.delete_module = this.delete_module.bind(this)
+        this.add_module = this.add_module.bind(this)
+        this.save_modules = this.save_modules.bind(this)
 
         // Setting up DB with Stitch
         const appId = "capstonear_app-xkqng"
@@ -34,19 +35,22 @@ export default class ManageModules extends Component {
                     <Row form>
                         <Col  sm={{ size: 4, offset: 3 }}>
                             <FormGroup>
-                                <Input type="text" defaultValue={module.name} onChange={event => {
+                                <Input type="text" value={this.state.modules[idx].name} onChange={event => {
                                     event.preventDefault()
-                                    this.state.modules[idx].name = event.target.value
+                                    
+                                    var modules = [...this.state.modules]
+                                    modules[idx].name = event.target.value
+                                    this.setState({modules})
                                 }}/>
                             </FormGroup>
                         </Col>
                         <Col sm={{ size: 1}}>
                             <Button>Edit</Button>
                         </Col>
-                        <Col sm={{ size: 1}}>
+                        <Col sm={{size: 1}}>
                             <Button onClick={event => {
                                 event.preventDefault()
-                                this.delete_module(module._id)
+                                this.delete_module(idx)
                             }}>Delete</Button>
                         </Col>
                     </Row>
@@ -66,15 +70,17 @@ export default class ManageModules extends Component {
         .catch(console.error);
     }
 
-    delete_module(module_id) {
-        const query = {"_id": module_id}
+    delete_module(idx) {
+        const query = {"_id": this.state.modules[idx]._id}
         this.db.collection("MODULES")
             .deleteOne(query)
             .then(res => {
                 console.log("Delete response: ",res)
 
-                // Reload updated module list
-                this.load_modules()
+                // Update module list
+                var modules = [...this.state.modules]
+                modules.splice(idx, 1)
+                this.setState({modules})
             })
             .catch(console.error);
     }
@@ -96,16 +102,16 @@ export default class ManageModules extends Component {
             .then(res => {
                 console.log("Add response: ",res)
 
-                // Save the other modules in case something changed
-                // Later should be replaced with a route to the "Edit Module" view
-                this.save_modules()
+                // Update module list
+                var modules = [...this.state.modules]
+                modules.push(query)
+                this.setState({modules})
             })
             .catch(console.error);
     }
 
-
     save_modules() {
-        Promise.all(this.state.modules.map((module, idx) => {
+        Promise.all(this.state.modules.map(module => {
             const query = {"_id": module._id}
             const update = {"$set": {
                     "name": module.name
@@ -117,9 +123,6 @@ export default class ManageModules extends Component {
         }))
         .then(res => {
             console.log("Save response: ", res)
-
-            // Later this should navigate back to the home screen. This is just for testing purposes
-            this.load_modules()
         })
         .catch(console.error);
     }
@@ -133,7 +136,7 @@ export default class ManageModules extends Component {
             }}
                 className="container"
             >
-                <Form onSubmit={ (event) => {
+                <Form onSubmit={event => {
                     event.preventDefault()
                     this.save_modules()
                 }}>
@@ -141,17 +144,19 @@ export default class ManageModules extends Component {
                     {this.list_modules()}
                     <Row>
                         <Col sm={{size: 'auto', offset: 3}}>
-                            <Button onClick={ (event) => {
+                            <Button onClick={event => {
                                 event.preventDefault()
                                 this.add_module()
+                                //this.props.history.push(#/editmodule)
                             }}>Add Module</Button>
                         </Col>
                     </Row>
                     <Row>
                         <Col sm={{size: 'auto', offset: 3}}>
-                            <Button onClick={ (event) => {
+                            <Button onClick={event => {
                                 event.preventDefault()
                                 this.save_modules()
+                                this.props.history.goBack()
                             }}>Save</Button>
                         </Col>
                     </Row>
