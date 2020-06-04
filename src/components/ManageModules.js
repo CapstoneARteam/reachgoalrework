@@ -49,7 +49,14 @@ export default class ManageModules extends Component {
                             </FormGroup>
                         </Col>
                         <Col sm={{ size: 1 }}>
-                            <Button>Edit</Button>
+                            <Button onClick={event => {
+                                event.preventDefault();
+
+                                // How should we navigate to "Edit Module" view?
+                                // How do you convert an ObjectID to a usable String?
+                                //var id = this.state.modules[idx]._id
+                                //this.props.history.push("#/editmodule/module?id=" + id)
+                            }}>Edit</Button>
                         </Col>
                         <Col sm={{ size: 1 }}>
                             <Button
@@ -118,6 +125,11 @@ export default class ManageModules extends Component {
                 var modules = [...this.state.modules];
                 modules.push(query);
                 this.setState({ modules });
+
+                // How should we navigate to "Edit Module" view?
+                // How do you convert an ObjectID to a usable String?
+                //var id = res.insertedId._id
+                //this.props.history.push("#/editmodule/module?id=" + id)
             })
             .catch(console.error);
     }
@@ -167,7 +179,6 @@ export default class ManageModules extends Component {
                                 onClick={(event) => {
                                     event.preventDefault();
                                     this.add_module();
-                                    //this.props.history.push(#/editmodule)
                                 }}
                             >
                                 Add Module
