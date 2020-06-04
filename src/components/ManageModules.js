@@ -32,7 +32,7 @@ export default class ManageModules extends Component {
             return (
                 <div key={idx}>
                     <Row form>
-                        <Col sm={{ size: 4, offset: 3 }}>
+                        <Col sm={{ size: 8 }}>
                             <FormGroup>
                                 <Input
                                     type="text"
@@ -47,21 +47,34 @@ export default class ManageModules extends Component {
                                 />
                             </FormGroup>
                         </Col>
-                        <Col sm={{ size: 1 }}>
-                            <Button onClick={event => {
-                                event.preventDefault();
-
-                                // How should we navigate to "Edit Module" view?
-                                // How do you convert an ObjectID to a usable String?
-                                //var id = this.state.modules[idx]._id
-                                //this.props.history.push("#/editmodule/module?id=" + id)
-                            }}>Edit</Button>
-                        </Col>
-                        <Col sm={{ size: 1 }}>
+                        <Col>
                             <Button
+                                color="link"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    this.delete_module(idx);
+
+                                    // How should we navigate to "Edit Module" view?
+                                    // How do you convert an ObjectID to a usable String?
+                                    //var id = this.state.modules[idx]._id
+                                    //this.props.history.push("#/editmodule/module?id=" + id)
+                                }}
+                            >
+                                Edit
+                            </Button>
+                        </Col>
+                        <Col>
+                            <Button
+                                color="danger"
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    if (
+                                        window.confirm(
+                                            'Are you sere you want to delete module "' +
+                                                module.name +
+                                                '"?'
+                                        )
+                                    )
+                                        this.delete_module(idx);
                                 }}
                             >
                                 Delete
@@ -162,42 +175,51 @@ export default class ManageModules extends Component {
                     top: "50px",
                     bottom: "0px",
                     position: "relative",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                 }}
                 className="container"
             >
-                <Form
-                    onSubmit={(event) => {
-                        event.preventDefault();
-                        this.save_modules();
+                <div
+                    style={{
+                        width: "500px",
                     }}
                 >
-                    {this.list_modules()}
-                    <Row>
-                        <Col sm={{ size: "auto", offset: 3 }}>
-                            <Button
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    this.add_module();
-                                }}
-                            >
-                                Add Module
-                            </Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={{ size: "auto", offset: 3 }}>
-                            <Button
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    this.save_modules();
-                                    this.props.history.goBack();
-                                }}
-                            >
-                                Save
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
+                    <Form
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            this.save_modules();
+                        }}
+                    >
+                        {this.list_modules()}
+                        <Button
+                            color="primary"
+                            size="lg"
+                            block
+                            onClick={(event) => {
+                                event.preventDefault();
+                                this.add_module();
+                            }}
+                        >
+                            Add Module
+                        </Button>
+                        <Button
+                            color="secondary"
+                            size="lg"
+                            block
+                            onClick={(event) => {
+                                event.preventDefault();
+                                this.save_modules();
+                                this.props.history.goBack();
+                            }}
+                        >
+                            Save
+                        </Button>
+                    </Form>
+                </div>
             </div>
         );
     }
