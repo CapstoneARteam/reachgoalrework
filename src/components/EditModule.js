@@ -30,8 +30,6 @@ export default class EditModule extends Component{
         this.db = mongodb.db("APP")
     }
 
-
-
     render(){
         return(
             <Form style={{
@@ -76,21 +74,27 @@ export default class EditModule extends Component{
                 </Form.Group>
                 <Form.Group as={Row}>
                     <Col sm={{ span: 10, offset: 2 }}>
-                        <Button className="btn btn-primary" onClick={() => {
+                        <Button className="btn btn-primary" onClick={(event) => {
+                            event.preventDefault();
                             const title = document.getElementById("title").value || "";
                             const description = document.getElementById("description").value || "";
                             const radiotype = this.state.selected;
                             this.db.collection("MODULES")
                                 .insertOne({
-                                    name: title,
+                                    title: title,
                                     owner_id: this.client.auth.authInfo.userId,
-                                    owner_email: this.state.useremail,
+                                    owner_name: this.client.auth.authInfo.userProfile.name,
+                                    owner_email: this.client.auth.authInfo.userProfile.email,
                                     description: description,
                                     pins: [],
                                     shared_array: [],
                                     public: radiotype,
                                 })
                                 .catch(console.error);
+                                var save = window.confirm(
+                                    'You have saved the module!'
+                                );
+                                this.props.history.goBack();
                         }}>
                             Save
                         </Button>
