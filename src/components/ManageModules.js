@@ -36,12 +36,12 @@ export default class ManageModules extends Component {
                             <FormGroup>
                                 <Input
                                     type="text"
-                                    value={this.state.modules[idx].name}
+                                    value={this.state.modules[idx].title}
                                     onChange={(event) => {
                                         event.preventDefault();
 
                                         var modules = [...this.state.modules];
-                                        modules[idx].name = event.target.value;
+                                        modules[idx].title = event.target.value;
                                         this.setState({ modules });
                                     }}
                                 />
@@ -69,7 +69,7 @@ export default class ManageModules extends Component {
                                     event.preventDefault();
                                     var del = window.confirm(
                                         'Are you sere you want to delete "' +
-                                            module.name +
+                                            module.title +
                                             '"?'
                                     );
                                     if (del) this.delete_module(idx);
@@ -150,7 +150,7 @@ export default class ManageModules extends Component {
                 const query = { _id: module._id };
                 const update = {
                     $set: {
-                        name: module.name,
+                        title: module.title,
                     },
                 };
                 const options = { upsert: false };
@@ -170,48 +170,66 @@ export default class ManageModules extends Component {
         return (
             <div
                 style={{
-                    top: "50px",
-                    bottom: "0px",
+                    top: "10px",
                     position: "relative",
                     marginLeft: "auto",
                     marginRight: "auto",
+                    height: "100%",
+                    overflow: "hidden",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
                 }}
                 className="container"
             >
-                <div>
+                <div
+                    style={{
+                        height: "100%",
+                        overflow: "hidden",
+                    }}
+                >
                     <Form
+                        style={{ height: "100%" }}
                         onSubmit={(event) => {
                             event.preventDefault();
                             this.save_modules();
                         }}
                     >
-                        {this.list_modules()}
-                        <Button
-                            color="primary"
-                            size="lg"
-                            block
-                            onClick={(event) => {
-                                event.preventDefault();
-                                this.add_module();
+                        <div
+                            style={{
+                                height: "60%",
+                                overflowY: "scroll",
+                                overflowX: "hidden",
                             }}
                         >
-                            Add Module
-                        </Button>
-                        <Button
-                            color="secondary"
-                            size="lg"
-                            block
-                            onClick={(event) => {
-                                event.preventDefault();
-                                this.save_modules();
-                                this.props.history.goBack();
-                            }}
-                        >
-                            Save
-                        </Button>
+                            {this.list_modules()}
+                        </div>
+
+                        <div style={{ marginTop: "10px" }}>
+                            <Button
+                                color="primary"
+                                size="lg"
+                                block
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.add_module();
+                                }}
+                            >
+                                Add Module
+                            </Button>
+                            <Button
+                                color="secondary"
+                                size="lg"
+                                block
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.save_modules();
+                                    window.location.assign("#/");
+                                }}
+                            >
+                                Save
+                            </Button>
+                        </div>
                     </Form>
                 </div>
             </div>
