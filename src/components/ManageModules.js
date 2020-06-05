@@ -19,6 +19,7 @@ export default class ManageModules extends Component {
         this.state = {
             modules: [],
             modal: false,
+            idx: -1,
         };
 
         this.toggle = this.toggle.bind(this);
@@ -40,8 +41,6 @@ export default class ManageModules extends Component {
         );
         this.db = mongodb.db("APP");
 
-        this.idx_to_delete = -1;
-
         this.load_modules();
     }
 
@@ -51,12 +50,12 @@ export default class ManageModules extends Component {
     }
 
     modal_message() {
-        if (this.idx_to_delete < 0) return <p>Nothing to delete</p>;
+        if (this.state.idx < 0) return <p>Nothing to delete</p>;
         else
             return (
                 <p>
                     Are you sure you want to delete{" "}
-                    <b>{this.state.modules[this.idx_to_delete].title}</b>?
+                    <b>{this.state.modules[this.state.idx].title}</b>?
                 </p>
             );
     }
@@ -101,7 +100,7 @@ export default class ManageModules extends Component {
                                 color="danger"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    this.idx_to_delete = idx;
+                                    this.setState({ idx: idx });
                                     this.toggle();
                                 }}
                             >
@@ -138,8 +137,7 @@ export default class ManageModules extends Component {
                 // Update module list
                 var modules = [...this.state.modules];
                 modules.splice(idx, 1);
-                this.setState({ modules });
-                this.idx_to_delete = -1;
+                this.setState({ modules: modules, idx: -1 });
             })
             .catch(console.error);
     }
@@ -286,8 +284,8 @@ export default class ManageModules extends Component {
                                 color="danger"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    if (this.idx_to_delete > -1)
-                                        this.delete_module(this.idx_to_delete);
+                                    if (this.state.idx > -1)
+                                        this.delete_module(this.state.idx);
                                     this.toggle();
                                 }}
                             >
