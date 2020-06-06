@@ -1,15 +1,6 @@
 import React, { Component, } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import FormCheck from 'react-bootstrap/FormCheck'
-import FormControl from 'react-bootstrap/FormControl'
-import Alert from 'react-bootstrap/Alert'
-import {Stitch, RemoteMongoClient} from "mongodb-stitch-browser-sdk"
-
-
-
+import { Row, Col, Form, Button } from 'react-bootstrap'
+import {Stitch, RemoteMongoClient} from "mongodb-stitch-browser-sdk" 
 
 export default class EditModule extends Component{
 
@@ -18,6 +9,8 @@ export default class EditModule extends Component{
         this.state = {
             selected: true
         }
+
+        this.save_module = this.save_module.bind(this);
 
         const appId = "capstonear_app-xkqng"
         this.client = Stitch.hasAppClient(appId)
@@ -28,6 +21,24 @@ export default class EditModule extends Component{
             "mongodb-atlas"
         )
         this.db = mongodb.db("APP")
+    }
+
+    save_module() {
+        const title = document.getElementById("title").value || "";
+        const description = document.getElementById("description").value || "";
+        const radiotype = this.state.selected;
+        this.db.collection("MODULES")
+            .insertOne({
+                title: title,
+                owner_id: this.client.auth.authInfo.userId,
+                owner_name: this.client.auth.authInfo.userProfile.name,
+                owner_email: this.client.auth.authInfo.userProfile.email,
+                description: description,
+                pins: [],
+                shared_array: [],
+                public: radiotype,
+            })
+            .catch(console.error);
     }
 
     render(){
@@ -76,25 +87,11 @@ export default class EditModule extends Component{
                     <Col sm={{ span: 10, offset: 2 }}>
                         <Button className="btn btn-primary" onClick={(event) => {
                             event.preventDefault();
-                            const title = document.getElementById("title").value || "";
-                            const description = document.getElementById("description").value || "";
-                            const radiotype = this.state.selected;
-                            this.db.collection("MODULES")
-                                .insertOne({
-                                    title: title,
-                                    owner_id: this.client.auth.authInfo.userId,
-                                    owner_name: this.client.auth.authInfo.userProfile.name,
-                                    owner_email: this.client.auth.authInfo.userProfile.email,
-                                    description: description,
-                                    pins: [],
-                                    shared_array: [],
-                                    public: radiotype,
-                                })
-                                .catch(console.error);
-                                var save = window.confirm(
-                                    'You have saved the module!'
-                                );
-                                this.props.history.goBack();
+                            var save = window.confirm(
+                                'You have saved the module!'
+                            );
+                            this.save_module();
+                            this.props.history.goBack();
                         }}>
                             Save
                         </Button>
