@@ -130,6 +130,8 @@ class Menu extends Component{
             <li><a href="#/viewmodules">My Modules</a></li>
             <br/>
             <li><a href="#/managemodules">Edit Modules</a></li>
+            <br/>
+            <li><a href="#/editmodule">Edit Module</a></li>
           </ul>
         
 
