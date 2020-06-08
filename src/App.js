@@ -11,7 +11,8 @@ import NavMenu from './components/Menu/NavMenu'
 import Module from './components/Module'
 import EditModule from './components/EditModule'
 import {Navbar} from 'react-bootstrap'
-import ViewModules, {View_Modules} from './components/ViewModules'
+import ViewModules from './components/ViewModules'
+import ManageModules from './components/ManageModules'
 import {
   Switch,
   Route,
@@ -137,6 +138,7 @@ export default class App extends Component {
             </Route>
             <Route exact path="/create_module" component={Create_Modules} />
             <Route exact path="/viewmodules" component={ViewModules} />
+            <Route exact path="/managemodules" component={ManageModules} />
             <Route exact path="/editmodule" component={EditModule} />
             <Route  path='/module/:id' component={Module}/>
           </Switch>
