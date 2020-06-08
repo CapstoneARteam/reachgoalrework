@@ -116,7 +116,10 @@ export default class ManageModules extends Component {
     load_modules() {
         this.db
             .collection("MODULES")
-            .find()
+            .find({
+                owner_id: this.client.auth.authInfo.userId
+                }
+            )
             .toArray()
             .then((res) => {
                 console.log("Load response: ", res);
