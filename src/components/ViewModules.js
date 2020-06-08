@@ -22,7 +22,8 @@ export default class ViewModules extends Component{
 
         this.add_module_cards = this.add_module_cards.bind(this)
         this.fetch_modules = this.fetch_modules.bind(this)
-
+        this.goto_module = this.goto_module.bind(this)
+        
         const appId = "capstonear_app-xkqng"
         if (Stitch.hasAppClient(appId)) {
             this.client = Stitch.getAppClient(appId)
@@ -92,9 +93,8 @@ export default class ViewModules extends Component{
 
   
 
-    async goto_module(){
-       
-        
+    goto_module(id){
+        window.location.assign('#/module/' + id)
     }
 
     add_module_cards(type){
@@ -104,7 +104,7 @@ export default class ViewModules extends Component{
 
         const mds= this.state.modules[type].map(function(module,idx) {
             return (
-                <div className="col-md-6 col-lg-4 col-xl-3" key={idx}>
+                <div className="col-md-6 col-lg-4 " key={idx}>
                     <Card style={{
                         display: 'block',
                         Height: '20rem',
@@ -118,7 +118,16 @@ export default class ViewModules extends Component{
                             <Card.Text>
                                 {module.description}
                             </Card.Text>
-                            <button className="btn btn-primary">View Module</button>
+                            <div className='btn-toolbar' style={{
+                                
+                            }}>
+                                <div className='btn-group mr-2'>
+                                    <button className="btn btn-primary" onClick={()=> window.location.assign('#/module/' + module._id)}>View Details</button>
+                                </div>
+                                <div className='btn-group mr-2'>
+                                    <button className="btn btn-primary">Start Module</button>
+                                </div>
+                            </div>
                         </Card.Body>
                     </Card>
                 </div>
