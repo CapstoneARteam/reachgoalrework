@@ -83,6 +83,11 @@ export default class ViewModules extends Component{
         }
         )
         console.log(this.state.modules)
+
+
+
+
+        
     }
 
   
@@ -170,17 +175,16 @@ export default class ViewModules extends Component{
 
                     
                     <Tab eventKey="Go To" title="Go To">
-                        <Form>
+                        <Form >
                             <Form.Group controlId="formModuleId">
                                 <Form.Label>Module ID:</Form.Label>
-                                <Form.Control type="string" placeholder="Enter module id" ref={this.goto_module_id} />
+                                <Form.Control required type="string" placeholder="Enter module id" ref={this.goto_module_id} />
                             </Form.Group>
 
                             <Button variant="primary" onClick={ ()=>{
-                                
                                 window.location.assign('#/module/' + this.goto_module_id.current.value)
                             }
-                            }>
+                            } >
                                 View Module
                             </Button>
                         </Form>
