@@ -84,7 +84,7 @@ export default class EditModule extends Component {
             .updateOne(query, update, options)
             .then((res) => {
                 console.log("Save response: ", res);
-                
+
                 // Go back to Manage Module view
                 window.location.assign("#/modules/edit/");
             })
@@ -131,6 +131,8 @@ export default class EditModule extends Component {
                         />
                     </Form.Group>
 
+                    {/* 
+                    If we want to use a checkbox instead of the radios, this is the code for it
                     <Form.Group>
                         <Form.Check
                             label="Public"
@@ -143,7 +145,7 @@ export default class EditModule extends Component {
                                 });
                             }}
                         />
-                    </Form.Group>
+                    </Form.Group> */}
 
                     <Form.Group
                         style={{
