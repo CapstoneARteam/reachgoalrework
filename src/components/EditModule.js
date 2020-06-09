@@ -8,6 +8,7 @@ export default class EditModule extends Component {
         super(props);
         this.state = {
             module_info: {
+                _id: "",
                 title: "",
                 owner_email: "",
                 owner_id: "",
@@ -173,15 +174,24 @@ export default class EditModule extends Component {
                     </Form.Group>
 
                     <Form.Group>
-                        <Button variant="primary" size="lg" block>
-                            Add Pins
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            block
+                            onClick={(e) => {
+                                e.preventDefault();
+                                var id = this.state.module_info._id;
+                                window.location.assign("#/pins/edit/" + id);
+                            }}
+                        >
+                            Manage Pins
                         </Button>
                         <Button
                             variant="secondary"
                             size="lg"
                             block
-                            onClick={(event) => {
-                                event.preventDefault();
+                            onClick={(e) => {
+                                e.preventDefault();
                                 this.save_module();
                             }}
                         >
