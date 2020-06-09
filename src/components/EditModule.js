@@ -84,6 +84,9 @@ export default class EditModule extends Component {
             .updateOne(query, update, options)
             .then((res) => {
                 console.log("Save response: ", res);
+                
+                // Go back to Manage Module view
+                window.location.assign("#/modules/edit/");
             })
             .catch(console.error);
     }
@@ -194,7 +197,6 @@ export default class EditModule extends Component {
                             onClick={(event) => {
                                 event.preventDefault();
                                 this.save_module();
-                                window.location.assign("#/modules/edit/");
                             }}
                         >
                             Save

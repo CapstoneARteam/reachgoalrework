@@ -86,11 +86,8 @@ export default class ManageModules extends Component {
                                 color="link"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    window.location.assign('#/modules/module/edit/' + this.state.modules[idx]._id)
-                                    // How should we navigate to "Edit Module" view?
-                                    // How do you convert an ObjectID to a usable String?
-                                    //var id = this.state.modules[idx]._id
-                                    //this.props.history.push("#/editmodule/module?id=" + id)
+                                    var id = this.state.modules[idx]._id
+                                    window.location.assign('#/modules/module/edit/' + id)
                                 }}
                             >
                                 Edit
@@ -164,14 +161,14 @@ export default class ManageModules extends Component {
                 console.log("Add response: ", res);
 
                 // Update module list
-                var modules = [...this.state.modules];
-                modules.push(query);
-                this.setState({ modules });
+                // var modules = [...this.state.modules];
+                // modules.push(query);
+                // this.setState({ modules });
 
-                // How should we navigate to "Edit Module" view?
-                // How do you convert an ObjectID to a usable String?
-                //var id = res.insertedId._id
-                //this.props.history.push("#/editmodule/module?id=" + id)
+                // Navigate to Edit Module view
+                var id = res.insertedId
+                window.location.assign('#/modules/module/edit/' + id)
+                console.log("URL used: " + '#/modules/module/edit/' + id)
             })
             .catch(console.error);
     }
