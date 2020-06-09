@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Form, Button } from "react-bootstrap";
-import { Input } from "reactstrap";
+import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
 
@@ -8,8 +7,6 @@ export default class EditModule extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modules: [],
-            selected: false,
             module_info: {
                 title: "",
                 owner_email: "",
@@ -93,53 +90,66 @@ export default class EditModule extends Component {
 
     render() {
         return (
-            <Form
+            <div
                 style={{
-                    top: "40px",
+                    top: "10px",
                     position: "relative",
-                    textAlign: "center",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
                 }}
+                className="container"
             >
-                <Form.Group>
-                    <Form.Control
-                        type="title"
-                        id="title"
-                        value={this.state.module_info.title}
-                        onChange={(e) => {
-                            var module_info = this.state.module_info;
-                            module_info.title = e.target.value;
-                            this.setState({ module_info: module_info });
-                        }}
-                        style={{
-                            textAlign: "center",
-                            width: "300px",
-                            margin: "0 auto",
-                        }}
-                    />
-                </Form.Group>
+                <Form>
+                    <Form.Group>
+                        <Form.Control
+                            type="title"
+                            id="title"
+                            value={this.state.module_info.title}
+                            onChange={(e) => {
+                                var module_info = this.state.module_info;
+                                module_info.title = e.target.value;
+                                this.setState({ module_info: module_info });
+                            }}
+                        />
+                    </Form.Group>
 
-                <Form.Group>
-                    <Form.Control
-                        as="textarea"
-                        rows="5"
-                        id="description"
-                        value={this.state.module_info.description}
-                        onChange={(e) => {
-                            var module_info = this.state.module_info;
-                            module_info.description = e.target.value;
-                            this.setState({ module_info: module_info });
-                        }}
+                    <Form.Group>
+                        <Form.Control
+                            as="textarea"
+                            rows="5"
+                            id="description"
+                            value={this.state.module_info.description}
+                            onChange={(e) => {
+                                var module_info = this.state.module_info;
+                                module_info.description = e.target.value;
+                                this.setState({ module_info: module_info });
+                            }}
+                        />
+                    </Form.Group>
+
+                    <Form.Group>
+                        <Form.Check
+                            label="Public"
+                            checked={this.state.module_info.public}
+                            onChange={(e) => {
+                                var module_info = this.state.module_info;
+                                module_info.public = e.target.checked;
+                                this.setState({
+                                    module_info: module_info,
+                                });
+                            }}
+                        />
+                    </Form.Group>
+
+                    <Form.Group
                         style={{
-                            textAlign: "center",
-                            width: "300px",
-                            margin: "0 auto",
+                            display: "flex",
+                            justifyContent: "center",
                         }}
-                    />
-                </Form.Group>
-                <fieldset>
-                    <Form.Group as={Row}>
-                        <Form.Label as="legend" column sm={2}></Form.Label>
-                        <Col sm={10}>
+                        as={Row}
+                    >
+                        <Col xs={4}>
                             <Form.Check
                                 type="radio"
                                 label="Public"
@@ -149,9 +159,13 @@ export default class EditModule extends Component {
                                 onChange={(e) => {
                                     var module_info = this.state.module_info;
                                     module_info.public = true;
-                                    this.setState({ module_info: module_info });
+                                    this.setState({
+                                        module_info: module_info,
+                                    });
                                 }}
                             />
+                        </Col>
+                        <Col xs={4}>
                             <Form.Check
                                 type="radio"
                                 label="Private"
@@ -161,22 +175,22 @@ export default class EditModule extends Component {
                                 onChange={(e) => {
                                     var module_info = this.state.module_info;
                                     module_info.public = false;
-                                    this.setState({ module_info: module_info });
+                                    this.setState({
+                                        module_info: module_info,
+                                    });
                                 }}
                             />
                         </Col>
                     </Form.Group>
-                </fieldset>
 
-                <Form.Group as={Row}>
-                    <Col sm={{ span: 10, offset: 2 }}>
-                        <Button variant="primary">Add Pins</Button>
-                    </Col>
-                </Form.Group>
-                <Form.Group as={Row}>
-                    <Col sm={{ span: 10, offset: 2 }}>
+                    <Form.Group>
+                        <Button variant="primary" size="lg" block>
+                            Add Pins
+                        </Button>
                         <Button
-                            className="btn btn-primary"
+                            variant="secondary"
+                            size="lg"
+                            block
                             onClick={(event) => {
                                 event.preventDefault();
                                 this.save_module();
@@ -185,14 +199,18 @@ export default class EditModule extends Component {
                         >
                             Save
                         </Button>
-                    </Col>
-                </Form.Group>
-                <Form.Group as={Row}>
-                    <Col sm={{ span: 10, offset: 2 }}>
+                    </Form.Group>
+
+                    <Form.Group
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
                         <Button variant="primary">Share</Button>
-                    </Col>
-                </Form.Group>
-            </Form>
+                    </Form.Group>
+                </Form>
+            </div>
         );
     }
 }
