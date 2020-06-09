@@ -136,8 +136,8 @@ export default class App extends Component {
             </Route>
             <Route exact path="/create_module" component={Create_Modules} />
             <Route exact path="/viewmodules" component={ViewModules} />
-            <Route exact path="/managemodules" component={ManageModules} />
-            <Route exact path="/editmodule" component={EditModule} />
+            <Route exact path="/modules/edit" component={ManageModules} />
+            <Route exact path="/modules/module/edit/:id" component={EditModule} />
             <Route  path='/module/:id' component={Module}/>
           </Switch>
           </div>

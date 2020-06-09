@@ -22,6 +22,7 @@ export default class ManageModules extends Component {
             idx: -1,
         };
 
+        this.goto_module_id = React.createRef()
         this.toggle = this.toggle.bind(this);
         this.modal_message = this.modal_message.bind(this);
         this.list_modules = this.list_modules.bind(this);
@@ -85,7 +86,7 @@ export default class ManageModules extends Component {
                                 color="link"
                                 onClick={(event) => {
                                     event.preventDefault();
-
+                                    window.location.assign('#/modules/module/edit/' + this.state.modules[idx]._id)
                                     // How should we navigate to "Edit Module" view?
                                     // How do you convert an ObjectID to a usable String?
                                     //var id = this.state.modules[idx]._id
