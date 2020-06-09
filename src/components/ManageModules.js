@@ -210,7 +210,7 @@ export default class ManageModules extends Component {
                     overflow: "hidden",
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: "center",
+                    // alignItems: "center",
                 }}
                 className="container"
             >
