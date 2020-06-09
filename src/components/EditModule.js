@@ -131,22 +131,6 @@ export default class EditModule extends Component {
                         />
                     </Form.Group>
 
-                    {/* 
-                    If we want to use a checkbox instead of the radios, this is the code for it
-                    <Form.Group>
-                        <Form.Check
-                            label="Public"
-                            checked={this.state.module_info.public}
-                            onChange={(e) => {
-                                var module_info = this.state.module_info;
-                                module_info.public = e.target.checked;
-                                this.setState({
-                                    module_info: module_info,
-                                });
-                            }}
-                        />
-                    </Form.Group> */}
-
                     <Form.Group
                         style={{
                             display: "flex",
