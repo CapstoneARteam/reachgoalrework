@@ -160,15 +160,9 @@ export default class ManageModules extends Component {
             .then((res) => {
                 console.log("Add response: ", res);
 
-                // Update module list
-                // var modules = [...this.state.modules];
-                // modules.push(query);
-                // this.setState({ modules });
-
                 // Navigate to Edit Module view
                 var id = res.insertedId
                 window.location.assign('#/modules/module/edit/' + id)
-                console.log("URL used: " + '#/modules/module/edit/' + id)
             })
             .catch(console.error);
     }
