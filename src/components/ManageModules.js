@@ -22,7 +22,7 @@ export default class ManageModules extends Component {
             idx: -1,
         };
 
-        this.goto_module_id = React.createRef()
+        this.goto_module_id = React.createRef();
         this.toggle = this.toggle.bind(this);
         this.modal_message = this.modal_message.bind(this);
         this.list_modules = this.list_modules.bind(this);
@@ -86,8 +86,10 @@ export default class ManageModules extends Component {
                                 color="link"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    var id = this.state.modules[idx]._id
-                                    window.location.assign('#/modules/module/edit/' + id)
+                                    var id = this.state.modules[idx]._id;
+                                    window.location.assign(
+                                        "#/modules/module/edit/" + id
+                                    );
                                 }}
                             >
                                 Edit
@@ -115,7 +117,7 @@ export default class ManageModules extends Component {
         this.db
             .collection("MODULES")
             .find({
-                owner_id: this.client.auth.authInfo.userId
+                owner_id: this.client.auth.authInfo.userId,
             })
             .toArray()
             .then((res) => {
@@ -161,8 +163,8 @@ export default class ManageModules extends Component {
                 console.log("Add response: ", res);
 
                 // Navigate to Edit Module view
-                var id = res.insertedId
-                window.location.assign('#/modules/module/edit/' + id)
+                var id = res.insertedId;
+                window.location.assign("#/modules/module/edit/" + id);
             })
             .catch(console.error);
     }
