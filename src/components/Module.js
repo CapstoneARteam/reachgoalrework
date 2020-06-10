@@ -120,9 +120,9 @@ export default class Module extends Component {
       
         return(
             <Container>
-                name: 
+                title: 
                 <br />
-                {this.state.module_info.name}
+                {this.state.module_info.title}
                 <br />
                 <br />
 
