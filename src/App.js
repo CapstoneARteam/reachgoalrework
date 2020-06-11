@@ -13,6 +13,8 @@ import EditModule from './components/EditModule'
 import {Navbar} from 'react-bootstrap'
 import ViewModules from './components/ViewModules'
 import ManageModules from './components/ManageModules'
+import ViewPinOnMap from './components/ViewPinOnMap'
+
 import {
   Switch,
   Route,
@@ -133,6 +135,9 @@ export default class App extends Component {
             <Route exact path="/menu" component={Menu} />
             <Route exact path="/droppin">
               <DropPin />
+            </Route>
+            <Route exact path="/viewpinmap">
+              <ViewPinOnMap />
             </Route>
             <Route exact path="/create_module" component={Create_Modules} />
             <Route exact path="/viewmodules" component={ViewModules} />
