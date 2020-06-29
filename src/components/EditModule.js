@@ -199,16 +199,43 @@ export default class EditModule extends Component {
                 )}
                 renderItem={({ value, index, props }) => (
                     <ListGroup.Item {...props}>
-                        <Form.Control
-                            type="title"
-                            value={this.state.pins[index].title}
-                            onChange={(e) => {
-                                e.preventDefault();
-                                var pins = this.state.pins;
-                                pins[index].title = e.target.value;
-                                this.setState({ pins: pins });
-                            }}
-                        />
+                        <Row form>
+                            <Col xs="6">
+                                <Form.Control
+                                    type="title"
+                                    value={this.state.pins[index].title}
+                                    onChange={(e) => {
+                                        e.preventDefault();
+                                        var pins = this.state.pins;
+                                        pins[index].title = e.target.value;
+                                        this.setState({ pins: pins });
+                                    }}
+                                />
+                            </Col>
+                            <Col>
+                                <Button
+                                    variant="link"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        // TODO: Pull up the Edit Pin modal
+                                        // If you Can pull up Edit Pin modal, probably don't need editable title
+                                    }}
+                                >
+                                    Edit
+                                </Button>
+                            </Col>
+                            <Col>
+                                <Button
+                                    variant="danger"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        this.delete_pin(index);
+                                    }}
+                                >
+                                    Delete
+                                </Button>
+                            </Col>
+                        </Row>
                     </ListGroup.Item>
                 )}
             />
@@ -254,11 +281,12 @@ export default class EditModule extends Component {
                             block
                             onClick={(e) => {
                                 e.preventDefault();
-                                var id = this.state.module_info._id;
-                                window.location.assign("#/pins/edit/" + id);
+                                window.location.assign("#/droppin");
+                                // var id = this.state.module_info._id;
+                                // window.location.assign("#/pins/edit/" + id);
                             }}
                         >
-                            Manage Pins
+                            Pin Map
                         </Button>
                         <Button
                             variant="secondary"
