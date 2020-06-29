@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import { Row, Col, Form, Button } from "react-bootstrap";
+import { Row, Col, Form, Button, Tabs, Tab, ListGroup } from "react-bootstrap";
+import { List, arrayMove } from "react-movable";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
+import "./EditModule.css";
 
 export default class EditModule extends Component {
     constructor(props) {
@@ -18,10 +20,13 @@ export default class EditModule extends Component {
                 shared_array: [],
                 public: false,
             },
+            pins: [],
         };
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
+        this.module_form = this.module_form.bind(this);
         this.save_module = this.save_module.bind(this);
+        this.list_pins = this.list_pins.bind(this);
 
         const appId = "capstonear_app-xkqng";
         this.client = Stitch.hasAppClient(appId)
@@ -53,24 +58,112 @@ export default class EditModule extends Component {
     }
 
     async fetch_userinfo() {
+        const query = {
+            _id: ObjectId(this.props.match.params.id),
+        };
+
         await this.db
             .collection("MODULES")
-            .find({
-                _id: ObjectId(this.props.match.params.id),
+            .findOne(query)
+            .then((res) => {
+                console.log("Module: ", res);
+                this.setState({ module_info: res });
+
+                // Pipeline to ensure that the order of the pins stays the same after the query
+                const pipeline = [
+                    { $match: { _id: { $in: res.pins } } },
+                    {
+                        $addFields: {
+                            __order: { $indexOfArray: [res.pins, "$_id"] },
+                        },
+                    },
+                    { $sort: { __order: 1 } },
+                ];
+
+                this.db
+                    .collection("PINS")
+                    .aggregate(pipeline)
+                    .toArray()
+                    .then((res) => {
+                        console.log("Pins: ", res);
+                        this.setState({ pins: res });
+                    });
             })
-            .asArray()
-            .then((module_info) => {
-                if (module_info === undefined || module_info.length === 0) {
-                    console.log(module_info);
-                    return;
-                }
-                this.setState({ module_info: module_info[0] });
-                console.log(module_info);
-            })
-            .catch((err) => {
-                this.setState({ error: err });
-                console.log(err);
-            });
+            .catch(console.error);
+    }
+
+    module_form() {
+        return (
+            <Form>
+                <Form.Group>
+                    <Form.Control
+                        type="title"
+                        id="title"
+                        value={this.state.module_info.title}
+                        onChange={(e) => {
+                            var module_info = this.state.module_info;
+                            module_info.title = e.target.value;
+                            this.setState({ module_info: module_info });
+                        }}
+                    />
+                </Form.Group>
+
+                <Form.Group>
+                    <Form.Control
+                        as="textarea"
+                        rows="5"
+                        id="description"
+                        value={this.state.module_info.description}
+                        onChange={(e) => {
+                            var module_info = this.state.module_info;
+                            module_info.description = e.target.value;
+                            this.setState({ module_info: module_info });
+                        }}
+                    />
+                </Form.Group>
+
+                <Form.Group
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                    as={Row}
+                >
+                    <Col xs={4}>
+                        <Form.Check
+                            type="radio"
+                            label="Public"
+                            name="formHorizontalRadios"
+                            id="true"
+                            checked={this.state.module_info.public}
+                            onChange={(e) => {
+                                var module_info = this.state.module_info;
+                                module_info.public = true;
+                                this.setState({
+                                    module_info: module_info,
+                                });
+                            }}
+                        />
+                    </Col>
+                    <Col xs={4}>
+                        <Form.Check
+                            type="radio"
+                            label="Private"
+                            name="formHorizontalRadios"
+                            id="false"
+                            checked={!this.state.module_info.public}
+                            onChange={(e) => {
+                                var module_info = this.state.module_info;
+                                module_info.public = false;
+                                this.setState({
+                                    module_info: module_info,
+                                });
+                            }}
+                        />
+                    </Col>
+                </Form.Group>
+            </Form>
+        );
     }
 
     save_module() {
@@ -92,6 +185,36 @@ export default class EditModule extends Component {
             .catch(console.error);
     }
 
+    list_pins() {
+        return (
+            <List
+                values={this.state.pins}
+                onChange={({ oldIndex, newIndex }) => {
+                    var pins = this.state.pins;
+                    pins = arrayMove(pins, oldIndex, newIndex);
+                    this.setState({ pins: pins });
+                }}
+                renderList={({ children, props }) => (
+                    <ListGroup {...props}>{children}</ListGroup>
+                )}
+                renderItem={({ value, index, props }) => (
+                    <ListGroup.Item {...props}>
+                        <Form.Control
+                            type="title"
+                            value={this.state.pins[index].title}
+                            onChange={(e) => {
+                                e.preventDefault();
+                                var pins = this.state.pins;
+                                pins[index].title = e.target.value;
+                                this.setState({ pins: pins });
+                            }}
+                        />
+                    </ListGroup.Item>
+                )}
+            />
+        );
+    }
+
     render() {
         return (
             <div
@@ -104,75 +227,26 @@ export default class EditModule extends Component {
                 }}
                 className="container"
             >
-                <Form>
-                    <Form.Group>
-                        <Form.Control
-                            type="title"
-                            id="title"
-                            value={this.state.module_info.title}
-                            onChange={(e) => {
-                                var module_info = this.state.module_info;
-                                module_info.title = e.target.value;
-                                this.setState({ module_info: module_info });
-                            }}
-                        />
-                    </Form.Group>
-
-                    <Form.Group>
-                        <Form.Control
-                            as="textarea"
-                            rows="5"
-                            id="description"
-                            value={this.state.module_info.description}
-                            onChange={(e) => {
-                                var module_info = this.state.module_info;
-                                module_info.description = e.target.value;
-                                this.setState({ module_info: module_info });
-                            }}
-                        />
-                    </Form.Group>
-
-                    <Form.Group
+                <Form style={{ height: "100%" }}>
+                    <Tabs
+                        defaultActiveKey="Module Info"
+                        transition={false}
                         style={{
-                            display: "flex",
+                            textAlign: "center",
                             justifyContent: "center",
                         }}
-                        as={Row}
                     >
-                        <Col xs={4}>
-                            <Form.Check
-                                type="radio"
-                                label="Public"
-                                name="formHorizontalRadios"
-                                id="true"
-                                checked={this.state.module_info.public}
-                                onChange={(e) => {
-                                    var module_info = this.state.module_info;
-                                    module_info.public = true;
-                                    this.setState({
-                                        module_info: module_info,
-                                    });
-                                }}
-                            />
-                        </Col>
-                        <Col xs={4}>
-                            <Form.Check
-                                type="radio"
-                                label="Private"
-                                name="formHorizontalRadios"
-                                id="false"
-                                checked={!this.state.module_info.public}
-                                onChange={(e) => {
-                                    var module_info = this.state.module_info;
-                                    module_info.public = false;
-                                    this.setState({
-                                        module_info: module_info,
-                                    });
-                                }}
-                            />
-                        </Col>
-                    </Form.Group>
-
+                        <Tab eventKey="Module Info" title="Module Info">
+                            {this.module_form()}
+                        </Tab>
+                        <Tab
+                            eventKey="Pins"
+                            title="Pins"
+                            style={{ height: "100%" }}
+                        >
+                            {this.list_pins()}
+                        </Tab>
+                    </Tabs>
                     <Form.Group>
                         <Button
                             variant="primary"
