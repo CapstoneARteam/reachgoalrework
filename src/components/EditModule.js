@@ -28,6 +28,7 @@ export default class EditModule extends Component {
         this.save_module = this.save_module.bind(this);
         this.list_pins = this.list_pins.bind(this);
         this.delete_pin = this.delete_pin.bind(this);
+        this.save_pins = this.save_pins.bind(this);
 
         const appId = "capstonear_app-xkqng";
         this.client = Stitch.hasAppClient(appId)
@@ -259,6 +260,28 @@ export default class EditModule extends Component {
             .catch(console.error);
     }
 
+    save_pins() {
+        Promise.all(
+            this.state.pins.map((pin) => {
+                const query = { _id: pin._id };
+                const update = {
+                    $set: {
+                        title: pin.title,
+                    },
+                };
+                const options = { upsert: false };
+
+                return this.db
+                    .collection("PINS")
+                    .updateOne(query, update, options);
+            })
+        )
+            .then((res) => {
+                console.log("Save pins response: ", res);
+            })
+            .catch(console.error);
+    }
+
     render() {
         return (
             <div
@@ -311,6 +334,7 @@ export default class EditModule extends Component {
                             block
                             onClick={(e) => {
                                 e.preventDefault();
+                                this.save_pins();
                                 this.save_module();
                             }}
                         >
