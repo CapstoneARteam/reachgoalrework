@@ -27,6 +27,7 @@ export default class EditModule extends Component {
         this.module_form = this.module_form.bind(this);
         this.save_module = this.save_module.bind(this);
         this.list_pins = this.list_pins.bind(this);
+        this.delete_pin = this.delete_pin.bind(this);
 
         const appId = "capstonear_app-xkqng";
         this.client = Stitch.hasAppClient(appId)
@@ -240,6 +241,22 @@ export default class EditModule extends Component {
                 )}
             />
         );
+    }
+
+    delete_pin(idx) {
+        const query = { _id: this.state.pins[idx]._id };
+        this.db
+            .collection("PINS")
+            .deleteOne(query)
+            .then((res) => {
+                console.log("Delete response: ", res);
+
+                // Update pin list
+                var pins = this.state.pins;
+                pins.splice(idx, 1);
+                this.setState({ pins: pins, idx: -1 });
+            })
+            .catch(console.error);
     }
 
     render() {
