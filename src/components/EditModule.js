@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Row, Col, Form, Button, Tabs, Tab, ListGroup } from "react-bootstrap";
+import {
+    Container,
+    Row,
+    Col,
+    Form,
+    Button,
+    Tabs,
+    Tab,
+    ListGroup,
+} from "react-bootstrap";
 import { List, arrayMove } from "react-movable";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
@@ -129,40 +138,37 @@ export default class EditModule extends Component {
                         display: "flex",
                         justifyContent: "center",
                     }}
-                    as={Row}
                 >
-                    <Col xs={4}>
-                        <Form.Check
-                            type="radio"
-                            label="Public"
-                            name="formHorizontalRadios"
-                            id="true"
-                            checked={this.state.module_info.public}
-                            onChange={(e) => {
-                                var module_info = this.state.module_info;
-                                module_info.public = true;
-                                this.setState({
-                                    module_info: module_info,
-                                });
-                            }}
-                        />
-                    </Col>
-                    <Col xs={4}>
-                        <Form.Check
-                            type="radio"
-                            label="Private"
-                            name="formHorizontalRadios"
-                            id="false"
-                            checked={!this.state.module_info.public}
-                            onChange={(e) => {
-                                var module_info = this.state.module_info;
-                                module_info.public = false;
-                                this.setState({
-                                    module_info: module_info,
-                                });
-                            }}
-                        />
-                    </Col>
+                    <Form.Check
+                        inline
+                        type="radio"
+                        label="Public"
+                        name="formHorizontalRadios"
+                        id="true"
+                        checked={this.state.module_info.public}
+                        onChange={(e) => {
+                            var module_info = this.state.module_info;
+                            module_info.public = true;
+                            this.setState({
+                                module_info: module_info,
+                            });
+                        }}
+                    />
+                    <Form.Check
+                        inline
+                        type="radio"
+                        label="Private"
+                        name="formHorizontalRadios"
+                        id="false"
+                        checked={!this.state.module_info.public}
+                        onChange={(e) => {
+                            var module_info = this.state.module_info;
+                            module_info.public = false;
+                            this.setState({
+                                module_info: module_info,
+                            });
+                        }}
+                    />
                 </Form.Group>
             </Form>
         );
@@ -202,7 +208,10 @@ export default class EditModule extends Component {
                 renderItem={({ value, index, props }) => (
                     <ListGroup.Item {...props}>
                         <Row form>
-                            <Col xs="6">
+                            <Col
+                                xs="4"
+                                style={{ textAlign: "center", margin: "auto" }}
+                            >
                                 <Form.Control
                                     type="title"
                                     value={this.state.pins[index].title}
@@ -213,6 +222,8 @@ export default class EditModule extends Component {
                                         this.setState({ pins: pins });
                                     }}
                                 />
+
+                                {/* {this.state.pins[index].title} */}
                             </Col>
                             <Col>
                                 <Button
@@ -284,15 +295,12 @@ export default class EditModule extends Component {
 
     render() {
         return (
-            <div
+            <Container
                 style={{
-                    top: "10px",
-                    position: "relative",
+                    marginTop: "10px",
+                    maxWidth: "540px",
                     height: "100%",
-                    display: "flex",
-                    justifyContent: "center",
                 }}
-                className="container"
             >
                 <Form style={{ height: "100%" }}>
                     <Tabs
@@ -351,7 +359,7 @@ export default class EditModule extends Component {
                         <Button variant="primary">Share</Button>
                     </Form.Group>
                 </Form>
-            </div>
+            </Container>
         );
     }
 }
