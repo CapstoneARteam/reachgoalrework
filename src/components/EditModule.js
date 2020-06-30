@@ -37,7 +37,6 @@ export default class EditModule extends Component {
         this.save_module = this.save_module.bind(this);
         this.list_pins = this.list_pins.bind(this);
         this.delete_pin = this.delete_pin.bind(this);
-        this.save_pins = this.save_pins.bind(this);
 
         const appId = "capstonear_app-xkqng";
         this.client = Stitch.hasAppClient(appId)
@@ -203,27 +202,28 @@ export default class EditModule extends Component {
                     this.setState({ pins: pins });
                 }}
                 renderList={({ children, props }) => (
-                    <ListGroup {...props}>{children}</ListGroup>
+                    <ol
+                        {...props}
+                        style={{
+                            display: "grid",
+                            justifyContent: "center",
+                            paddingLeft: "0px",
+                        }}
+                    >
+                        {children}
+                    </ol>
                 )}
                 renderItem={({ value, index, props }) => (
-                    <ListGroup.Item {...props}>
-                        <Row form>
+                    <li {...props}>
+                        <Row style={{ marginTop: "5px", marginBottom: "5px" }}>
                             <Col
                                 xs="4"
-                                style={{ textAlign: "center", margin: "auto" }}
+                                style={{
+                                    marginTop: "auto",
+                                    marginBottom: "auto",
+                                }}
                             >
-                                <Form.Control
-                                    type="title"
-                                    value={this.state.pins[index].title}
-                                    onChange={(e) => {
-                                        e.preventDefault();
-                                        var pins = this.state.pins;
-                                        pins[index].title = e.target.value;
-                                        this.setState({ pins: pins });
-                                    }}
-                                />
-
-                                {/* {this.state.pins[index].title} */}
+                                {this.state.pins[index].title}
                             </Col>
                             <Col>
                                 <Button
@@ -249,7 +249,7 @@ export default class EditModule extends Component {
                                 </Button>
                             </Col>
                         </Row>
-                    </ListGroup.Item>
+                    </li>
                 )}
             />
         );
@@ -267,28 +267,6 @@ export default class EditModule extends Component {
                 var pins = this.state.pins;
                 pins.splice(idx, 1);
                 this.setState({ pins: pins, idx: -1 });
-            })
-            .catch(console.error);
-    }
-
-    save_pins() {
-        Promise.all(
-            this.state.pins.map((pin) => {
-                const query = { _id: pin._id };
-                const update = {
-                    $set: {
-                        title: pin.title,
-                    },
-                };
-                const options = { upsert: false };
-
-                return this.db
-                    .collection("PINS")
-                    .updateOne(query, update, options);
-            })
-        )
-            .then((res) => {
-                console.log("Save pins response: ", res);
             })
             .catch(console.error);
     }
@@ -342,7 +320,6 @@ export default class EditModule extends Component {
                             block
                             onClick={(e) => {
                                 e.preventDefault();
-                                this.save_pins();
                                 this.save_module();
                             }}
                         >
