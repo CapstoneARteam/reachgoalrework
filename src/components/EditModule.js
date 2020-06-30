@@ -136,6 +136,7 @@ export default class EditModule extends Component {
                     style={{
                         display: "flex",
                         justifyContent: "center",
+                        marginBottom: "0",
                     }}
                 >
                     <Form.Check
