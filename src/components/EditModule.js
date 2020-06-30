@@ -7,7 +7,7 @@ import {
     Button,
     Tabs,
     Tab,
-    ListGroup,
+    Modal,
 } from "react-bootstrap";
 import { List, arrayMove } from "react-movable";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
@@ -30,12 +30,19 @@ export default class EditModule extends Component {
                 public: false,
             },
             pins: [],
+            modal: false,
+            idx: -1,
         };
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
-        this.module_form = this.module_form.bind(this);
-        this.list_pins = this.list_pins.bind(this);
+
+        this.show_modal = this.show_modal.bind(this);
+        this.hide_modal = this.hide_modal.bind(this);
+        this.modal_component = this.modal_component.bind(this);
+
         this.delete_pin = this.delete_pin.bind(this);
+        this.list_pins = this.list_pins.bind(this);
+        this.module_form = this.module_form.bind(this);
         this.save_pin_order = this.save_pin_order.bind(this);
         this.save_module = this.save_module.bind(this);
 
@@ -101,6 +108,67 @@ export default class EditModule extends Component {
                     });
             })
             .catch(console.error);
+    }
+
+    show_modal() {
+        this.setState({ modal: true });
+    }
+
+    hide_modal() {
+        this.setState({ modal: false });
+    }
+
+    modal_component() {
+        var modal_message;
+        if (this.state.idx < 0) modal_message = <p>Nothing to delete</p>;
+        else
+            modal_message = (
+                <p>
+                    Are you sure you want to delete{" "}
+                    <b>{this.state.pins[this.state.idx].title}</b>?
+                </p>
+            );
+
+        return (
+            <Modal
+                // size="sm"
+                show={this.state.modal}
+                onHide={(e) => {
+                    e.preventDefault();
+                    this.hide_modal();
+                }}
+                style={{
+                    marginTop: "50px",
+                }}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modal_message}</Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="danger"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (this.state.idx > -1)
+                                this.delete_pin(this.state.idx);
+                            this.hide_modal();
+                        }}
+                    >
+                        Delete
+                    </Button>{" "}
+                    <Button
+                        variant="secondary"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.hide_modal();
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
     }
 
     module_form() {
@@ -213,7 +281,7 @@ export default class EditModule extends Component {
                                     variant="link"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        // TODO: Pull up the Edit Pin modal
+                                        // TODO: Link to Edit Pin modal
                                     }}
                                 >
                                     Edit
@@ -224,7 +292,8 @@ export default class EditModule extends Component {
                                     variant="danger"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        this.delete_pin(index);
+                                        this.setState({ idx: index });
+                                        this.show_modal();
                                     }}
                                 >
                                     Delete
@@ -319,6 +388,7 @@ export default class EditModule extends Component {
                             onClick={(e) => {
                                 e.preventDefault();
                                 window.location.assign("#/droppin");
+                                // TODO: Update DropPin route to use a module id, similar to below
                                 // var id = this.state.module_info._id;
                                 // window.location.assign("#/pins/edit/" + id);
                             }}
@@ -347,6 +417,8 @@ export default class EditModule extends Component {
                         <Button variant="primary">Share</Button>
                     </Form.Group>
                 </Form>
+
+                {this.modal_component()}
             </Container>
         );
     }
