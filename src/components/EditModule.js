@@ -243,7 +243,6 @@ export default class EditModule extends Component {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         // TODO: Pull up the Edit Pin modal
-                                        // If you Can pull up Edit Pin modal, probably don't need editable title
                                     }}
                                 >
                                     Edit
