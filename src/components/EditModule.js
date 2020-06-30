@@ -34,10 +34,10 @@ export default class EditModule extends Component {
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
         this.module_form = this.module_form.bind(this);
-        this.save_pin_order = this.save_pin_order.bind(this);
-        this.save_module = this.save_module.bind(this);
         this.list_pins = this.list_pins.bind(this);
         this.delete_pin = this.delete_pin.bind(this);
+        this.save_pin_order = this.save_pin_order.bind(this);
+        this.save_module = this.save_module.bind(this);
 
         const appId = "capstonear_app-xkqng";
         this.client = Stitch.hasAppClient(appId)
@@ -175,35 +175,6 @@ export default class EditModule extends Component {
         );
     }
 
-    save_pin_order() {
-        var module = this.state.module_info;
-        const pin_ids = this.state.pins.map((pin) => {
-            return pin._id;
-        });
-        module.pins = pin_ids;
-        this.setState({ module_info: module });
-    }
-
-    save_module() {
-        this.save_pin_order();
-        const query = { _id: this.state.module_info._id };
-        const update = {
-            $set: this.state.module_info,
-        };
-        const options = { upsert: false };
-
-        this.db
-            .collection("MODULES")
-            .updateOne(query, update, options)
-            .then((res) => {
-                console.log("Save response: ", res);
-
-                // Go back to Manage Module view
-                window.location.assign("#/modules/edit/");
-            })
-            .catch(console.error);
-    }
-
     list_pins() {
         return (
             <List
@@ -225,7 +196,7 @@ export default class EditModule extends Component {
                         {children}
                     </ol>
                 )}
-                renderItem={({ value, index, props }) => (
+                renderItem={({ index, props }) => (
                     <li {...props}>
                         <Row style={{ marginTop: "5px", marginBottom: "5px" }}>
                             <Col
@@ -278,6 +249,35 @@ export default class EditModule extends Component {
                 var pins = this.state.pins;
                 pins.splice(idx, 1);
                 this.setState({ pins: pins, idx: -1 });
+            })
+            .catch(console.error);
+    }
+
+    save_pin_order() {
+        var module = this.state.module_info;
+        const pin_ids = this.state.pins.map((pin) => {
+            return pin._id;
+        });
+        module.pins = pin_ids;
+        this.setState({ module_info: module });
+    }
+
+    save_module() {
+        this.save_pin_order();
+        const query = { _id: this.state.module_info._id };
+        const update = {
+            $set: this.state.module_info,
+        };
+        const options = { upsert: false };
+
+        this.db
+            .collection("MODULES")
+            .updateOne(query, update, options)
+            .then((res) => {
+                console.log("Save response: ", res);
+
+                // Go back to Manage Module view
+                window.location.assign("#/modules/edit/");
             })
             .catch(console.error);
     }
