@@ -34,6 +34,7 @@ export default class EditModule extends Component {
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
         this.module_form = this.module_form.bind(this);
+        this.save_pin_order = this.save_pin_order.bind(this);
         this.save_module = this.save_module.bind(this);
         this.list_pins = this.list_pins.bind(this);
         this.delete_pin = this.delete_pin.bind(this);
@@ -174,7 +175,17 @@ export default class EditModule extends Component {
         );
     }
 
+    save_pin_order() {
+        var module = this.state.module_info;
+        const pin_ids = this.state.pins.map((pin) => {
+            return pin._id;
+        });
+        module.pins = pin_ids;
+        this.setState({ module_info: module });
+    }
+
     save_module() {
+        this.save_pin_order();
         const query = { _id: this.state.module_info._id };
         const update = {
             $set: this.state.module_info,
