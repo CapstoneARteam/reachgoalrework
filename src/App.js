@@ -114,7 +114,7 @@ export default class App extends Component {
             zIndex:1500,
           }}>
             <Navbar.Brand href='#/'>
-              CS Capstone
+              Context AR
             </Navbar.Brand>
           </Navbar>
           {this.NavMenu()}
