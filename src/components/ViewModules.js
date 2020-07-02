@@ -1,5 +1,5 @@
 import React, { Component, } from 'react'
-import {Card, Tab, Tabs, CardDeck, Form, Button} from 'react-bootstrap'
+import {Card, Tab, Tabs, CardDeck, Form, Button, Spinner} from 'react-bootstrap'
 import {Stitch,RemoteMongoClient,  } from "mongodb-stitch-browser-sdk"
 //import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
 
@@ -8,7 +8,7 @@ export default class ViewModules extends Component{
     constructor(props){
         super(props)
         this.state ={
-            //modules : [{name:'OMSI'},{name:'PSU'},{name:'DOWNTOWN'}, {name:'DOWNTOWN2'},{name:'OMSI'},{name:'PSU'},{name:'DOWNTOWN'}, {name:'DOWNTOWN2'},{name:'OMSI'},{name:'PSU'},{name:'DOWNTOWN'}, {name:'DOWNTOWN2'},],
+            
             modules: [],
             my_modules: [],
             shared_modules:[],
@@ -22,7 +22,8 @@ export default class ViewModules extends Component{
 
         this.add_module_cards = this.add_module_cards.bind(this)
         this.fetch_modules = this.fetch_modules.bind(this)
-
+        this.goto_module = this.goto_module.bind(this)
+        
         const appId = "capstonear_app-xkqng"
         if (Stitch.hasAppClient(appId)) {
             this.client = Stitch.getAppClient(appId)
@@ -83,18 +84,13 @@ export default class ViewModules extends Component{
         }
         )
         console.log(this.state.modules)
-
-
-
-
         
     }
 
   
 
-    async goto_module(){
-       
-        
+    goto_module(id){
+        window.location.assign('#/module/' + id)
     }
 
     add_module_cards(type){
@@ -104,21 +100,32 @@ export default class ViewModules extends Component{
 
         const mds= this.state.modules[type].map(function(module,idx) {
             return (
-                <div className="col-md-6 col-lg-4 col-xl-3" key={idx}>
-                    <Card style={{
-                        display: 'block',
-                        Height: '20rem',
+                <div className="col-md-6 col-lg-4 " key={idx}>
+                    <Card className='h-100' style={{
+                        display: 'fixed',
+                        
                         Width: '25rem',
                         margin: '0.25rem',
+                        justifyContent:'center',
+                        textAlign:'center'
                     }} >
                         <Card.Body>
                             <Card.Img variant="top" src="https://capstoneusercontent.s3.amazonaws.com/ar.png" />
-                            <Card.Title>{module.name}</Card.Title>
+                            <Card.Title>{module.title}</Card.Title>
                             <Card.Subtitle className="mb-2 text-muted">by {module.owner_name} ({module.owner_email})</Card.Subtitle>
                             <Card.Text>
                                 {module.description}
                             </Card.Text>
-                            <button className="btn btn-primary">View Module</button>
+                            <div className='btn-toolbar' style={{
+                                justifyContent:'center'
+                            }}>
+                                <div className='btn-group mr-2'>
+                                    <button className="btn btn-primary" onClick={()=> window.location.assign('#/module/' + module._id)}>View Details</button>
+                                </div>
+                                <div className='btn-group mr-2'>
+                                    <button className="btn btn-primary">Start Module</button>
+                                </div>
+                            </div>
                         </Card.Body>
                     </Card>
                 </div>
@@ -143,7 +150,9 @@ export default class ViewModules extends Component{
 
     render(){
 
-        
+       
+
+
         return(
             <div style={{
                 position:'absolute',
