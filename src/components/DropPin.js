@@ -30,8 +30,7 @@ const floatStyle = {
 }
 
 const EditForm = props => {
-    let {objectID, lat, lng} = props;
-    objectID = objectID.insertedId;
+    const objectID = props.objectID.insertedId;
     return (
         <Modal
             {...props}
@@ -61,17 +60,14 @@ const EditForm = props => {
                     const hint = document.getElementById("hint").value || "";
                     const description = document.getElementById("description").value || "";
                     const destination = document.getElementById("destination").value || "";
-                    const { lng, lat } = globalPosition;
                     const query = { _id: objectID};
-                    // insert a new pin on the database
+                    // update a pin on the database
                     db.collection("PINS")
                         .findOneAndUpdate(query, {
-                            name: title,
+                            title: title,
                             description: description,
                             hint: hint,
                             destination: destination,
-                            long: lng,
-                            lat: lat
                         })
                         .then(objectID => {
                             props.cancel();
@@ -137,12 +133,12 @@ const AddpinForm = props => {
                     // insert a new pin on the database
                     db.collection("PINS")
                         .insertOne({
-                            name: title,
+                            title: title,
+                            owner_id: client.auth.authInfo.userId,
                             description: description,
                             hint: hint,
                             destination: destination,
-                            long: lng,
-                            lat: lat
+                            coordinates: [lat, lng]
                         })
                         .then(objectID => {
                             // add the new pin to the map on success of adding the pin to
