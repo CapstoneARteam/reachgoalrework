@@ -56,7 +56,7 @@ class ViewPinOnMap extends Component{
       useremail:"",
       userID:"",
       stitch_res:[],
-      pins:[],
+      pin:[],
       pins_line:[],
       pins_array:[],
     }
@@ -91,36 +91,40 @@ class ViewPinOnMap extends Component{
     this.getUserPosition()
     this.drawpins()
   }
-
-  drawpins() {
+ 
+  async drawpins() {
     if(!this.client.auth.isLoggedIn){
         return
     }
-    this.db.collection("MODULES").find({_id: ObjectId("5efa19afa4cd11d00a3ed561")} )
-    .asArray()
+    const query ={_id: ObjectId("5efa19afa4cd11d00a3ed561") };
+    await this.db.collection("MODULES").findOne(query)
     .then((stitch_res) => {this.setState({stitch_res})
+      console.log(this.state.stitch_res)
       var temp_array =[]
-      for(var i=0; i< this.state.stitch_res[0].pins.length;i++)
-      {
-        this.db.collection("PINS").find({_id: ObjectId(this.state.stitch_res[0].pins[i])} )
-        .asArray()
-        .then((pins) => {this.setState({pins})
-          temp_array.push(this.state.pins);
-        })
-        this.setState ({ pins_array: temp_array} )
-      }
-     
-      //console.log(this.state.pins_array) 
-      //this.setState ({ pins_line: temp_array} ) 
-      }
+      const pipeline = [
+        { $match: { _id: { $in: stitch_res.pins } } },
+        {
+            $addFields: {
+                __order: { $indexOfArray: [stitch_res.pins, "$_id"] },
+            },
+        },
+        { $sort: { __order: 1 } },
+    ];
+    this.db.collection("PINS").aggregate(pipeline)
+    .toArray()
+    .then((res) => {
+        console.log("Pins: ", res);
+        this.setState ({ pins_array: res} )
+
+    });      
+       
+    }
     )
   }
   drawlines(){
-    //console.log(this.state.pins_line)
-    //console.log(this.state.pins_line.length)
+   
     if(this.state.pins_line.length>0)
     {
-      //console.log("If statement in drawlines")
       return (
         <Polyline positions={this.state.pins_line} color ={'red'}>
       </Polyline>
@@ -130,10 +134,8 @@ class ViewPinOnMap extends Component{
   } 
   openGoogle(lat,long)
   {
-    //console.log(lat,long)
     var url= "http://maps.google.com?q="+lat+","+long
     var win = window.open(url, '_blank');
-    //var win = window.location.assign(url);
     return
   }
   render(){
@@ -154,14 +156,14 @@ class ViewPinOnMap extends Component{
          
         {this.state.pins_array.map((info,idx) => {
             return <Marker 
-                           key = {idx} position={[info[0].lat,info[0].long]} 
+                           key = {idx} position={[info.lat,info.long]} 
                            icon= {new L.divIcon({
                                                   className: 'my-div-icon',
                                                   html: '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'+
                                                         '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
                                                 })} >
                         <Popup>
-                              <h1>{info[0].desc}</h1>
+                              <h1>{info.desc}</h1>
                               <p>{info.description}</p>
                               <p>{info.hint}</p>
                               <p>{info.destination}</p>
