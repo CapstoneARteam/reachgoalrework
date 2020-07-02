@@ -29,6 +29,81 @@ const floatStyle = {
     zIndex: 1500
 }
 
+const EditForm = props => {
+    let {objectID, lat, lng} = props;
+    objectID = objectID.insertedId;
+    return (
+        <Modal
+            {...props}
+            centered
+            show={props.show}
+            style={{ zIndex: "1600" }}
+        >
+            <Modal.Header>
+                <Modal.Title>Edit a Pin</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <label className="d-block" htmlFor="title">Title</label>
+                <input type="text" className="w-100" id="title" required defaultValue={props.title}/>
+                <label className="d-block" htmlFor="description">Description</label>
+                <textarea className="w-100" id="description" defaultValue={props.description}required />
+                <label className="d-block" htmlFor="hint">Hint</label>
+                <textarea className="w-100" id="hint" defaultValue={props.hint} required />
+                <label className="d-block" htmlFor="destination">Destination</label>
+                <textarea className="w-100" id="destination" defaultValue={props.destination} required />
+            </Modal.Body>
+            <Modal.Footer>
+                <button className="btn btn-secondary" onClick={props.cancel}>
+                    Cancel
+                </button>
+                <button className="btn btn-primary" onClick={() => {
+                    const title = document.getElementById("title").value || "";
+                    const hint = document.getElementById("hint").value || "";
+                    const description = document.getElementById("description").value || "";
+                    const destination = document.getElementById("destination").value || "";
+                    const { lng, lat } = globalPosition;
+                    const query = { _id: objectID};
+                    // insert a new pin on the database
+                    db.collection("PINS")
+                        .findOneAndUpdate(query, {
+                            name: title,
+                            description: description,
+                            hint: hint,
+                            destination: destination,
+                            long: lng,
+                            lat: lat
+                        })
+                        .then(objectID => {
+                            props.cancel();
+                        })
+                }}>
+                    Submit
+                </button>
+            </Modal.Footer>
+        </Modal>
+    );
+}
+
+const PinMarker = props => {
+    const [ modalShow, setModalShow ] = useState(false);
+    return (
+        <Marker key={globalPosition} position={[props.lat, props.lng]}
+            onClick={() => { setModalShow(!modalShow) }}
+        >
+            <EditForm
+                description={props.description}
+                hint={props.hint}
+                destination={props.destination}
+                title={props.title}
+                objectID={props.objectID}
+                lng={props.lng}
+                lat={props.lat}
+                show={modalShow}
+                cancel={() => setModalShow(false)}
+            />
+        </Marker>);
+}
+
 const AddpinForm = props => {
     return (
         <Modal
@@ -40,13 +115,13 @@ const AddpinForm = props => {
                 <Modal.Title>Add a Pin</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <label className="d-block" for="title">Title</label>
+                <label className="d-block" htmlFor="title">Title</label>
                 <input type="text" className="w-100" id="title" required/>
-                <label className="d-block" for="description">Description</label>
+                <label className="d-block" htmlFor="description">Description</label>
                 <textarea className="w-100" id="description" required/>
-                <label className="d-block" for="hint">Hint</label>
+                <label className="d-block" htmlFor="hint">Hint</label>
                 <textarea className="w-100" id="hint" required/>
-                <label className="d-block" for="destination">Destination</label>
+                <label className="d-block" htmlFor="destination">Destination</label>
                 <textarea className="w-100" id="destination" required/>
             </Modal.Body>
             <Modal.Footer>
@@ -59,6 +134,7 @@ const AddpinForm = props => {
                     const description = document.getElementById("description").value || "";
                     const destination = document.getElementById("destination").value || "";
                     const { lng, lat } = globalPosition;
+                    // insert a new pin on the database
                     db.collection("PINS")
                         .insertOne({
                             name: title,
@@ -68,18 +144,23 @@ const AddpinForm = props => {
                             long: lng,
                             lat: lat
                         })
-                    props.setMarkers(
-                        [...props.markers,
-                        <Marker key={globalPosition} position={[lat, lng]}>
-                            <Popup>
-                                <h1>{title}</h1>
-                                <p>{description}</p>
-                                <p>{hint}</p>
-                                <p>{destination}</p>
-                            </Popup>
-                        </Marker>
-                        ]
-                    );
+                        .then(objectID => {
+                            // add the new pin to the map on success of adding the pin to
+                            // to the database
+                            props.setMarkers(
+                                [...props.markers,
+                                    <PinMarker
+                                        description={description}
+                                        hint={hint}
+                                        destination={destination}
+                                        title={title}
+                                        objectID={objectID}
+                                        lng={lng}
+                                        lat={lat}
+                                    />
+                                ]
+                            );
+                        })
                     props.onHide();
                 }}>
                     Submit
@@ -89,7 +170,7 @@ const AddpinForm = props => {
     );
 };
 
-const DropPin = () => {
+const DropPin = props => {
     const [position, setPosition] = useState([45, 45]);
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
