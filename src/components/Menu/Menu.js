@@ -129,6 +129,8 @@ class Menu extends Component{
             <br/>
             <li><a href="#/droppin">Drop pin</a></li>
             <br/>
+            <li><a href="#/viewpinmap">View pins on map</a></li>
+            <br/>
             <li><a href="#/viewmodules">My Modules</a></li>
             <br/>
             <li><a href="#/modules/edit">Manage Modules</a></li>

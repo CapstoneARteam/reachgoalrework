@@ -10,9 +10,11 @@ import DropPin from "./components/DropPin";
 import NavMenu from "./components/Menu/NavMenu";
 import Module from "./components/Module";
 import EditModule from "./components/EditModule";
+import { Navbar } from "react-bootstrap";
 import ViewModules from "./components/ViewModules";
 import ManageModules from "./components/ManageModules";
-import { Navbar } from "react-bootstrap";
+import ViewPinOnMap from "./components/ViewPinOnMap";
+
 import { Switch, Route, HashRouter } from "react-router-dom";
 
 export default class App extends Component {
@@ -84,7 +86,7 @@ export default class App extends Component {
                             zIndex: 1500,
                         }}
                     >
-                        <Navbar.Brand href="#/">CS Capstone</Navbar.Brand>
+                        <Navbar.Brand href="#/">Context AR</Navbar.Brand>
                     </Navbar>
                     {this.NavMenu()}
                 </div>
@@ -107,6 +109,9 @@ export default class App extends Component {
                         <Route exact path="/menu" component={Menu} />
                         <Route exact path="/droppin">
                             <DropPin />
+                        </Route>
+                        <Route exact path="/viewpinmap">
+                            <ViewPinOnMap />
                         </Route>
                         <Route
                             exact
