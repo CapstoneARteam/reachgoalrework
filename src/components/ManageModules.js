@@ -87,7 +87,7 @@ export default class ManageModules extends Component {
                                     event.preventDefault();
                                     var id = this.state.modules[idx]._id;
                                     window.location.assign(
-                                        "#/modules/module/edit/" + id
+                                        "#/module/" + id + "/edit"
                                     );
                                 }}
                             >
@@ -164,7 +164,7 @@ export default class ManageModules extends Component {
 
                 // Navigate to Edit Module view
                 var id = res.insertedId;
-                window.location.assign("#/modules/module/edit/" + id);
+                window.location.assign("#/module/" + id + "/edit");
             })
             .catch(console.error);
     }
