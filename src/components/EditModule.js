@@ -14,7 +14,11 @@ import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
 import "./EditModule.css";
 
+// @classdesc Used to make the Edit Module view.
 export default class EditModule extends Component {
+    // Creates a new EditModule
+    // @param {Object} props
+    // @class
     constructor(props) {
         super(props);
         this.state = {
@@ -55,26 +59,13 @@ export default class EditModule extends Component {
             "mongodb-atlas"
         );
         this.db = mongodb.db("APP");
-    }
 
-    componentDidMount() {
         this.fetch_userinfo();
-        const appId = "capstonear_app-xkqng";
-        if (Stitch.hasAppClient(appId)) {
-            this.client = Stitch.getAppClient(appId);
-            const mongodb = this.client.getServiceClient(
-                RemoteMongoClient.factory,
-                "mongodb-atlas"
-            );
-            //select the db in our mongdb atlas cluster
-            this.db = mongodb.db("APP");
-            console.log("client");
-        } else {
-            this.client = Stitch.initializeAppClient(appId);
-            console.log("client init");
-        }
     }
 
+    // Gets the module ID from the routing parameter and uses it to get the
+    // associated module and pins for that module.
+    // @return {Promise} Query to set state.module_info and state.pins
     async fetch_userinfo() {
         const query = {
             _id: ObjectId(this.props.match.params.id),
@@ -110,14 +101,17 @@ export default class EditModule extends Component {
             .catch(console.error);
     }
 
+    // Sets state.modal to true
     show_modal() {
         this.setState({ modal: true });
     }
 
+    // Sets state.modal to false
     hide_modal() {
         this.setState({ modal: false });
     }
 
+    // @return {JSX.Element} Modal to confirm deletion
     modal_component() {
         var modal_message;
         if (this.state.idx < 0) modal_message = <p>Nothing to delete</p>;
@@ -171,6 +165,8 @@ export default class EditModule extends Component {
         );
     }
 
+    // @return {JSX.Element} Form to fill out module title, description, and
+    // public/private status
     module_form() {
         return (
             <Form>
@@ -243,6 +239,9 @@ export default class EditModule extends Component {
         );
     }
 
+    // Creates the list of pins based on state.pins. Uses the react-movable
+    // library to make the list of pins draggable.
+    // @return {JSX.Element} The list of pins.
     list_pins() {
         return (
             <List
@@ -306,6 +305,8 @@ export default class EditModule extends Component {
         );
     }
 
+    // This function will remove a pin from the DB and state.pins
+    // @param {number} idx - The index of the pin to delete
     delete_pin(idx) {
         const query = { _id: this.state.pins[idx]._id };
         this.db
@@ -322,6 +323,8 @@ export default class EditModule extends Component {
             .catch(console.error);
     }
 
+    // Converts state.pins to a list of ObjectIDs, then updates
+    // state.module_info.pins based on the new list
     save_pin_order() {
         var module = this.state.module_info;
         const pin_ids = this.state.pins.map((pin) => {
@@ -331,6 +334,7 @@ export default class EditModule extends Component {
         this.setState({ module_info: module });
     }
 
+    // Saves the module to the DB
     save_module() {
         this.save_pin_order();
         const query = { _id: this.state.module_info._id };
@@ -351,6 +355,7 @@ export default class EditModule extends Component {
             .catch(console.error);
     }
 
+    // @return {JSX.Element} The EditModule componenet
     render() {
         return (
             <Container
