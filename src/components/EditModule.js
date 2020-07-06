@@ -171,6 +171,7 @@ export default class EditModule extends Component {
         return (
             <Form>
                 <Form.Group>
+                    <Form.Label>Title</Form.Label>
                     <Form.Control
                         type="title"
                         id="title"
@@ -184,6 +185,7 @@ export default class EditModule extends Component {
                 </Form.Group>
 
                 <Form.Group>
+                    <Form.Label>Description</Form.Label>
                     <Form.Control
                         as="textarea"
                         rows="5"
