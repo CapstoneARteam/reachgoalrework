@@ -22,10 +22,11 @@ export default class ManageModules extends Component {
             idx: -1,
         };
 
+        this.fetch_userinfo = this.fetch_userinfo.bind(this);
+
         this.toggle = this.toggle.bind(this);
         this.modal_message = this.modal_message.bind(this);
         this.list_modules = this.list_modules.bind(this);
-        this.load_modules = this.load_modules.bind(this);
         this.delete_module = this.delete_module.bind(this);
         this.add_module = this.add_module.bind(this);
         this.save_modules = this.save_modules.bind(this);
@@ -41,7 +42,23 @@ export default class ManageModules extends Component {
         );
         this.db = mongodb.db("APP");
 
-        this.load_modules();
+        this.fetch_userinfo();
+    }
+
+    async fetch_userinfo() {
+        const query = {
+            owner_id: this.client.auth.authInfo.userId,
+        };
+        await this.db
+            .collection("MODULES")
+            .find(query)
+            .toArray()
+            .then((res) => {
+                console.log("Modules loaded: ", res);
+
+                this.setState({ modules: res });
+            })
+            .catch(console.error);
     }
 
     toggle() {
@@ -110,22 +127,6 @@ export default class ManageModules extends Component {
                 </div>
             );
         });
-    }
-
-    load_modules() {
-        this.db
-            .collection("MODULES")
-            .find({
-                owner_id: this.client.auth.authInfo.userId,
-            })
-
-            .toArray()
-            .then((res) => {
-                console.log("Load response: ", res);
-
-                this.setState({ modules: res });
-            })
-            .catch(console.error);
     }
 
     delete_module(idx) {
