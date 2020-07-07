@@ -22,7 +22,6 @@ export default class ManageModules extends Component {
             idx: -1,
         };
 
-        this.goto_module_id = React.createRef();
         this.toggle = this.toggle.bind(this);
         this.modal_message = this.modal_message.bind(this);
         this.list_modules = this.list_modules.bind(this);
