@@ -394,10 +394,10 @@ export default class EditModule extends Component {
                             block
                             onClick={(e) => {
                                 e.preventDefault();
-                                window.location.assign("#/droppin");
-                                // TODO: Update DropPin route to use a module id, similar to below
-                                // var id = this.state.module_info._id;
-                                // window.location.assign("#/pins/edit/" + id);
+                                var id = this.state.module_info._id;
+                                window.location.assign(
+                                    "#/module/" + id + "/pins/edit"
+                                );
                             }}
                         >
                             Pin Map

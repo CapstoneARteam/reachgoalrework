@@ -103,44 +103,39 @@ export default class App extends Component {
                     }}
                 >
                     <Switch>
-                        <Route exact path="/">
-                            {this.Home}
-                        </Route>
                         <Route exact path="/menu" component={Menu} />
-                        <Route exact path="/droppin">
-                            <DropPin />
-                        </Route>
-                        <Route exact path="/viewpinmap">
-                            <ViewPinOnMap />
-                        </Route>
-                        <Route
-                            exact
-                            path="/create_module"
-                            component={Create_Modules}
-                        />
-                        <Route
-                            exact
-                            path="/viewmodules"
-                            component={ViewModules}
-                        />
+
                         <Route
                             exact
                             path="/modules/edit"
                             component={ManageModules}
                         />
+                        <Route exact path="/modules" component={ViewModules} />
+
                         <Route
                             exact
-                            path="/modules/module/edit/:id"
+                            path="/module/:id/pins/edit"
+                            component={DropPin}
+                        />
+                        <Route
+                            exact
+                            path="/module/:id/pins"
+                            component={ViewPinOnMap}
+                        />
+
+                        <Route
+                            exact
+                            path="/module/:id/edit"
                             component={EditModule}
                         />
                         <Route path="/module/:id" component={Module} />
+
+                        <Route exact path="/">
+                            {this.Home}
+                        </Route>
                     </Switch>
                 </div>
             </HashRouter>
         );
     }
 }
-
-const Create_Modules = () => {
-    return <h2>Admin</h2>;
-};
