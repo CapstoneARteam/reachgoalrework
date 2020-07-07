@@ -91,15 +91,18 @@ const EditForm = (props) => {
                             document.getElementById("description").value || "";
                         const destination =
                             document.getElementById("destination").value || "";
-                        const query = { _id: objectID };
-                        // update a pin on the database
-                        db.collection("PINS")
-                            .findOneAndUpdate(query, {
+                        const query = { _id: props.objectID };
+                        const update = {
+                            $set: {
                                 title: title,
                                 description: description,
                                 hint: hint,
                                 destination: destination,
-                            })
+                            },
+                        };
+                        // update a pin on the database
+                        db.collection("PINS")
+                            .findOneAndUpdate(query, update)
                             .then((objectID) => {
                                 props.cancel();
                             });
@@ -250,6 +253,7 @@ const DropPin = (props) => {
         public: false,
     });
 
+    // Getting the users current location
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((pos) => {
             const { latitude, longitude } = pos.coords;
@@ -257,6 +261,7 @@ const DropPin = (props) => {
         });
     }, []);
 
+    // Getting the module and pins for the module
     useEffect(() => {
         const query = {
             _id: ObjectId(props.match.params.id),
