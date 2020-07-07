@@ -152,7 +152,12 @@ export default class Module extends Component {
               
 
 
-                <button className='btn btn-primary'>start module</button>
+                <button className='btn btn-primary' 
+                        onClick={() =>
+                            window.location.assign(
+                                "#/module/" + this.state.module_info._id+"/pins"
+                        )}
+                        >start module</button>
             </Container>
         )
     }

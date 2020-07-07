@@ -96,7 +96,7 @@ class ViewPinOnMap extends Component{
     if(!this.client.auth.isLoggedIn){
         return
     }
-    const query ={_id: ObjectId("5efa19afa4cd11d00a3ed561") };
+    const query ={_id: ObjectId(this.props.match.params.id) };
     await this.db.collection("MODULES").findOne(query)
     .then((stitch_res) => {this.setState({stitch_res})
       console.log(this.state.stitch_res)
@@ -132,9 +132,9 @@ class ViewPinOnMap extends Component{
     }
     return
   } 
-  openGoogle(lat,long)
+  openGoogle(coords)
   {
-    var url= "http://maps.google.com?q="+lat+","+long
+    var url= "http://maps.google.com?q="+coords[0]+","+coords[1]
     var win = window.open(url, '_blank');
     return
   }
@@ -156,7 +156,7 @@ class ViewPinOnMap extends Component{
          
         {this.state.pins_array.map((info,idx) => {
             return <Marker 
-                           key = {idx} position={[info.lat,info.long]} 
+                           key = {idx} position={info.coords} 
                            icon= {new L.divIcon({
                                                   className: 'my-div-icon',
                                                   html: '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'+
@@ -167,7 +167,7 @@ class ViewPinOnMap extends Component{
                               <p>{info.description}</p>
                               <p>{info.hint}</p>
                               <p>{info.destination}</p>
-                              <button onClick={()=>this.openGoogle(info.lat,info.long)} >Open Google Map</button>
+                              <button onClick={()=>this.openGoogle(info.coords)} >Open Google Map</button>
                         </Popup>
                     </Marker>
           })}

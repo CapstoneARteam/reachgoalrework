@@ -131,7 +131,12 @@ export default class ViewModules extends Component {
                                     </button>
                                 </div>
                                 <div className="btn-group mr-2">
-                                    <button className="btn btn-primary">
+                                    <button className="btn btn-primary"
+                                        onClick={() =>
+                                            window.location.assign(
+                                                "#/module/" + module._id+"/pins"
+                                        )
+                                    }>
                                         Start Module
                                     </button>
                                 </div>
