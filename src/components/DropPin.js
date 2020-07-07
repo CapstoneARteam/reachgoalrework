@@ -31,7 +31,12 @@ const floatStyle = {
 };
 
 const EditForm = (props) => {
-    const objectID = props.objectID.insertedId;
+    const [defaultValues, setDefaultValues] = useState({
+        title: props.title,
+        description: props.description,
+        hint: props.hint,
+        destination: props.destination,
+    });
     return (
         <Modal {...props} centered show={props.show} style={{ zIndex: "1600" }}>
             <Modal.Header>
@@ -46,7 +51,7 @@ const EditForm = (props) => {
                     className="w-100"
                     id="title"
                     required
-                    defaultValue={props.title}
+                    defaultValue={defaultValues.title}
                 />
                 <label className="d-block" htmlFor="description">
                     Description
@@ -54,7 +59,7 @@ const EditForm = (props) => {
                 <textarea
                     className="w-100"
                     id="description"
-                    defaultValue={props.description}
+                    defaultValue={defaultValues.description}
                     required
                 />
                 <label className="d-block" htmlFor="hint">
@@ -63,7 +68,7 @@ const EditForm = (props) => {
                 <textarea
                     className="w-100"
                     id="hint"
-                    defaultValue={props.hint}
+                    defaultValue={defaultValues.hint}
                     required
                 />
                 <label className="d-block" htmlFor="destination">
@@ -72,7 +77,7 @@ const EditForm = (props) => {
                 <textarea
                     className="w-100"
                     id="destination"
-                    defaultValue={props.destination}
+                    defaultValue={defaultValues.destination}
                     required
                 />
             </Modal.Body>
@@ -104,7 +109,12 @@ const EditForm = (props) => {
                         db.collection("PINS")
                             .findOneAndUpdate(query, update)
                             .then((objectID) => {
-                                props.setUpdateMap(!props.updateMap);
+                                setDefaultValues({
+                                    title: title,
+                                    description: description,
+                                    hint: hint,
+                                    destination: destination
+                                });
                                 props.cancel();
                             });
                     }}
@@ -136,8 +146,6 @@ const PinMarker = (props) => {
                 lat={props.lat}
                 show={modalShow}
                 cancel={() => setModalShow(false)}
-                setUpdateMap={props.setUpdateMap}
-                updateMap={props.updateMap}
             />
         </Marker>
     );
@@ -243,7 +251,6 @@ const DropPin = (props) => {
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
     const [modalShow, setModalShow] = useState(false);
-    const [updateMap, setUpdateMap] = useState(false);
     const [module, setModule] = useState({
         _id: "",
         title: "",
@@ -300,8 +307,6 @@ const DropPin = (props) => {
                                         objectID={pin._id}
                                         lng={pin.coords[1]}
                                         lat={pin.coords[0]}
-                                        setUpdateMap={setUpdateMap}
-                                        updateMap={updateMap}
                                     />
                                 );
                             })
@@ -309,7 +314,7 @@ const DropPin = (props) => {
                     });
             })
             .catch(console.error);
-    }, [props.match.params.id, updateMap]);
+    }, [props.match.params.id]);
 
     return (
         <Map
