@@ -185,9 +185,11 @@ const AddpinForm = (props) => {
                                 description: description,
                                 hint: hint,
                                 destination: destination,
+                                audio: "",
+                                video: "",
                                 coords: [lat, lng],
                             })
-                            .then((objectID) => {
+                            .then((res) => {
                                 // add the new pin to the map on success of adding the pin to
                                 // to the database
                                 props.setMarkers([
@@ -197,11 +199,29 @@ const AddpinForm = (props) => {
                                         hint={hint}
                                         destination={destination}
                                         title={title}
-                                        objectID={objectID}
+                                        objectID={res.insertedId}
                                         lng={lng}
                                         lat={lat}
                                     />,
                                 ]);
+
+                                var module = props.module;
+                                module.pins = [...module.pins, res.insertedId];
+                                props.setModule(module);
+
+                                const query = { _id: module._id };
+                                const update = {
+                                    $set: {
+                                        pins: module.pins,
+                                    },
+                                };
+                                const options = { upsert: false };
+                                db.collection("MODULES")
+                                    .findOneAndUpdate(query, update, options)
+                                    .then((res) => {
+                                        console.log("Module update: ", res);
+                                    })
+                                    .catch(console.error);
                             });
                         props.onHide();
                     }}
@@ -218,6 +238,18 @@ const DropPin = (props) => {
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
     const [modalShow, setModalShow] = useState(false);
+    const [module, setModule] = useState({
+        _id: "",
+        title: "",
+        owner_email: "",
+        owner_id: "",
+        owner_name: "",
+        description: "",
+        pins: [],
+        shared_array: [],
+        public: false,
+    });
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((pos) => {
             const { latitude, longitude } = pos.coords;
@@ -225,48 +257,52 @@ const DropPin = (props) => {
         });
     }, []);
 
-    const query = {
-        _id: ObjectId(props.match.params.id),
-    };
-    db.collection("MODULES")
-        .findOne(query)
-        .then((res) => {
-            console.log("Module: ", res);
+    useEffect(() => {
+        const query = {
+            _id: ObjectId(props.match.params.id),
+        };
+        db.collection("MODULES")
+            .findOne(query)
+            .then((res) => {
+                console.log("Module: ", res);
 
-            // Pipeline to ensure that the order of the pins stays the same after the query
-            const pipeline = [
-                { $match: { _id: { $in: res.pins } } },
-                {
-                    $addFields: {
-                        __order: { $indexOfArray: [res.pins, "$_id"] },
+                setModule(res);
+
+                // Pipeline to ensure that the order of the pins stays the same after the query
+                const pipeline = [
+                    { $match: { _id: { $in: res.pins } } },
+                    {
+                        $addFields: {
+                            __order: { $indexOfArray: [res.pins, "$_id"] },
+                        },
                     },
-                },
-                { $sort: { __order: 1 } },
-            ];
+                    { $sort: { __order: 1 } },
+                ];
 
-            db.collection("PINS")
-                .aggregate(pipeline)
-                .toArray()
-                .then((res) => {
-                    console.log("Pins: ", res);
-                    setMarkers(
-                        res.map((pin) => {
-                            return (
-                                <PinMarker
-                                    description={pin.description}
-                                    hint={pin.hint}
-                                    destination={pin.destination}
-                                    title={pin.title}
-                                    objectID={pin._id}
-                                    lng={pin.coords[1]}
-                                    lat={pin.coords[0]}
-                                />
-                            );
-                        })
-                    );
-                });
-        })
-        .catch(console.error);
+                db.collection("PINS")
+                    .aggregate(pipeline)
+                    .toArray()
+                    .then((res) => {
+                        console.log("Pins: ", res);
+                        setMarkers(
+                            res.map((pin) => {
+                                return (
+                                    <PinMarker
+                                        description={pin.description}
+                                        hint={pin.hint}
+                                        destination={pin.destination}
+                                        title={pin.title}
+                                        objectID={pin._id}
+                                        lng={pin.coords[1]}
+                                        lat={pin.coords[0]}
+                                    />
+                                );
+                            })
+                        );
+                    });
+            })
+            .catch(console.error);
+    }, [props.match.params.id]);
 
     return (
         <Map
@@ -285,6 +321,8 @@ const DropPin = (props) => {
                 onHide={() => setModalShow(false)}
                 setMarkers={setMarkers}
                 markers={markers}
+                setModule={setModule}
+                module={module}
             />
             <button
                 style={floatStyle}
