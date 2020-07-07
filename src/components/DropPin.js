@@ -104,6 +104,7 @@ const EditForm = (props) => {
                         db.collection("PINS")
                             .findOneAndUpdate(query, update)
                             .then((objectID) => {
+                                props.setUpdateMap(!props.updateMap);
                                 props.cancel();
                             });
                     }}
@@ -135,6 +136,8 @@ const PinMarker = (props) => {
                 lat={props.lat}
                 show={modalShow}
                 cancel={() => setModalShow(false)}
+                setUpdateMap={props.setUpdateMap}
+                updateMap={props.updateMap}
             />
         </Marker>
     );
@@ -222,7 +225,6 @@ const AddpinForm = (props) => {
                                 db.collection("MODULES")
                                     .findOneAndUpdate(query, update, options)
                                     .then((res) => {
-                                        console.log("Module update: ", res);
                                     })
                                     .catch(console.error);
                             });
@@ -241,6 +243,7 @@ const DropPin = (props) => {
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
     const [modalShow, setModalShow] = useState(false);
+    const [updateMap, setUpdateMap] = useState(false);
     const [module, setModule] = useState({
         _id: "",
         title: "",
@@ -269,8 +272,6 @@ const DropPin = (props) => {
         db.collection("MODULES")
             .findOne(query)
             .then((res) => {
-                console.log("Module: ", res);
-
                 setModule(res);
 
                 // Pipeline to ensure that the order of the pins stays the same after the query
@@ -288,7 +289,6 @@ const DropPin = (props) => {
                     .aggregate(pipeline)
                     .toArray()
                     .then((res) => {
-                        console.log("Pins: ", res);
                         setMarkers(
                             res.map((pin) => {
                                 return (
@@ -300,6 +300,8 @@ const DropPin = (props) => {
                                         objectID={pin._id}
                                         lng={pin.coords[1]}
                                         lat={pin.coords[0]}
+                                        setUpdateMap={setUpdateMap}
+                                        updateMap={updateMap}
                                     />
                                 );
                             })
@@ -307,7 +309,7 @@ const DropPin = (props) => {
                     });
             })
             .catch(console.error);
-    }, [props.match.params.id]);
+    }, [props.match.params.id, updateMap]);
 
     return (
         <Map
