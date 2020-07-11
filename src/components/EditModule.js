@@ -36,20 +36,26 @@ export default class EditModule extends Component {
                 public: false,
             },
             email: "",
+            shared_with: [],
             pins: [],
             idx: -1,
+            ind: -1,
             modal: null,
+            modal2: null,
         };
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
 
         this.show_modal = this.show_modal.bind(this);
+        this.show_modal2 = this.show_modal2.bind(this);
         this.hide_modal = this.hide_modal.bind(this);
+        this.hide_modal2 = this.hide_modal2.bind(this);
         this.modal_component = this.modal_component.bind(this);
         this.share_modal = this.share_modal.bind(this);
         this.list_shared = this.list_shared.bind(this);
         this.add_email = this.add_email.bind(this);
         this.delete_email = this.delete_email.bind(this);
+        this.delete_email_modal = this.delete_email_modal.bind(this);
 
         this.delete_pin = this.delete_pin.bind(this);
         this.list_pins = this.list_pins.bind(this);
@@ -113,9 +119,17 @@ export default class EditModule extends Component {
         this.setState({ modal: id });
     }
 
+    show_modal2(id) {
+        this.setState({ modal2: id });
+    }
+
     // Sets state.modal to false
     hide_modal() {
         this.setState({ modal: null });
+    }
+
+    hide_modal2() {
+        this.setState({ modal2: null });
     }
 
     // @return {JSX.Element} Modal to confirm deletion
@@ -171,6 +185,56 @@ export default class EditModule extends Component {
         );
     }
 
+    delete_email_modal() {
+        var modal_message;
+        if (this.state.ind < 0) modal_message = <p>Nothing to delete</p>;
+        else
+            modal_message = (
+                <p>
+                    Are you sure you want to delete{" "}
+                    <b>{this.state.module_info.shared_with[this.state.ind]}</b>?
+                </p>
+            );
+
+        return (
+            <Modal
+                // size="sm"
+                show={this.state.modal2 == 'delete_email'}
+                onHide={(e) => {
+                    this.hide_modal2();
+                }}
+                style={{
+                    marginTop: "50px",
+                }}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modal_message}</Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="danger"
+                        onClick={(e) => {
+                            if (this.state.ind > -1)
+                                this.delete_email(this.state.ind);
+                            this.hide_modal2();
+                        }}
+                    >
+                        Delete
+                    </Button>{" "}
+                    <Button
+                        variant="secondary"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.hide_modal2();
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
 
     add_email() {
         const query = { _id: this.state.module_info._id };
@@ -184,16 +248,16 @@ export default class EditModule extends Component {
             .findOneAndUpdate(query, update, options)
             .then((res) => {
                 console.log("Save response: ", res);
-                var module_info = this.state.module_info;
-                this.setState({module_info: module_info})
+                var shared_with = this.state.module_info.shared_with;
+                this.setState({shared_with: shared_with})
             })
             .catch(console.error);
     }
 
-    delete_email(idx) {
+    delete_email(ind) {
         const query = { _id: this.state.module_info._id };
         const update = {
-            $pull: { shared_with: this.state.module_info.shared_with[idx] }
+            $pull: { shared_with: this.state.shared_with[ind] }
         };
         const options = { multi: false };
 
@@ -202,27 +266,27 @@ export default class EditModule extends Component {
             .findOneAndUpdate(query, update, options)
             .then((res) => {
                 console.log("Save response: ", res);
-                var module_info = this.state.module_info;
-                this.setState({module_info: this.state.module_info})
+                var shared_with = this.state.module_info.shared_with;
+                this.setState({shared_with: shared_with, ind: -1})
             })
             .catch(console.error);
     }
 
     list_shared() {
-        return this.state.module_info.shared_with.map((module_info, idx) => {
+        return this.state.module_info.shared_with.map((module_info, ind) => {
             return (
-                <div key={idx}>
+                <div key={ind}>
                     <Row form>
                         <Col xs="8">
                             <FormGroup>
                                 <FormControl
                                     type="text"
-                                    value={this.state.module_info.shared_with[idx]}
+                                    value={this.state.module_info.shared_with[ind]}
                                     onChange={(event) => {
                                         event.preventDefault();
-                                        var module_info = this.state.module_info;
-                                        module_info.shared_with[idx] = event.target.value;
-                                        this.setState({ module_info: this.state.module_info, idx: this.state.idx});
+                                        var shared_with = this.state.module_info.shared_with;
+                                        shared_with[ind] = event.target.value;
+                                        this.setState({ shared_with: this.shared_with, ind: this.state.ind});
                                     }}
                                 />
                             </FormGroup>
@@ -232,13 +296,15 @@ export default class EditModule extends Component {
                                 variant="danger"
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    this.delete_email(idx);
+                                    this.setState({ ind: ind });
+                                    this.show_modal2('delete_email');
                                 }}
                             >
                                 Delete
                             </Button>
                         </Col>
                     </Row>
+                    {this.delete_email_modal()}
                 </div>
             );
         });
@@ -300,7 +366,7 @@ export default class EditModule extends Component {
                                 this.hide_modal();
                             }}
                         >
-                            Done
+                            Save
                         </Button>
                     </Form.Group>
                 </Modal.Footer>
