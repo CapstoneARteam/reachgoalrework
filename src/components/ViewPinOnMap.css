@@ -1,0 +1,31 @@
+.my-div-span {
+    position: relative;
+    margin: auto;
+    left: 5px;
+    top:10px;
+    font-weight: bolder;
+    text-shadow: 0 0 2px black;
+    font-size: medium;
+}
+.current-location{
+    position: relative;
+    margin: auto;
+    left: 3px;
+    top:5px;
+    font-weight: bolder;
+    text-shadow: 0 0 2px black;
+}
+
+.center-button {
+    position: "fixed";
+    width: "60px";
+    height: "60px";
+    bottom: "40px";
+    right: "40px";
+    background-color: "#0C9";
+    color: "#FFF";
+    border-radius: "50px";
+    text-align: "center";
+    box-shadow: "2px 2px 3px #999";
+    z-index:  1500;
+}

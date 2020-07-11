@@ -4,6 +4,9 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
+import './ViewPinOnMap.css'
+import { map } from 'jquery'
+
 
 
 
@@ -39,9 +42,22 @@ var greenIcon = new L.Icon({
 
 var myIcon = new L.divIcon({
   className: 'my-div-icon',
-  html: '<span  class="my-div-span">YOU ARE HERE </span>'+
-        '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
+  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"/>'
 })
+
+const floatStyle = {
+  position: "fixed",
+  width: "60px",
+  height: "60px",
+  bottom: "40px",
+  right: "40px",
+  backgroundColor: "#0C9",
+  color: "#FFF",
+  borderRadius: "50px",
+  textAlign: "center",
+  boxShadow: "2px 2px 3px #999",
+  zIndex: 1500,
+};
 
 class ViewPinOnMap extends Component{
   constructor(props){
@@ -64,6 +80,7 @@ class ViewPinOnMap extends Component{
   this.drawpins = this.drawpins.bind(this)
   this.drawlines = this.drawlines.bind(this)
   this.openGoogle = this.openGoogle.bind(this)
+  this.centerMap=this.centerMap.bind(this)
 
   const appId = "capstonear_app-xkqng"
   this.client = Stitch.hasAppClient(appId)
@@ -99,8 +116,6 @@ class ViewPinOnMap extends Component{
     const query ={_id: ObjectId(this.props.match.params.id) };
     await this.db.collection("MODULES").findOne(query)
     .then((stitch_res) => {this.setState({stitch_res})
-      console.log(this.state.stitch_res)
-      var temp_array =[]
       const pipeline = [
         { $match: { _id: { $in: stitch_res.pins } } },
         {
@@ -113,7 +128,6 @@ class ViewPinOnMap extends Component{
     this.db.collection("PINS").aggregate(pipeline)
     .toArray()
     .then((res) => {
-        console.log("Pins: ", res);
         this.setState ({ pins_array: res} )
 
     });      
@@ -138,16 +152,22 @@ class ViewPinOnMap extends Component{
     var win = window.open(url, '_blank');
     return
   }
+  centerMap(coords)
+  {
+    console.log("center Map function")
+    const map = this.refs.map.leafletElement
+    map.panTo(coords)
+  }
   render(){
     const userLocation = this.state.userLocationFound ? (
       <Marker  position={this.state.userLocation}  icon= {myIcon} >
-        <Popup>Your location</Popup>
+        <Popup>You are here</Popup>
       </Marker>
     ) : null
    
     return (
       <div>
-      <Map center={this.state.currentLocation} zoom={13} maxZoom={18} >
+      <Map ref='map' center={this.state.currentLocation} zoom={13} maxZoom={18} >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -163,14 +183,17 @@ class ViewPinOnMap extends Component{
                                                         '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
                                                 })} >
                         <Popup>
-                              <h1>{info.desc}</h1>
+                              <h1>{info.title}</h1>
                               <p>{info.description}</p>
+                              <p>{info.address}</p>
                               <p>{info.hint}</p>
-                              <p>{info.destination}</p>
                               <button onClick={()=>this.openGoogle(info.coords)} >Open Google Map</button>
                         </Popup>
                     </Marker>
           })}
+          <button style={floatStyle}>
+                <div style={{ fontSize: "10px" }} onClick={()=>this.centerMap(this.state.currentLocation)} >Center</div>
+          </button>
       </Map>
       </div>
     );
