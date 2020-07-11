@@ -8,6 +8,8 @@ import {
     Tabs,
     Tab,
     Modal,
+    FormControl,
+    FormGroup,
 } from "react-bootstrap";
 import { List, arrayMove } from "react-movable";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
@@ -30,12 +32,13 @@ export default class EditModule extends Component {
                 owner_name: "",
                 description: "",
                 pins: [],
-                shared_array: [],
+                shared_with: [],
                 public: false,
             },
+            email: "",
             pins: [],
-            modal: false,
             idx: -1,
+            modal: null,
         };
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
@@ -43,6 +46,10 @@ export default class EditModule extends Component {
         this.show_modal = this.show_modal.bind(this);
         this.hide_modal = this.hide_modal.bind(this);
         this.modal_component = this.modal_component.bind(this);
+        this.share_modal = this.share_modal.bind(this);
+        this.list_shared = this.list_shared.bind(this);
+        this.add_email = this.add_email.bind(this);
+        this.delete_email = this.delete_email.bind(this);
 
         this.delete_pin = this.delete_pin.bind(this);
         this.list_pins = this.list_pins.bind(this);
@@ -102,13 +109,13 @@ export default class EditModule extends Component {
     }
 
     // Sets state.modal to true
-    show_modal() {
-        this.setState({ modal: true });
+    show_modal(id) {
+        this.setState({ modal: id });
     }
 
     // Sets state.modal to false
     hide_modal() {
-        this.setState({ modal: false });
+        this.setState({ modal: null });
     }
 
     // @return {JSX.Element} Modal to confirm deletion
@@ -126,9 +133,8 @@ export default class EditModule extends Component {
         return (
             <Modal
                 // size="sm"
-                show={this.state.modal}
+                show={this.state.modal == 'delete'}
                 onHide={(e) => {
-                    e.preventDefault();
                     this.hide_modal();
                 }}
                 style={{
@@ -160,6 +166,143 @@ export default class EditModule extends Component {
                     >
                         Cancel
                     </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+
+    add_email() {
+        const query = { _id: this.state.module_info._id };
+        const update = {
+            $addToSet: { shared_with: this.state.email }
+        };
+        const options = { upsert: false };
+
+        this.db
+            .collection("MODULES")
+            .findOneAndUpdate(query, update, options)
+            .then((res) => {
+                console.log("Save response: ", res);
+                var module_info = this.state.module_info;
+                this.setState({module_info: module_info})
+            })
+            .catch(console.error);
+    }
+
+    delete_email(idx) {
+        const query = { _id: this.state.module_info._id };
+        const update = {
+            $pull: { shared_with: this.state.module_info.shared_with[idx] }
+        };
+        const options = { multi: false };
+
+        this.db
+            .collection("MODULES")
+            .findOneAndUpdate(query, update, options)
+            .then((res) => {
+                console.log("Save response: ", res);
+                var module_info = this.state.module_info;
+                this.setState({module_info: this.state.module_info})
+            })
+            .catch(console.error);
+    }
+
+    list_shared() {
+        return this.state.module_info.shared_with.map((module_info, idx) => {
+            return (
+                <div key={idx}>
+                    <Row form>
+                        <Col xs="8">
+                            <FormGroup>
+                                <FormControl
+                                    type="text"
+                                    value={this.state.module_info.shared_with[idx]}
+                                    onChange={(event) => {
+                                        event.preventDefault();
+                                        var module_info = this.state.module_info;
+                                        module_info.shared_with[idx] = event.target.value;
+                                        this.setState({ module_info: this.state.module_info, idx: this.state.idx});
+                                    }}
+                                />
+                            </FormGroup>
+                        </Col>
+                        <Col>
+                            <Button
+                                variant="danger"
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.delete_email(idx);
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+            );
+        });
+    }
+
+    share_modal() {
+        return (
+            <Modal 
+                sz="lg"
+                show={this.state.modal == 'share'}
+                onHide={(event) => {
+                    this.hide_modal();
+                }}
+                style={{
+                    marginTop: "50px",
+                }}
+            >
+                <Modal.Header closeButton>Shared With</Modal.Header>
+                <Modal.Body>
+                <div
+                    style={{
+                        maxHeight: 'calc(100vh - 320px)',
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                    }}
+                >
+                    {this.list_shared()}
+                </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Form.Group>
+                        <FormControl
+                            id="email"
+                            type="email"
+                            value={this.state.email}
+                            onChange={(e) => {
+                                var email = this.state.email;
+                                email = e.target.value;
+                                this.setState({ email: email });
+                            }}
+                        />
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            block
+                            onClick={(event) => {
+                                event.preventDefault();
+                                this.add_email();
+                            }}
+                        >
+                            Add
+                        </Button>
+                        <Button 
+                            variant="primary"
+                            size="lg"
+                            block
+                            onClick={(event) => {
+                                event.preventDefault();
+                                this.hide_modal();
+                            }}
+                        >
+                            Done
+                        </Button>
+                    </Form.Group>
                 </Modal.Footer>
             </Modal>
         );
@@ -294,7 +437,7 @@ export default class EditModule extends Component {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         this.setState({ idx: index });
-                                        this.show_modal();
+                                        this.show_modal('delete');
                                     }}
                                 >
                                     Delete
@@ -421,11 +564,21 @@ export default class EditModule extends Component {
                             justifyContent: "center",
                         }}
                     >
-                        <Button variant="primary">Share</Button>
+                        <Button 
+                        variant="primary"
+                        size="lg"
+                        block
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.show_modal('share');   
+                        }}
+                        >
+                            Share
+                        </Button>
                     </Form.Group>
                 </Form>
-
                 {this.modal_component()}
+                {this.share_modal()}
             </Container>
         );
     }
