@@ -241,15 +241,15 @@ export default class EditModule extends Component {
         const update = {
             $addToSet: { shared_with: this.state.email }
         };
-        const options = { upsert: false };
+        const options = { upsert: false, returnNewDocument: true};
 
         this.db
             .collection("MODULES")
             .findOneAndUpdate(query, update, options)
             .then((res) => {
+                var shared_with = res.shared_with;
+                this.setState({shared_with: shared_with});
                 console.log("Save response: ", res);
-                var shared_with = this.state.module_info.shared_with;
-                this.setState({shared_with: shared_with})
             })
             .catch(console.error);
     }
@@ -259,21 +259,21 @@ export default class EditModule extends Component {
         const update = {
             $pull: { shared_with: this.state.shared_with[ind] }
         };
-        const options = { multi: false };
+        const options = { multi: false, returnNewDocument: true };
 
         this.db
             .collection("MODULES")
             .findOneAndUpdate(query, update, options)
             .then((res) => {
+                var shared_with = res.shared_with;
+                this.setState({shared_with: shared_with, ind: -1});
                 console.log("Save response: ", res);
-                var shared_with = this.state.module_info.shared_with;
-                this.setState({shared_with: shared_with, ind: -1})
             })
             .catch(console.error);
     }
 
     list_shared() {
-        return this.state.module_info.shared_with.map((module_info, ind) => {
+        return this.state.shared_with.map((module_info, ind) => {
             return (
                 <div key={ind}>
                     <Row form>
@@ -281,12 +281,12 @@ export default class EditModule extends Component {
                             <FormGroup>
                                 <FormControl
                                     type="text"
-                                    value={this.state.module_info.shared_with[ind]}
+                                    value={this.state.shared_with[ind]}
                                     onChange={(event) => {
                                         event.preventDefault();
-                                        var shared_with = this.state.module_info.shared_with;
+                                        var shared_with = this.state.shared_with;
                                         shared_with[ind] = event.target.value;
-                                        this.setState({ shared_with: this.shared_with, ind: this.state.ind});
+                                        this.setState({ shared_with: shared_with, ind: this.state.ind});
                                     }}
                                 />
                             </FormGroup>
@@ -352,7 +352,8 @@ export default class EditModule extends Component {
                             block
                             onClick={(event) => {
                                 event.preventDefault();
-                                this.add_email();
+                                if(this.state.email != "")
+                                    this.add_email();
                             }}
                         >
                             Add
