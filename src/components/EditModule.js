@@ -341,7 +341,11 @@ export default class EditModule extends Component {
                 </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Form>
+                    <Form
+                    style={{
+                        position: "relative",
+                        margin: "auto",
+                    }}>
                         <Form.Group>
                             <FormControl
                                 id="email"
