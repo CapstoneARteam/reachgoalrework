@@ -119,6 +119,7 @@ export default class EditModule extends Component {
         this.setState({ modal: id });
     }
 
+    // Sets state.modal2 to true
     show_modal2(id) {
         this.setState({ modal2: id });
     }
@@ -128,6 +129,7 @@ export default class EditModule extends Component {
         this.setState({ modal: null });
     }
 
+    // Sets state.modal2 to false
     hide_modal2() {
         this.setState({ modal2: null });
     }
@@ -185,6 +187,7 @@ export default class EditModule extends Component {
         );
     }
 
+    // @return {JSX.Element} Modal to confirm deletion of email
     delete_email_modal() {
         var modal_message;
         if (this.state.ind < 0) modal_message = <p>Nothing to delete</p>;
@@ -236,6 +239,7 @@ export default class EditModule extends Component {
         );
     }
 
+    // This function adds a email to MODULES.shared_with and avoids duplicates
     add_email() {
         const query = { _id: this.state.module_info._id };
         const update = {
@@ -249,11 +253,14 @@ export default class EditModule extends Component {
             .then((res) => {
                 var shared_with = res.shared_with;
                 this.setState({shared_with: shared_with});
+                this.setState({ module_info: res})
                 console.log("Save response: ", res);
             })
             .catch(console.error);
     }
 
+    // This function will remove a email from MODULES.shared_with
+    // @param {number} ind - The index of the email to delete
     delete_email(ind) {
         const query = { _id: this.state.module_info._id };
         const update = {
@@ -267,27 +274,25 @@ export default class EditModule extends Component {
             .then((res) => {
                 var shared_with = res.shared_with;
                 this.setState({shared_with: shared_with, ind: -1});
+                this.setState({ module_info: res})
                 console.log("Save response: ", res);
             })
             .catch(console.error);
     }
 
+    // Creates the list of emails in MODULES.shared_with
+    // @return {JSX.Element} The list of emails.
     list_shared() {
-        return this.state.shared_with.map((module_info, ind) => {
+        return this.state.module_info.shared_with.map((module_info, ind) => {
             return (
                 <div key={ind}>
                     <Row form>
                         <Col xs="8">
                             <FormGroup>
                                 <FormControl
+                                    plaintext readOnly
                                     type="text"
-                                    value={this.state.shared_with[ind]}
-                                    onChange={(event) => {
-                                        event.preventDefault();
-                                        var shared_with = this.state.shared_with;
-                                        shared_with[ind] = event.target.value;
-                                        this.setState({ shared_with: shared_with, ind: this.state.ind});
-                                    }}
+                                    value={this.state.module_info.shared_with[ind]}
                                 />
                             </FormGroup>
                         </Col>
@@ -310,6 +315,7 @@ export default class EditModule extends Component {
         });
     }
 
+    // Modal to display MODULE.shared_with emails to allow adding and deleting
     share_modal() {
         return (
             <Modal 
@@ -335,29 +341,33 @@ export default class EditModule extends Component {
                 </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Form.Group>
-                        <FormControl
-                            id="email"
-                            type="email"
-                            value={this.state.email}
-                            onChange={(e) => {
-                                var email = this.state.email;
-                                email = e.target.value;
-                                this.setState({ email: email });
-                            }}
-                        />
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            block
-                            onClick={(event) => {
-                                event.preventDefault();
-                                if(this.state.email != "")
-                                    this.add_email();
-                            }}
-                        >
-                            Add
-                        </Button>
+                    <Form>
+                        <Form.Group>
+                            <FormControl
+                                id="email"
+                                type="email"
+                                value={this.state.email}
+                                onChange={(e) => {
+                                    var email = this.state.email;
+                                    email = e.target.value;
+                                    this.setState({ email: email });
+                                }}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                block
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    if(this.state.email != "")
+                                        this.add_email();
+                                }}
+                            >
+                                Add
+                            </Button>
+                        </Form.Group>
                         <Button 
                             variant="primary"
                             size="lg"
@@ -369,7 +379,7 @@ export default class EditModule extends Component {
                         >
                             Save
                         </Button>
-                    </Form.Group>
+                    </Form>
                 </Modal.Footer>
             </Modal>
         );
