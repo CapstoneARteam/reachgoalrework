@@ -337,6 +337,19 @@ const DropPin = (props) => {
                 module={module}
             />
             <button
+                style={{
+                    zIndex: 1500,
+                    position: "fixed",
+                    bottom: "10px",
+                    left: "10px",
+                    textAlign: "center",
+                }}
+                className="btn btn-primary"
+                onClick={() => {
+                    window.history.back();
+                }}
+            >Save</button>
+            <button
                 style={floatStyle}
                 onClick={() => setCanPlacePin(!canPlacePin)}
             >
