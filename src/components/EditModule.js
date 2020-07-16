@@ -42,6 +42,8 @@ export default class EditModule extends Component {
             ind: -1,
             modal: null,
             modal2: null,
+            copied: false,
+            link: "",
         };
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
@@ -56,6 +58,7 @@ export default class EditModule extends Component {
         this.add_email = this.add_email.bind(this);
         this.delete_email = this.delete_email.bind(this);
         this.delete_email_modal = this.delete_email_modal.bind(this);
+        this.copy_clipboard = this.copy_clipboard.bind(this);
 
         this.delete_pin = this.delete_pin.bind(this);
         this.list_pins = this.list_pins.bind(this);
@@ -112,6 +115,14 @@ export default class EditModule extends Component {
                     });
             })
             .catch(console.error);
+    }
+
+    // copies textarea to clipboard and sets copy state
+    copy_clipboard() {
+        const e = this.textArea
+        e.select()
+        document.execCommand("copy")
+        this.setState({copy: true})
     }
 
     // Sets state.modal to true
@@ -325,6 +336,7 @@ export default class EditModule extends Component {
                     this.hide_modal();
                 }}
                 style={{
+                    maxHeight: "100vh",
                     marginTop: "50px",
                 }}
             >
@@ -332,7 +344,7 @@ export default class EditModule extends Component {
                 <Modal.Body>
                 <div
                     style={{
-                        maxHeight: 'calc(100vh - 320px)',
+                        maxHeight: 'calc(100vh - 450px)',
                         overflowY: "auto",
                         overflowX: "hidden",
                     }}
@@ -340,7 +352,13 @@ export default class EditModule extends Component {
                     {this.list_shared()}
                 </div>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer
+                    style={{
+                        maxHeight: 'calc(100vh - 450px)',
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                    }}
+                >
                     <Form
                     style={{
                         position: "relative",
@@ -360,8 +378,8 @@ export default class EditModule extends Component {
                         </Form.Group>
                         <Form.Group>
                             <Button
-                                variant="secondary"
-                                size="sm"
+                                variant="primary"
+                                size="lg"
                                 block
                                 onClick={(event) => {
                                     event.preventDefault();
@@ -371,18 +389,51 @@ export default class EditModule extends Component {
                             >
                                 Add
                             </Button>
+                            <Button 
+                                variant="primary"
+                                size="lg"
+                                block
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.hide_modal();
+                                }}
+                            >
+                                Save
+                            </Button>
+                            <Form.Group
+                                style={{
+                                    marginTop: "15px",
+                                }}>
+                                <textarea
+                                    ref={(textarea) => this.textArea = textarea}
+                                    plaintext readOnly
+                                    value={this.state.link}
+                                    placeholder="Sharing This Module Requires They Be Set To Public!"
+                                    style={{
+                                        width: "100%",
+                                        height: "80px"
+                                    }}
+                                />
+                                <Button 
+                                    variant="secondary"
+                                    size="sm"
+                                    block
+                                    onClick={(event) => {
+                                        event.preventDefault();
+                                        this.setState({ link: window.location.origin + "/ar-app/#/module/" + this.state.module_info._id})
+                                        this.copy_clipboard()
+                                    }}
+                                >
+                                    Copy Link
+                                </Button>
+                                {
+                                    this.state.copy ?
+                                    <div style={{"color": "green"}}>
+                                        Copied to clipboard!
+                                    </div> :null
+                                }
+                            </Form.Group>
                         </Form.Group>
-                        <Button 
-                            variant="primary"
-                            size="lg"
-                            block
-                            onClick={(event) => {
-                                event.preventDefault();
-                                this.hide_modal();
-                            }}
-                        >
-                            Save
-                        </Button>
                     </Form>
                 </Modal.Footer>
             </Modal>
