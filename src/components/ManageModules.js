@@ -188,8 +188,9 @@ export default class ManageModules extends Component {
                     }}
                 >
                     <div
+                        className="overflow-auto"
                         style={{
-                            maxHeight: "60%",
+                            maxHeight: `${window.innerHeight*.7}px`,
                         }}
                     >
                         {this.list_modules()}
