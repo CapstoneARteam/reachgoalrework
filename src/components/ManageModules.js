@@ -1,16 +1,5 @@
 import React, { Component } from "react";
-import {
-    Form,
-    FormGroup,
-    Input,
-    Row,
-    Col,
-    Button,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-} from "reactstrap";
+import { Modal } from "react-bootstrap";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 
 export default class ManageModules extends Component {
@@ -80,26 +69,24 @@ export default class ManageModules extends Component {
     list_modules() {
         return this.state.modules.map((module, idx) => {
             return (
-                <div key={idx}>
-                    <Row form>
-                        <Col xs="6">
-                            <FormGroup>
-                                <Input
-                                    type="text"
-                                    value={this.state.modules[idx].title}
-                                    onChange={(event) => {
-                                        event.preventDefault();
+                <div key={idx} className="pt-1">
+                    <div className="row">
+                        <div className="col-6 offset-sm-2 col-sm-4">
+                            <input
+                                type="text"
+                                value={this.state.modules[idx].title}
+                                onChange={(event) => {
+                                    event.preventDefault();
 
-                                        var modules = [...this.state.modules];
-                                        modules[idx].title = event.target.value;
-                                        this.setState({ modules });
-                                    }}
-                                />
-                            </FormGroup>
-                        </Col>
-                        <Col>
-                            <Button
-                                color="link"
+                                    var modules = [...this.state.modules];
+                                    modules[idx].title = event.target.value;
+                                    this.setState({ modules });
+                                }}
+                            />
+                        </div>
+                        <div className="col-6 col-sm-4">
+                            <button
+                                className="btn btn-link float-right"
                                 onClick={(event) => {
                                     event.preventDefault();
                                     var id = this.state.modules[idx]._id;
@@ -109,11 +96,9 @@ export default class ManageModules extends Component {
                                 }}
                             >
                                 Edit
-                            </Button>
-                        </Col>
-                        <Col>
-                            <Button
-                                color="danger"
+                            </button>
+                            <button
+                                className="btn btn-danger float-right"
                                 onClick={(event) => {
                                     event.preventDefault();
                                     this.setState({ idx: idx });
@@ -121,9 +106,9 @@ export default class ManageModules extends Component {
                                 }}
                             >
                                 Delete
-                            </Button>
-                        </Col>
-                    </Row>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             );
         });
@@ -194,111 +179,86 @@ export default class ManageModules extends Component {
 
     render() {
         return (
-            <div
-                style={{
-                    top: "10px",
-                    position: "relative",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    height: "100%",
-                    overflow: "hidden",
-                    display: "flex",
-                    justifyContent: "center",
-                }}
-                className="container"
-            >
-                <div
-                    style={{
-                        height: "100%",
-                        overflow: "hidden",
+            <div className="container">
+                <form
+                    style={{ height: "100%" }}
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        this.save_modules();
                     }}
                 >
-                    <Form
-                        style={{ height: "100%" }}
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            this.save_modules();
+                    <div
+                        style={{
+                            maxHeight: "60%",
                         }}
                     >
-                        <div
-                            style={{
-                                maxHeight: "60%",
-                                overflowY: "scroll",
-                                overflowX: "hidden",
+                        {this.list_modules()}
+                    </div>
+
+                    <div style={{ marginTop: "10px" }}>
+                        <button
+                            className="btn btn-primary btn-lg btn-block"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                this.add_module();
                             }}
                         >
-                            {this.list_modules()}
-                        </div>
-
-                        <div style={{ marginTop: "10px" }}>
-                            <Button
-                                color="primary"
-                                size="lg"
-                                block
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    this.add_module();
-                                }}
-                            >
-                                Add Module
-                            </Button>
-                            <Button
-                                color="secondary"
-                                size="lg"
-                                block
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    this.save_modules();
-                                    window.location.assign("#/");
-                                }}
-                            >
-                                Save
-                            </Button>
-                        </div>
-                    </Form>
-                    <Modal
-                        isOpen={this.state.modal}
+                            Add Module
+                        </button>
+                        <button
+                            className="btn btn-secondary btn-lg btn-block"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                this.save_modules();
+                                window.location.assign("#/");
+                            }}
+                        >
+                            Save
+                        </button>
+                    </div>
+                </form>
+                <Modal
+                    isOpen={this.state.modal}
+                    toggle={(event) => {
+                        event.preventDefault();
+                        this.toggle();
+                    }}
+                    style={{
+                        marginTop: "50px",
+                    }}
+                >
+                    <Modal.Header
                         toggle={(event) => {
                             event.preventDefault();
                             this.toggle();
                         }}
-                        style={{
-                            marginTop: "50px",
-                        }}
                     >
-                        <ModalHeader
-                            toggle={(event) => {
+                        Confirm Deletion
+                    </Modal.Header>
+                    <Modal.Body>{this.modal_message()}</Modal.Body>
+                    <Modal.Footer>
+                        <button
+                            className="btn btn-danger"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                if (this.state.idx > -1)
+                                    this.delete_module(this.state.idx);
+                                this.toggle();
+                            }}
+                        >
+                            Delete
+                        </button>{" "}
+                        <button
+                            className="btn btn-secondary"
+                            onClick={(event) => {
                                 event.preventDefault();
                                 this.toggle();
                             }}
                         >
-                            Confirm Deletion
-                        </ModalHeader>
-                        <ModalBody>{this.modal_message()}</ModalBody>
-                        <ModalFooter>
-                            <Button
-                                color="danger"
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    if (this.state.idx > -1)
-                                        this.delete_module(this.state.idx);
-                                    this.toggle();
-                                }}
-                            >
-                                Delete
-                            </Button>{" "}
-                            <Button
-                                color="secondary"
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    this.toggle();
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                        </ModalFooter>
-                    </Modal>
-                </div>
+                            Cancel
+                        </button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         );
     }
