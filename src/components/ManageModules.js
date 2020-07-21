@@ -189,7 +189,7 @@ export default class ManageModules extends Component {
                 >
                     <div
                         style={{
-                            maxHeight: "70vh",
+                            height: "70vh",
                             overflowY: "scroll",
                             overflowX: "hidden"
                         }}
