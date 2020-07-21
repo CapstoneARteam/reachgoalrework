@@ -218,7 +218,7 @@ export default class ManageModules extends Component {
                     </div>
                 </form>
                 <Modal
-                    isOpen={this.state.modal}
+                    show={this.state.modal}
                     toggle={(event) => {
                         event.preventDefault();
                         this.toggle();
