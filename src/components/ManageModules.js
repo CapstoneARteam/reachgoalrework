@@ -188,9 +188,10 @@ export default class ManageModules extends Component {
                     }}
                 >
                     <div
-                        className="overflow-auto"
                         style={{
-                            maxHeight: `${window.innerHeight*.7}px`,
+                            maxHeight: "70vh",
+                            overflowY: "scroll",
+                            overflowX: "hidden"
                         }}
                     >
                         {this.list_modules()}
