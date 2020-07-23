@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Card, Tab, Tabs, CardDeck, Form, Button } from "react-bootstrap";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
+import { ObjectId } from "mongodb";
 //import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
 
 export default class ViewModules extends Component {
@@ -12,7 +13,14 @@ export default class ViewModules extends Component {
             shared_modules: [],
             img1: "",
             stitch_res: [],
+            user: {
+                _id: '',
+                user_id: '',
+                accessed_links: [],
+            },
+            accessed_modules: [],
         };
+        
 
         //refs
         this.goto_module_id = React.createRef();
@@ -55,6 +63,7 @@ export default class ViewModules extends Component {
                     modules: {
                         0: my_modules,
                         1: this.state.shared_modules,
+                        2: this.state.accessed_modules,
                     },
                 });
 
@@ -74,11 +83,48 @@ export default class ViewModules extends Component {
                     modules: {
                         0: this.state.my_modules,
                         1: shared_modules,
+                        2: this.state.accessed_modules,
                     },
                 });
                 console.log(shared_modules);
             });
         console.log(this.state.modules);
+
+        // fetch user collection
+        const query = {
+            user_id: this.client.auth.authInfo.userId,
+        };
+        await this.db
+            .collection("USERS")
+            .findOne(query)
+            .then((res) => {
+                console.log("User: ", res);
+
+                this.setState({ user: res });
+            })
+            .catch(console.error);
+
+        // fetch accessed links and set accessed modules
+        await this.db
+            .collection("MODULES")
+            .find({
+                _id: { $in: [...this.state.user.accessed_links]},
+                public: true,
+            })
+            .asArray()
+            .then((accessed_modules) => {
+                this.setState({
+                    accessed_modules: accessed_modules,
+                    modules: {
+                        0: this.state.my_modules,
+                        1: this.state.shared_modules,
+                        2: accessed_modules,
+                    },
+                });
+                console.log("Accessed: ",accessed_modules);
+            });
+        console.log(this.accessed_modules);
+        
     }
 
     goto_module(id) {
@@ -199,6 +245,10 @@ export default class ViewModules extends Component {
 
                         <Tab eventKey="Shared Modules" title="Shared with me">
                             {this.add_module_cards(1)}
+                        </Tab>
+
+                        <Tab eventKey="Accessed Modules" title="Accessed">
+                            {this.add_module_cards(2)}
                         </Tab>
 
                         <Tab eventKey="Go To" title="Go To">
