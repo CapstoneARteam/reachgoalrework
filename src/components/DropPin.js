@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
+import {Stitch,RemoteMongoClient,BSON} from "mongodb-stitch-browser-sdk"
+import {AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
 import { Modal } from "react-bootstrap";
 import { ObjectId } from "mongodb";
 
@@ -14,6 +15,10 @@ const mongodb = client.getServiceClient(
     "mongodb-atlas"
 );
 const db = mongodb.db("APP");
+
+//image data
+var base64data = '';
+
 var globalPosition = {};
 
 const floatStyle = {
@@ -29,6 +34,67 @@ const floatStyle = {
     boxShadow: "2px 2px 3px #999",
     zIndex: 1500,
 };
+
+
+
+const fileSelector = document.createElement('input');
+
+const HandleFileSelect = (e) => {
+    e.preventDefault();
+    fileSelector.setAttribute('type', 'file');
+    fileSelector.setAttribute('multiple', 'multiple');
+    fileSelector.onchange = HandleFileChange;
+    fileSelector.click()
+}
+
+const HandleFileChange = (e, props) => {
+    console.log(e.target.files)
+    
+    let fileReader = new FileReader();
+    fileReader.readAsDataURL(e.target.files[0])
+    fileReader.onloadend = (e) => {
+        setBase64data(fileReader.result);
+    }
+    
+}
+
+const HandleUpload = (props) =>{
+    
+    console.log(window.context)
+    // Convert the base64 encoded image string to a BSON Binary object
+   
+    var basestring = props.base64data.replace(/^data:image\/\w+;base64,/, '');
+    var fileBuffer = new Buffer(basestring, 'base64');
+    const binaryImageData = new BSON.Binary(new Uint8Array(fileBuffer), 0)
+
+    const aws = client.getServiceClient(AwsServiceClient.factory, "capstoneusercontent");
+    // These are the arguments specifically for the s3 service PutObject function
+    const args = {
+        ACL: 'public-read',
+        Bucket: "capstoneusercontent",
+        ContentType: "image/png",
+        Key: "b4.png",
+        ContentEncoding: 'base64',
+        Body: binaryImageData,
+        // or Body could be a BSON object
+    };
+
+    const request = new AwsRequest.Builder()
+    .withService("s3")
+    .withAction("PutObject")
+    .withRegion("us-west-2") // this is optional
+    .withArgs(args); // depending on the service and action, this may be optional as well
+
+    console.log(request)
+
+    aws.execute(request.build())
+    .then(result => {
+        console.log(result)
+    }).catch(err => {
+        console.log(err)
+    });
+    
+}
 
 const EditForm = (props) => {
     const [defaultValues, setDefaultValues] = useState({
@@ -152,6 +218,7 @@ const PinMarker = (props) => {
 };
 
 const AddpinForm = (props) => {
+
     return (
         <Modal {...props} centered style={{ zIndex: "1600" }}>
             <Modal.Header>
@@ -174,6 +241,28 @@ const AddpinForm = (props) => {
                     Destination
                 </label>
                 <textarea className="w-100" id="destination" required />
+
+                <label className="d-block" htmlFor="pinImage">
+                    Image
+                </label>
+                <button className='btn btn-primary' onClick={HandleFileSelect}
+                >
+                choose file
+                </button>
+
+                <button className='btn btn-primary' onClick={HandleUpload}
+                >
+                upload
+                </button>
+
+                <br />
+                <img style={{
+                    height: '200px',
+                    width : '300px'
+                }} src={base64data}></img>
+                <br />
+
+
             </Modal.Body>
             <Modal.Footer>
                 <button className="btn btn-secondary" onClick={props.onHide}>
@@ -251,6 +340,7 @@ const DropPin = (props) => {
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
     const [modalShow, setModalShow] = useState(false);
+    const [base64data, setBase64data] = useState();
     const [module, setModule] = useState({
         _id: "",
         title: "",
@@ -262,6 +352,7 @@ const DropPin = (props) => {
         shared_array: [],
         public: false,
     });
+   
 
     // Getting the users current location
     useEffect(() => {
@@ -335,6 +426,7 @@ const DropPin = (props) => {
                 markers={markers}
                 setModule={setModule}
                 module={module}
+                setBase64data={setBase64data}
             />
             <button
                 style={{
