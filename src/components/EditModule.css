@@ -1,8 +1,10 @@
+@media screen {
+
 .tab-content {
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
-    height: 50%;
+    height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     border: 1px solid #ced4da;
@@ -11,4 +13,5 @@
 .list-group {
     height: 100%;
     padding-bottom: 10px;
+}
 }
