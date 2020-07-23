@@ -152,11 +152,15 @@ class ViewPinOnMap extends Component{
     var win = window.open(url, '_blank');
     return
   }
-  centerMap(coords)
+  centerMap(obj,coords)
   {
     console.log("center Map function")
     const map = this.refs.map.leafletElement
-    map.panTo(coords)
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    map.setView(coords)
   }
   render(){
     const userLocation = this.state.userLocationFound ? (
@@ -179,20 +183,20 @@ class ViewPinOnMap extends Component{
                            key = {idx} position={info.coords} 
                            icon= {new L.divIcon({
                                                   className: 'my-div-icon',
-                                                  html: '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'+
-                                                        '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
+                                                  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>' 
+                                                  + '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'
                                                 })} >
                         <Popup>
                               <h1>{info.title}</h1>
                               <p>{info.description}</p>
-                              <p>{info.address}</p>
                               <p>{info.hint}</p>
+                              <p>{info.destination}</p>
                               <button onClick={()=>this.openGoogle(info.coords)} >Open Google Map</button>
                         </Popup>
                     </Marker>
           })}
-          <button style={floatStyle}>
-                <div style={{ fontSize: "10px" }} onClick={()=>this.centerMap(this.state.currentLocation)} >Center</div>
+          <button style={floatStyle} onClick={()=>this.centerMap(this,this.state.currentLocation)} >
+                <div style={{ fontSize: "10px" }} >Center</div>
           </button>
       </Map>
       </div>
