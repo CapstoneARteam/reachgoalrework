@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import {Stitch,RemoteMongoClient,BSON} from "mongodb-stitch-browser-sdk"
@@ -17,7 +17,7 @@ const mongodb = client.getServiceClient(
 const db = mongodb.db("APP");
 
 //image data
-var base64data = '';
+var base64data = 'default'
 
 var globalPosition = {};
 
@@ -37,33 +37,25 @@ const floatStyle = {
 
 
 
-const fileSelector = document.createElement('input');
 
-const HandleFileSelect = (e) => {
-    e.preventDefault();
-    fileSelector.setAttribute('type', 'file');
-    fileSelector.setAttribute('multiple', 'multiple');
-    fileSelector.onchange = HandleFileChange;
-    fileSelector.click()
-}
-
-const HandleFileChange = (e, props) => {
+const HandleFileChange = (props, e) => {
     console.log(e.target.files)
-    
+    console.log(e.target.files[0])
     let fileReader = new FileReader();
     fileReader.readAsDataURL(e.target.files[0])
     fileReader.onloadend = (e) => {
-        setBase64data(fileReader.result);
+        props.setbase64data(fileReader.result)
+        console.log(props)
     }
     
 }
 
-const HandleUpload = (props) =>{
-    
-    console.log(window.context)
+const HandleUpload = (base64data, id) =>{
+    console.log(base64data)
+    console.log(id)
+    // console.log(window.context)
     // Convert the base64 encoded image string to a BSON Binary object
-   
-    var basestring = props.base64data.replace(/^data:image\/\w+;base64,/, '');
+    var basestring = base64data.replace(/^data:image\/\w+;base64,/, '');
     var fileBuffer = new Buffer(basestring, 'base64');
     const binaryImageData = new BSON.Binary(new Uint8Array(fileBuffer), 0)
 
@@ -72,8 +64,8 @@ const HandleUpload = (props) =>{
     const args = {
         ACL: 'public-read',
         Bucket: "capstoneusercontent",
-        ContentType: "image/png",
-        Key: "b4.png",
+        ContentType: "image/jpeg",
+        Key: id + '.jpeg',
         ContentEncoding: 'base64',
         Body: binaryImageData,
         // or Body could be a BSON object
@@ -95,6 +87,24 @@ const HandleUpload = (props) =>{
     });
     
 }
+
+const OpenFile = (props) =>{
+    console.log("open file")
+   
+    console.log(props.base64data)
+    return(
+        <div>
+            <input type="file" multiple="single"  onChange={(e) => HandleFileChange(props, e)}></input>  
+            <img style={{
+                    height: '200px',
+                    width : '300px'
+                }} src={props.base64data}></img>
+        </div>
+        
+    )
+}
+
+
 
 const EditForm = (props) => {
     const [defaultValues, setDefaultValues] = useState({
@@ -146,6 +156,12 @@ const EditForm = (props) => {
                     defaultValue={defaultValues.destination}
                     required
                 />
+
+                <img style={{
+                    height: '200px',
+                    width : '300px'
+                }} src={"https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + props.id + ".jpeg"}></img>
+
             </Modal.Body>
             <Modal.Footer>
                 <button className="btn btn-secondary" onClick={props.cancel}>
@@ -203,6 +219,7 @@ const PinMarker = (props) => {
             }}
         >
             <EditForm
+                id={props.id}
                 description={props.description}
                 hint={props.hint}
                 destination={props.destination}
@@ -245,22 +262,9 @@ const AddpinForm = (props) => {
                 <label className="d-block" htmlFor="pinImage">
                     Image
                 </label>
-                <button className='btn btn-primary' onClick={HandleFileSelect}
-                >
-                choose file
-                </button>
+                <OpenFile base64data={props.base64data} setbase64data={props.setbase64data}></OpenFile>
+                
 
-                <button className='btn btn-primary' onClick={HandleUpload}
-                >
-                upload
-                </button>
-
-                <br />
-                <img style={{
-                    height: '200px',
-                    width : '300px'
-                }} src={base64data}></img>
-                <br />
 
 
             </Modal.Body>
@@ -293,11 +297,17 @@ const AddpinForm = (props) => {
                                 coords: [lat, lng],
                             })
                             .then((res) => {
+                                //console.log(res.insertedId.id)
+
+                                //upload image
+                                HandleUpload(props.base64data, res.insertedId.toString())
+
                                 // add the new pin to the map on success of adding the pin to
                                 // to the database
                                 props.setMarkers([
                                     ...props.markers,
                                     <PinMarker
+                                        id={res.insertedId.toString()}
                                         description={description}
                                         hint={hint}
                                         destination={destination}
@@ -340,7 +350,7 @@ const DropPin = (props) => {
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
     const [modalShow, setModalShow] = useState(false);
-    const [base64data, setBase64data] = useState();
+    const [base64data, setbase64data] = useState("default 64");
     const [module, setModule] = useState({
         _id: "",
         title: "",
@@ -391,6 +401,7 @@ const DropPin = (props) => {
                             res.map((pin) => {
                                 return (
                                     <PinMarker
+                                        id={pin._id.toString()}
                                         description={pin.description}
                                         hint={pin.hint}
                                         destination={pin.destination}
@@ -426,7 +437,9 @@ const DropPin = (props) => {
                 markers={markers}
                 setModule={setModule}
                 module={module}
-                setBase64data={setBase64data}
+                
+                setbase64data={setbase64data}
+                base64data={base64data}
             />
             <button
                 style={{
