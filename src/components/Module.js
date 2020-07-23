@@ -25,9 +25,7 @@ export default class Module extends Component {
 
         this.getUserPosition = this.getUserPosition.bind(this)
         this.fetch_userinfo = this.fetch_userinfo.bind(this)
-        this.handleFileSelect = this.handleFileSelect.bind(this)
-        this.buildFileSelector = this.buildFileSelector.bind(this)
-        this.handleUpload = this.handleUpload.bind(this)
+      
         const appId = "capstonear_app-xkqng"
         if (Stitch.hasAppClient(appId)) {
             this.client = Stitch.getAppClient(appId)
@@ -46,7 +44,7 @@ export default class Module extends Component {
     }
 
     componentDidMount(){
-        this.fileSelector = this.buildFileSelector();
+
         this.getUserPosition()
         this.fetch_userinfo()
         const appId = "capstonear_app-xkqng"

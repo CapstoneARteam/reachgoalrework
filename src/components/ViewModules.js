@@ -118,7 +118,7 @@ export default class ViewModules extends Component {
                                     justifyContent: "center",
                                 }}
                             >
-                                <div className="btn-group mr-2">
+                                <div className="btn-group mr-1">
                                     <button
                                         className="btn btn-primary"
                                         onClick={() =>
@@ -130,7 +130,8 @@ export default class ViewModules extends Component {
                                         View Details
                                     </button>
                                 </div>
-                                <div className="btn-group mr-2">
+
+                                <div className="btn-group mr-1">
                                     <button className="btn btn-primary"
                                         onClick={() =>
                                             window.location.assign(
@@ -180,7 +181,9 @@ export default class ViewModules extends Component {
                 <div
                     style={{
                         top: "10px",
+                        bottom: '0px',
                         position: "relative",
+                        height: "100vh",
                         marginLeft: "auto",
                         marginRight: "auto",
                     }}
