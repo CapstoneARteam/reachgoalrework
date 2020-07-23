@@ -134,73 +134,6 @@ export default class Module extends Component {
         });
       };
 
-    buildFileSelector(){
-        const fileSelector = document.createElement('input');
-        fileSelector.setAttribute('type', 'file');
-        fileSelector.setAttribute('multiple', 'multiple');
-        fileSelector.onchange = this.handleFileChange;
-        return fileSelector;
-      }
-
-    handleFileSelect = (e) => {
-        e.preventDefault();
-        this.fileSelector.click();
-    }
-
-    handleFileChange = (e) => {
-        console.log(e.target.files)
-       
-        let fileReader = new FileReader();
-        fileReader.readAsDataURL(e.target.files[0])
-        fileReader.onloadend = (e) => {
-            var base64data = fileReader.result;
-            this.setState({
-                base64img: base64data
-            })
-            console.log(this.state)
-        }
-        
-       
-    }
-
-    handleUpload(){
-    
-        console.log(window.context)
-        // Convert the base64 encoded image string to a BSON Binary object
-       
-        var basestring = this.state.base64img.replace(/^data:image\/\w+;base64,/, '');
-        var fileBuffer = new Buffer(basestring, 'base64');
-        const binaryImageData = new BSON.Binary(new Uint8Array(fileBuffer), 0)
-
-        const aws = this.client.getServiceClient(AwsServiceClient.factory, "capstoneusercontent");
-        // These are the arguments specifically for the s3 service PutObject function
-        const args = {
-            ACL: 'public-read',
-            Bucket: "capstoneusercontent",
-            ContentType: "image/png",
-            Key: "b4.png",
-            ContentEncoding: 'base64',
-            Body: binaryImageData,
-            // or Body could be a BSON object
-        };
-
-        const request = new AwsRequest.Builder()
-        .withService("s3")
-        .withAction("PutObject")
-        .withRegion("us-west-2") // this is optional
-        .withArgs(args); // depending on the service and action, this may be optional as well
-
-        console.log(request)
-
-        aws.execute(request.build())
-        .then(result => {
-            console.log(result)
-        }).catch(err => {
-            console.log(err)
-        });
-        
-    }
-
 
     render(){
       
@@ -236,29 +169,8 @@ export default class Module extends Component {
                 <br />
                 <br />
               
-                filelink:
-                {this.state.imgUpload}
-
-                <br />
-                <br />
-                <img style={{
-                    height: '200px',
-                    width : '300px'
-                }} src={this.state.base64img}></img>
-                <br />
-                <br />
-
-                <button className='btn btn-primary' onClick={this.handleFileSelect}
-                >
-                choose file
-                </button>
-
-                <button className='btn btn-primary' onClick={this.handleUpload}
-                >
-                upload
-                </button>
-              
-
+             
+        
 
                 <button className='btn btn-primary' 
                         onClick={() =>
