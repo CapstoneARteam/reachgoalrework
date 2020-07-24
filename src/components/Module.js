@@ -116,10 +116,10 @@ export default class Module extends Component {
 
     update_user() {
         if(
-            this.state.user.user_id != this.state.module_info.owner_id && this.state.module_info.public == true){
+            this.client.auth.authInfo.userId != this.state.module_info.owner_id && this.state.module_info.public == true && !this.state.module_info.shared_with.includes(this.client.auth.authInfo.userProfile.email)){
             const query = {
                 _id: this.state.user._id,
-                user_id: this.state.user.user_id,
+                user_id: this.client.auth.authInfo.userId,
             };
             const update = { $addToSet: { accessed_links: ObjectId(this.state.module_info._id) } };
     

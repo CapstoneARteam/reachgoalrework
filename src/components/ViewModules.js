@@ -90,16 +90,22 @@ export default class ViewModules extends Component {
             });
         console.log(this.state.modules);
 
-        // fetch user collection
+        // fetch user collection, create new if not found
         const query = {
             user_id: this.client.auth.authInfo.userId,
         };
+        const update = {
+            $setOnInsert: {accessed_links: [],}
+        };
+        const options = {
+            returnNewDocument: true,
+            upsert: true,
+        };
         await this.db
             .collection("USERS")
-            .findOne(query)
+            .findOneAndUpdate(query, update, options)
             .then((res) => {
                 console.log("User: ", res);
-
                 this.setState({ user: res });
             })
             .catch(console.error);
@@ -124,7 +130,6 @@ export default class ViewModules extends Component {
                 console.log("Accessed: ",accessed_modules);
             });
         console.log(this.accessed_modules);
-        
     }
 
     goto_module(id) {
@@ -244,11 +249,12 @@ export default class ViewModules extends Component {
                         </Tab>
 
                         <Tab eventKey="Shared Modules" title="Shared with me">
-                            {this.add_module_cards(1)}
-                        </Tab>
-
-                        <Tab eventKey="Accessed Modules" title="Accessed">
-                            {this.add_module_cards(2)}
+                            <div>
+                                {this.add_module_cards(1)}
+                            </div>
+                            <div>
+                                {this.add_module_cards(2)}
+                            </div>
                         </Tab>
 
                         <Tab eventKey="Go To" title="Go To">
