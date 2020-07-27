@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, Tab, Tabs, CardDeck, Form, Button } from "react-bootstrap";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
+import { waitForElementToBeRemoved } from "@testing-library/react";
 //import {AwsServiceClient, AwsRequest} from 'mongodb-stitch-browser-services-aws'
 
 export default class ViewModules extends Component {
@@ -114,6 +115,7 @@ export default class ViewModules extends Component {
         await this.db
             .collection("MODULES")
             .find({
+                shared_with: { $ne: this.client.auth.authInfo.userProfile.data.email},
                 _id: { $in: [...this.state.user.accessed_links]},
                 public: true,
             })
@@ -129,7 +131,7 @@ export default class ViewModules extends Component {
                 });
                 console.log("Accessed: ",accessed_modules);
             });
-        console.log(this.accessed_modules);
+        console.log(this.state.accessed_modules);
     }
 
     goto_module(id) {
