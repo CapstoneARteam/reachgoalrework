@@ -119,10 +119,10 @@ export default class EditModule extends Component {
 
     // copies textarea to clipboard and sets copy state
     copy_clipboard() {
-        const e = this.textArea
-        e.select()
-        document.execCommand("copy")
-        this.setState({copy: true})
+        const e = this.textArea;
+        e.select();
+        document.execCommand("copy");
+        this.setState({ copy: true });
     }
 
     // Sets state.modal to true
@@ -160,7 +160,7 @@ export default class EditModule extends Component {
         return (
             <Modal
                 // size="sm"
-                show={this.state.modal == 'delete'}
+                show={this.state.modal == "delete"}
                 onHide={(e) => {
                     this.hide_modal();
                 }}
@@ -213,7 +213,7 @@ export default class EditModule extends Component {
         return (
             <Modal
                 // size="sm"
-                show={this.state.modal2 == 'delete_email'}
+                show={this.state.modal2 == "delete_email"}
                 onHide={(e) => {
                     this.hide_modal2();
                 }}
@@ -254,17 +254,17 @@ export default class EditModule extends Component {
     add_email() {
         const query = { _id: this.state.module_info._id };
         const update = {
-            $addToSet: { shared_with: this.state.email }
+            $addToSet: { shared_with: this.state.email },
         };
-        const options = { upsert: false, returnNewDocument: true};
+        const options = { upsert: false, returnNewDocument: true };
 
         this.db
             .collection("MODULES")
             .findOneAndUpdate(query, update, options)
             .then((res) => {
                 var shared_with = res.shared_with;
-                this.setState({shared_with: shared_with});
-                this.setState({ module_info: res})
+                this.setState({ shared_with: shared_with });
+                this.setState({ module_info: res });
                 console.log("Save response: ", res);
             })
             .catch(console.error);
@@ -275,7 +275,7 @@ export default class EditModule extends Component {
     delete_email(ind) {
         const query = { _id: this.state.module_info._id };
         const update = {
-            $pull: { shared_with: this.state.shared_with[ind] }
+            $pull: { shared_with: this.state.shared_with[ind] },
         };
         const options = { multi: false, returnNewDocument: true };
 
@@ -284,8 +284,8 @@ export default class EditModule extends Component {
             .findOneAndUpdate(query, update, options)
             .then((res) => {
                 var shared_with = res.shared_with;
-                this.setState({shared_with: shared_with, ind: -1});
-                this.setState({ module_info: res})
+                this.setState({ shared_with: shared_with, ind: -1 });
+                this.setState({ module_info: res });
                 console.log("Save response: ", res);
             })
             .catch(console.error);
@@ -301,9 +301,12 @@ export default class EditModule extends Component {
                         <Col xs="8">
                             <FormGroup>
                                 <FormControl
-                                    plaintext readOnly
+                                    plaintext
+                                    readOnly
                                     type="text"
-                                    value={this.state.module_info.shared_with[ind]}
+                                    value={
+                                        this.state.module_info.shared_with[ind]
+                                    }
                                 />
                             </FormGroup>
                         </Col>
@@ -313,7 +316,7 @@ export default class EditModule extends Component {
                                 onClick={(event) => {
                                     event.preventDefault();
                                     this.setState({ ind: ind });
-                                    this.show_modal2('delete_email');
+                                    this.show_modal2("delete_email");
                                 }}
                             >
                                 Delete
@@ -329,9 +332,9 @@ export default class EditModule extends Component {
     // Modal to display MODULE.shared_with emails to allow adding and deleting
     share_modal() {
         return (
-            <Modal 
+            <Modal
                 sz="lg"
-                show={this.state.modal == 'share'}
+                show={this.state.modal == "share"}
                 onHide={(event) => {
                     this.hide_modal();
                 }}
@@ -342,28 +345,29 @@ export default class EditModule extends Component {
             >
                 <Modal.Header closeButton>Shared With</Modal.Header>
                 <Modal.Body>
-                <div
-                    style={{
-                        maxHeight: 'calc(100vh - 450px)',
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                    }}
-                >
-                    {this.list_shared()}
-                </div>
+                    <div
+                        style={{
+                            maxHeight: "calc(100vh - 450px)",
+                            overflowY: "auto",
+                            overflowX: "hidden",
+                        }}
+                    >
+                        {this.list_shared()}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer
                     style={{
-                        maxHeight: 'calc(100vh - 450px)',
+                        maxHeight: "calc(100vh - 450px)",
                         overflowY: "auto",
                         overflowX: "hidden",
                     }}
                 >
                     <Form
-                    style={{
-                        position: "relative",
-                        margin: "auto",
-                    }}>
+                        style={{
+                            position: "relative",
+                            margin: "auto",
+                        }}
+                    >
                         <Form.Group>
                             <FormControl
                                 id="email"
@@ -383,13 +387,13 @@ export default class EditModule extends Component {
                                 block
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    if(this.state.email != "")
+                                    if (this.state.email != "")
                                         this.add_email();
                                 }}
                             >
                                 Add
                             </Button>
-                            <Button 
+                            <Button
                                 variant="primary"
                                 size="lg"
                                 block
@@ -403,35 +407,43 @@ export default class EditModule extends Component {
                             <Form.Group
                                 style={{
                                     marginTop: "15px",
-                                }}>
+                                }}
+                            >
                                 <textarea
-                                    ref={(textarea) => this.textArea = textarea}
-                                    plaintext readOnly
+                                    ref={(textarea) =>
+                                        (this.textArea = textarea)
+                                    }
+                                    plaintext
+                                    readOnly
                                     value={this.state.link}
                                     placeholder="Sharing This Module Requires They Be Set To Public!"
                                     style={{
                                         width: "100%",
-                                        height: "80px"
+                                        height: "80px",
                                     }}
                                 />
-                                <Button 
+                                <Button
                                     variant="secondary"
                                     size="sm"
                                     block
                                     onClick={(event) => {
                                         event.preventDefault();
-                                        this.setState({ link: window.location.origin + "/ar-app/#/module/" + this.state.module_info._id})
-                                        this.copy_clipboard()
+                                        this.setState({
+                                            link:
+                                                window.location.origin +
+                                                "/ar-app/#/module/" +
+                                                this.state.module_info._id,
+                                        });
+                                        this.copy_clipboard();
                                     }}
                                 >
                                     Copy Link
                                 </Button>
-                                {
-                                    this.state.copy ?
-                                    <div style={{"color": "green"}}>
+                                {this.state.copy ? (
+                                    <div style={{ color: "green" }}>
                                         Copied to clipboard!
-                                    </div> :null
-                                }
+                                    </div>
+                                ) : null}
                             </Form.Group>
                         </Form.Group>
                     </Form>
@@ -569,7 +581,7 @@ export default class EditModule extends Component {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         this.setState({ idx: index });
-                                        this.show_modal('delete');
+                                        this.show_modal("delete");
                                     }}
                                 >
                                     Delete
@@ -696,14 +708,14 @@ export default class EditModule extends Component {
                             justifyContent: "center",
                         }}
                     >
-                        <Button 
-                        variant="primary"
-                        size="lg"
-                        block
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.show_modal('share');   
-                        }}
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            block
+                            onClick={(e) => {
+                                e.preventDefault();
+                                this.show_modal("share");
+                            }}
                         >
                             Share
                         </Button>
