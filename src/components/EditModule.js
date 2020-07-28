@@ -62,6 +62,7 @@ export default class EditModule extends Component {
         this.delete_email_modal = this.delete_email_modal.bind(this);
         this.copy_clipboard = this.copy_clipboard.bind(this);
 
+        this.save_pin = this.save_pin.bind(this);
         this.delete_pin = this.delete_pin.bind(this);
         this.list_pins = this.list_pins.bind(this);
         this.module_form = this.module_form.bind(this);
@@ -197,15 +198,6 @@ export default class EditModule extends Component {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        );
-    }
-
-    edit_pin_modal() {
-        return (
-            <EditForm
-                show={this.state.modal === "edit_pin"}
-                cancel={() => this.hide_modal()}
-            />
         );
     }
 
@@ -580,9 +572,8 @@ export default class EditModule extends Component {
                                     variant="link"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        console.log("Pressed edit button");
                                         this.setState({ idx: index });
-                                        this.show_modal("edit_pin");
+                                        this.show_modal("edit_pin_" + index);
                                     }}
                                 >
                                     Edit
@@ -601,10 +592,39 @@ export default class EditModule extends Component {
                                 </Button>
                             </Col>
                         </Row>
+
+                        <EditForm
+                            pin={this.state.pins[index]}
+                            show={this.state.modal === "edit_pin_" + index}
+                            save={(pin) => {
+                                this.save_pin(pin);
+                            }}
+                            cancel={() => this.hide_modal()}
+                        />
                     </li>
                 )}
             />
         );
+    }
+
+    save_pin(pin) {
+        const query = { _id: pin._id };
+        const update = {
+            $set: pin,
+        };
+        // update a pin on the database
+        this.db
+            .collection("PINS")
+            .findOneAndUpdate(query, update)
+            .then((res) => {
+                console.log("Pin update response: ", res);
+
+                // Update pin list
+                var pins = this.state.pins;
+                pins[this.state.idx] = pin;
+                this.setState({ pins: pins });
+                this.hide_modal();
+            });
     }
 
     // This function will remove a pin from the DB and state.pins
@@ -734,7 +754,6 @@ export default class EditModule extends Component {
                         </Button>
                     </Form.Group>
                 </Form>
-                {this.edit_pin_modal()}
                 {this.delete_pin_modal()}
                 {this.share_modal()}
             </Container>

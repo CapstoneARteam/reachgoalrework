@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
-import { Modal } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { ObjectId } from "mongodb";
 
 const appId = "capstonear_app-xkqng";
@@ -31,96 +31,74 @@ const floatStyle = {
 };
 
 export const EditForm = (props) => {
-    const [defaultValues, setDefaultValues] = useState({
-        title: props.title,
-        description: props.description,
-        hint: props.hint,
-        destination: props.destination,
-    });
+    const [pin, setPin] = useState(props.pin);
+
+    const handleInputChange = (e) => {
+        setPin({ ...pin, [e.target.name]: e.target.value });
+    };
+
     return (
         <Modal {...props} centered show={props.show} style={{ zIndex: "1600" }}>
             <Modal.Header>
                 <Modal.Title>Edit a Pin</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <label className="d-block" htmlFor="title">
-                    Title
-                </label>
-                <input
-                    type="text"
-                    className="w-100"
-                    id="title"
-                    required
-                    defaultValue={defaultValues.title}
-                />
-                <label className="d-block" htmlFor="description">
-                    Description
-                </label>
-                <textarea
-                    className="w-100"
-                    id="description"
-                    defaultValue={defaultValues.description}
-                    required
-                />
-                <label className="d-block" htmlFor="hint">
-                    Hint
-                </label>
-                <textarea
-                    className="w-100"
-                    id="hint"
-                    defaultValue={defaultValues.hint}
-                    required
-                />
-                <label className="d-block" htmlFor="destination">
-                    Destination
-                </label>
-                <textarea
-                    className="w-100"
-                    id="destination"
-                    defaultValue={defaultValues.destination}
-                    required
-                />
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                            type="title"
+                            id="title"
+                            name="title"
+                            value={pin.title}
+                            onChange={handleInputChange}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows="2"
+                            id="description"
+                            name="description"
+                            value={pin.description}
+                            onChange={handleInputChange}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Hint</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            rows="2"
+                            id="hint"
+                            name="hint"
+                            value={pin.hint}
+                            onChange={handleInputChange}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Destination</Form.Label>
+                        <Form.Control
+                            id="destination"
+                            name="destination"
+                            value={pin.destination}
+                            onChange={handleInputChange}
+                        />
+                    </Form.Group>
+                </Form>
             </Modal.Body>
             <Modal.Footer>
-                <button className="btn btn-secondary" onClick={props.cancel}>
+                <Button variant="secondary" onClick={props.cancel}>
                     Cancel
-                </button>
-                <button
-                    className="btn btn-primary"
+                </Button>
+                <Button
+                    variant="primary"
                     onClick={() => {
-                        const title =
-                            document.getElementById("title").value || "";
-                        const hint =
-                            document.getElementById("hint").value || "";
-                        const description =
-                            document.getElementById("description").value || "";
-                        const destination =
-                            document.getElementById("destination").value || "";
-                        const query = { _id: props.objectID };
-                        const update = {
-                            $set: {
-                                title: title,
-                                description: description,
-                                hint: hint,
-                                destination: destination,
-                            },
-                        };
-                        // update a pin on the database
-                        db.collection("PINS")
-                            .findOneAndUpdate(query, update)
-                            .then((objectID) => {
-                                setDefaultValues({
-                                    title: title,
-                                    description: description,
-                                    hint: hint,
-                                    destination: destination,
-                                });
-                                props.cancel();
-                            });
+                        props.save(pin);
                     }}
                 >
                     Submit
-                </button>
+                </Button>
             </Modal.Footer>
         </Modal>
     );
@@ -131,20 +109,26 @@ const PinMarker = (props) => {
     return (
         <Marker
             key={globalPosition}
-            position={[props.lat, props.lng]}
+            position={props.pin.coords}
             onClick={() => {
                 setModalShow(!modalShow);
             }}
         >
             <EditForm
-                description={props.description}
-                hint={props.hint}
-                destination={props.destination}
-                title={props.title}
-                objectID={props.objectID}
-                lng={props.lng}
-                lat={props.lat}
+                pin={props.pin}
                 show={modalShow}
+                save={(pin) => {
+                    const query = { _id: pin._id };
+                    const update = {
+                        $set: pin,
+                    };
+                    // update a pin on the database
+                    db.collection("PINS")
+                        .findOneAndUpdate(query, update)
+                        .then(() => {
+                            setModalShow(false);
+                        });
+                }}
                 cancel={() => setModalShow(false)}
             />
         </Marker>
@@ -192,30 +176,26 @@ const AddpinForm = (props) => {
                             document.getElementById("destination").value || "";
                         const { lng, lat } = globalPosition;
                         // insert a new pin on the database
+                        const pin = {
+                            title: title,
+                            owner_id: client.auth.authInfo.userId,
+                            description: description,
+                            hint: hint,
+                            destination: destination,
+                            audio: "",
+                            video: "",
+                            coords: [lat, lng],
+                        };
                         db.collection("PINS")
-                            .insertOne({
-                                title: title,
-                                owner_id: client.auth.authInfo.userId,
-                                description: description,
-                                hint: hint,
-                                destination: destination,
-                                audio: "",
-                                video: "",
-                                coords: [lat, lng],
-                            })
+                            .insertOne(pin)
                             .then((res) => {
                                 // add the new pin to the map on success of adding the pin to
                                 // to the database
                                 props.setMarkers([
                                     ...props.markers,
                                     <PinMarker
-                                        description={description}
-                                        hint={hint}
-                                        destination={destination}
-                                        title={title}
-                                        objectID={res.insertedId}
-                                        lng={lng}
-                                        lat={lat}
+                                        key={res.insertedId}
+                                        pin={pin}
                                     />,
                                 ]);
 
@@ -297,17 +277,7 @@ const DropPin = (props) => {
                     .then((res) => {
                         setMarkers(
                             res.map((pin) => {
-                                return (
-                                    <PinMarker
-                                        description={pin.description}
-                                        hint={pin.hint}
-                                        destination={pin.destination}
-                                        title={pin.title}
-                                        objectID={pin._id}
-                                        lng={pin.coords[1]}
-                                        lat={pin.coords[0]}
-                                    />
-                                );
+                                return <PinMarker key={pin._id} pin={pin} />;
                             })
                         );
                     });
