@@ -16,6 +16,8 @@ import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
 import "./EditModule.css";
 
+import { EditForm } from "./DropPin";
+
 // @classdesc Used to make the Edit Module view.
 export default class EditModule extends Component {
     // Creates a new EditModule
@@ -52,7 +54,7 @@ export default class EditModule extends Component {
         this.show_modal2 = this.show_modal2.bind(this);
         this.hide_modal = this.hide_modal.bind(this);
         this.hide_modal2 = this.hide_modal2.bind(this);
-        this.modal_component = this.modal_component.bind(this);
+        this.delete_pin_modal = this.delete_pin_modal.bind(this);
         this.share_modal = this.share_modal.bind(this);
         this.list_shared = this.list_shared.bind(this);
         this.add_email = this.add_email.bind(this);
@@ -146,7 +148,7 @@ export default class EditModule extends Component {
     }
 
     // @return {JSX.Element} Modal to confirm deletion
-    modal_component() {
+    delete_pin_modal() {
         var modal_message;
         if (this.state.idx < 0) modal_message = <p>Nothing to delete</p>;
         else
@@ -160,7 +162,7 @@ export default class EditModule extends Component {
         return (
             <Modal
                 // size="sm"
-                show={this.state.modal == "delete"}
+                show={this.state.modal === "delete"}
                 onHide={(e) => {
                     this.hide_modal();
                 }}
@@ -198,6 +200,15 @@ export default class EditModule extends Component {
         );
     }
 
+    edit_pin_modal() {
+        return (
+            <EditForm
+                show={this.state.modal === "edit_pin"}
+                cancel={() => this.hide_modal()}
+            />
+        );
+    }
+
     // @return {JSX.Element} Modal to confirm deletion of email
     delete_email_modal() {
         var modal_message;
@@ -213,7 +224,7 @@ export default class EditModule extends Component {
         return (
             <Modal
                 // size="sm"
-                show={this.state.modal2 == "delete_email"}
+                show={this.state.modal2 === "delete_email"}
                 onHide={(e) => {
                     this.hide_modal2();
                 }}
@@ -334,7 +345,7 @@ export default class EditModule extends Component {
         return (
             <Modal
                 sz="lg"
-                show={this.state.modal == "share"}
+                show={this.state.modal === "share"}
                 onHide={(event) => {
                     this.hide_modal();
                 }}
@@ -387,7 +398,7 @@ export default class EditModule extends Component {
                                 block
                                 onClick={(event) => {
                                     event.preventDefault();
-                                    if (this.state.email != "")
+                                    if (this.state.email !== "")
                                         this.add_email();
                                 }}
                             >
@@ -569,7 +580,9 @@ export default class EditModule extends Component {
                                     variant="link"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        // TODO: Link to Edit Pin modal
+                                        console.log("Pressed edit button");
+                                        this.setState({ idx: index });
+                                        this.show_modal("edit_pin");
                                     }}
                                 >
                                     Edit
@@ -721,7 +734,8 @@ export default class EditModule extends Component {
                         </Button>
                     </Form.Group>
                 </Form>
-                {this.modal_component()}
+                {this.edit_pin_modal()}
+                {this.delete_pin_modal()}
                 {this.share_modal()}
             </Container>
         );

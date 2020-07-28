@@ -30,7 +30,7 @@ const floatStyle = {
     zIndex: 1500,
 };
 
-const EditForm = (props) => {
+export const EditForm = (props) => {
     const [defaultValues, setDefaultValues] = useState({
         title: props.title,
         description: props.description,
@@ -113,7 +113,7 @@ const EditForm = (props) => {
                                     title: title,
                                     description: description,
                                     hint: hint,
-                                    destination: destination
+                                    destination: destination,
                                 });
                                 props.cancel();
                             });
@@ -232,8 +232,7 @@ const AddpinForm = (props) => {
                                 const options = { upsert: false };
                                 db.collection("MODULES")
                                     .findOneAndUpdate(query, update, options)
-                                    .then((res) => {
-                                    })
+                                    .then((res) => {})
                                     .catch(console.error);
                             });
                         props.onHide();
@@ -348,7 +347,9 @@ const DropPin = (props) => {
                 onClick={() => {
                     window.history.back();
                 }}
-            >Save</button>
+            >
+                Save
+            </button>
             <button
                 style={floatStyle}
                 onClick={() => setCanPlacePin(!canPlacePin)}
