@@ -12,7 +12,6 @@ import { map } from 'jquery'
 
 delete L.Icon.Default.prototype._getIconUrl;
 
-
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
     iconUrl: require('leaflet/dist/images/marker-icon.png'),
@@ -104,6 +103,7 @@ class ViewPinOnMap extends Component{
   this.nextPin=this.nextPin.bind(this)
   this.previousPin=this.previousPin.bind(this)
   this.currentPin=this.currentPin.bind(this)
+  this.bounds = undefined;
 
   const appId = "capstonear_app-xkqng"
   this.client = Stitch.hasAppClient(appId)
@@ -127,11 +127,34 @@ class ViewPinOnMap extends Component{
   
   }
 
+  boundingRect(coords) {
+    return coords
+      .reduce((acc, curr) => {
+        const [lat, lng] = curr;
+        acc[0][0] = lat < acc[0][0] ? lat : acc[0][0];
+        acc[0][1] = lng < acc[0][1] ? lng : acc[0][1];
+        acc[1][0] = lat > acc[1][0] ? lat : acc[1][0];
+        acc[1][1] = lng > acc[1][1] ? lng : acc[1][1];
+        return acc;
+      }, [[90, 180], [-90, -180]]);
+  }
+
+  AddPaddingToRect(rect, percent=0.10){
+    const [latMin, lngMin] = rect[0];
+    const [latMax, lngMax] = rect[1];
+    const lngPad = (lngMax - lngMin) * percent;
+    const latPad = (latMax - latMin) * percent;
+    return [
+      [latMin - latPad, lngMin - lngPad],
+      [latMax + latPad, lngMax + lngPad]
+    ];
+  }
+
   componentDidMount(){
     this.getUserPosition()
     this.drawpins()
   }
- 
+
   async drawpins() {
     if(!this.client.auth.isLoggedIn){
         return
@@ -149,12 +172,13 @@ class ViewPinOnMap extends Component{
         { $sort: { __order: 1 } },
     ];
     this.db.collection("PINS").aggregate(pipeline)
-    .toArray()
-    .then((res) => {
-        this.setState ({ pins_array: res} )
+      .toArray()
+      .then((res) => {
+        this.bounds = this.AddPaddingToRect(
+          this.boundingRect([...res.map(elem => elem.coords), this.state.currentLocation]));
+        this.setState({ pins_array: res })
+      });
 
-    });      
-       
     }
     )
   }
@@ -237,7 +261,7 @@ class ViewPinOnMap extends Component{
    
     return (
       <div>
-      <Map ref='map' center={this.state.currentLocation} zoom={13} maxZoom={18} >
+      <Map ref='map' center={this.state.currentLocation} zoom={13} maxBounds={this.bounds} bounds={this.bounds}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
