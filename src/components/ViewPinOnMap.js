@@ -44,14 +44,27 @@ const nextButtonStyle = {
   height: "60px",
   bottom: "40px",
   right: "120px",
-  backgroundColor: "#0C9",
-  color: "#FFF",
-  borderRadius: "50px",
+  backgroundColor: "#74E4E9",
+  color: "#000000",
+  borderRadius: "40px",
   textAlign: "center",
   boxShadow: "2px 2px 3px #999",
   zIndex: 1500,
 };
 const previousButtonStyle = {
+  position: "fixed",
+  width: "60px",
+  height: "60px",
+  bottom: "40px",
+  right: "240px",
+  backgroundColor: "#74E4E9",
+  color: "#000000",
+  borderRadius: "40px",
+  textAlign: "center",
+  boxShadow: "2px 2px 3px #999",
+  zIndex: 1500,
+};
+const currentButtonStyle = {
   position: "fixed",
   width: "60px",
   height: "60px",
@@ -90,6 +103,7 @@ class ViewPinOnMap extends Component{
   this.centerMap=this.centerMap.bind(this)
   this.nextPin=this.nextPin.bind(this)
   this.previousPin=this.previousPin.bind(this)
+  this.currentPin=this.currentPin.bind(this)
 
   const appId = "capstonear_app-xkqng"
   this.client = Stitch.hasAppClient(appId)
@@ -163,7 +177,6 @@ class ViewPinOnMap extends Component{
   }
   centerMap(obj,coords)
   {
-    console.log("center Map function")
     const map = this.refs.map.leafletElement
     map.doubleClickZoom.disable();
     setTimeout(function() {
@@ -185,6 +198,8 @@ class ViewPinOnMap extends Component{
     }
     console.log("current pin index", this.state.current_pin_index)
     map.setView(this.state.pins_array[temp].coords)
+    const pin =this.refs[temp].leafletElement
+    pin.openPopup()
     this.setState({current_pin_index:temp})
   }
   previousPin()
@@ -200,7 +215,18 @@ class ViewPinOnMap extends Component{
       temp=0
     }
     map.setView(this.state.pins_array[temp].coords)
+    const pin =this.refs[temp].leafletElement
+    pin.openPopup()
     this.setState({current_pin_index:temp})
+  }
+  currentPin()
+  {
+    const map = this.refs.map.leafletElement
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    map.setView(this.state.pins_array[this.state.current_pin_index].coords)
   }
   render(){
     const userLocation = this.state.userLocationFound ? (
@@ -236,8 +262,9 @@ class ViewPinOnMap extends Component{
             }
             return <Marker 
                            key = {idx} position={info.coords} 
-                           icon= {marker_icon} >
-                        <Popup>
+                           icon= {marker_icon} 
+                           ref = {idx}  >
+                        <Popup >
                               <h1>{info.title}</h1>
                               <p>{info.description}</p>
                               <p>{info.hint}</p>
@@ -251,10 +278,13 @@ class ViewPinOnMap extends Component{
                 <div style={{ fontSize: "10px" }} >Center</div>
           </button>
           <button style={nextButtonStyle} onClick={()=>this.nextPin()} >
-                <div style={{ fontSize: "8px" }} >Next</div>
+                <div style={{ fontSize: "1px" }} >Next</div>
           </button>
           <button style={previousButtonStyle} onClick={()=>this.previousPin()} >
-                <div style={{ fontSize: "8px" }} >Previous</div>
+                <div style={{ fontSize: "1px" }} >Previous</div>
+          </button>
+          <button style={currentButtonStyle} onClick={()=>this.currentPin()} >
+        <div style={{ fontSize: "8px" }} >Current pin: {this.state.current_pin_index +1}</div>
           </button>
       </Map>
       </div>
