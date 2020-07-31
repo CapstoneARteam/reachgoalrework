@@ -65,7 +65,7 @@ class MapView extends Component{
       userLocation:[],
       userLocationFound: false,
       modules: [],
-      pin_array: [],
+      pins: [],
     }
 
   this.drawpins = this.drawpins.bind(this)
@@ -109,20 +109,38 @@ class MapView extends Component{
         shared_with: { $ne: this.client.auth.authInfo.userProfile.data.email},
         public: true,
         pins: { $ne: []},
-      },
-      {
-        pins: { $slice: [0, 1]}
       })
       .asArray()
       .then((res) => {
         this.setState({modules: res})
-        console.log("Modules: ", res);
+        res = res.map(curr => {
+          curr = curr.pins[0];
+          return curr;
+        })
+        this.setState({pin_array: res})
+        console.log("Pin Array: ", res);
+        console.log("Modules: ", this.state.modules);
       })
+
+    await this.db
+      .collection("PINS")
+      .find({
+        _id: { $in: [...this.state.pin_array]}
+      })
+      .toArray()
+      .then((res) => {
+        res = res.map(curr => {
+          curr = curr.coords;
+          return curr;
+        })
+        console.log("Pins: ", res);
+        this.setState({ pins: res });
+      });
   }
 
   render(){
     const userLocation = this.state.userLocationFound ? (
-      <Marker position={this.state.userLocation}>
+      <Marker position={this.state.userLocation} icon= {myIcon} >
         <Popup >Your location</Popup>
       </Marker>
     ) : null
@@ -136,15 +154,24 @@ class MapView extends Component{
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
         />
         {userLocation}   
-        {this.state.pin_array.map((info,idx) => {
+        {this.state.pins.map((info,idx) => {
             return <Marker 
-              key = {idx} position={info.pins[0].coords} 
+              key = {idx} position={info} 
               icon= {new L.divIcon({
                 className: 'my-div-icon',
                 html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>' 
-                + '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'
               })} >
               <Popup>
+                <h1>{this.state.modules[idx].title}</h1>
+                <p>{this.state.modules[idx].description}</p>
+                <p>{this.state.modules[idx].owner_name}</p>
+                <p>{this.state.modules[idx].owner_email}</p>
+                <button
+                  className="btn btn-primary"
+                  onClick={() =>
+                  window.location.assign("#/module/" + this.state.modules[idx]._id)
+                  }
+                  >View Details</button>
               </Popup>
             </Marker>
           })}  
