@@ -4,9 +4,10 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
-//import './ViewPinOnMap.css'
 import { map } from 'jquery'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowAltCircleRight,faArrowAltCircleLeft,faMapMarkerAlt,faStreetView } from '@fortawesome/free-solid-svg-icons'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
 
 
 
@@ -207,6 +208,8 @@ class ViewPinOnMap extends Component{
          map.doubleClickZoom.enable();
     }, 1000);
     map.setView(coords)
+    const pin = this.refs.userloc.leafletElement
+    pin.openPopup()
   }
   nextPin()
   {
@@ -254,14 +257,14 @@ class ViewPinOnMap extends Component{
   }
   render(){
     const userLocation = this.state.userLocationFound ? (
-      <Marker  position={this.state.userLocation}  icon= {myIcon} >
+      <Marker ref='userloc' position={this.state.userLocation}  icon= {myIcon} >
         <Popup>You are here</Popup>
       </Marker>
     ) : null
    
     return (
       <div>
-      <Map ref='map' center={this.state.currentLocation} zoom={13} maxBounds={this.bounds} bounds={this.bounds}>
+      <Map ref='map' center={this.state.currentLocation} zoom={13} maxZoom={18}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -299,17 +302,19 @@ class ViewPinOnMap extends Component{
             
           })}
           <button style={floatStyle} onClick={()=>this.centerMap(this,this.state.currentLocation)} >
-                <div style={{ fontSize: "10px" }} >Center</div>
+                <div><FontAwesomeIcon icon={faStreetView} size="3x" /></div>
           </button>
-          <button style={nextButtonStyle} onClick={()=>this.nextPin()} >
-                <div style={{ fontSize: "1px" }} >Next</div>
+          <ButtonGroup>
+          <button style={nextButtonStyle} onClick={()=>this.nextPin()}  >
+                <div><FontAwesomeIcon icon={faArrowAltCircleRight} size="3x" /></div>
           </button>
           <button style={previousButtonStyle} onClick={()=>this.previousPin()} >
-                <div style={{ fontSize: "1px" }} >Previous</div>
+                <div><FontAwesomeIcon icon={faArrowAltCircleLeft} size="3x" /></div>
           </button>
           <button style={currentButtonStyle} onClick={()=>this.currentPin()} >
-        <div style={{ fontSize: "8px" }} >Current pin: {this.state.current_pin_index +1}</div>
+                <div><FontAwesomeIcon icon={faMapMarkerAlt} size="3x" /></div>
           </button>
+          </ButtonGroup>
       </Map>
       </div>
     );
