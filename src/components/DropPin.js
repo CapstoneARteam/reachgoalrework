@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
+
+import {Stitch,RemoteMongoClient,BSON} from "mongodb-stitch-browser-sdk"
+import {AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
+import { Modal } from "react-bootstrap";
+
 import { Button, Form, Modal } from "react-bootstrap";
+
 import { ObjectId } from "mongodb";
 
 const appId = "capstonear_app-xkqng";
@@ -14,6 +19,10 @@ const mongodb = client.getServiceClient(
     "mongodb-atlas"
 );
 const db = mongodb.db("APP");
+
+//image data
+var base64data = 'default'
+
 var globalPosition = {};
 
 const floatStyle = {
@@ -30,12 +39,93 @@ const floatStyle = {
     zIndex: 1500,
 };
 
+
+
+
+
+var HandleFileChange = (props, e) => {
+    console.log(e.target.files)
+    console.log(e.target.files[0])
+    let fileReader = new FileReader();
+    fileReader.readAsDataURL(e.target.files[0])
+    fileReader.onloadend = (e) => {
+        props.setbase64data(e.target.result)
+       
+        return e.target.result
+        
+        
+    }
+    
+    
+}
+
+const HandleUpload = (base64data, id) =>{
+    console.log(base64data)
+    console.log(id)
+    // console.log(window.context)
+    // Convert the base64 encoded image string to a BSON Binary object
+    var basestring = base64data.replace(/^data:image\/\w+;base64,/, '');
+    var fileBuffer = new Buffer(basestring, 'base64');
+    const binaryImageData = new BSON.Binary(new Uint8Array(fileBuffer), 0)
+
+    const aws = client.getServiceClient(AwsServiceClient.factory, "capstoneusercontent");
+    // These are the arguments specifically for the s3 service PutObject function
+    const args = {
+        ACL: 'public-read',
+        Bucket: "capstoneusercontent",
+        ContentType: "image/jpeg",
+        Key: id + '.jpeg',
+        ContentEncoding: 'base64',
+        Body: binaryImageData,
+        // or Body could be a BSON object
+    };
+
+    const request = new AwsRequest.Builder()
+    .withService("s3")
+    .withAction("PutObject")
+    .withRegion("us-west-2") // this is optional
+    .withArgs(args); // depending on the service and action, this may be optional as well
+
+    console.log(request)
+
+    aws.execute(request.build())
+    .then(result => {
+        console.log(result)
+    }).catch(err => {
+        console.log(err)
+    });
+    
+}
+
+const OpenFile = (props) =>{
+    console.log("open file")
+   
+    console.log(props.base64data)
+    return(
+        <div>
+            <input type="file" multiple="single"  onChange={(e) => {
+                HandleFileChange(props, e)
+                }}></input>  
+            <img style={{
+                    height: '200px',
+                    width : '300px'
+                }} src={props.base64data}></img>
+        </div>
+        
+    )
+}
+
+
+
 export const EditForm = (props) => {
     const [pin, setPin] = useState(props.pin);
 
     const handleInputChange = (e) => {
         setPin({ ...pin, [e.target.name]: e.target.value });
     };
+   
+    const [imgurl, setimgurl] = useState("https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + props.id + ".jpeg?versionid=latest&date=" + Date.now());
+  
 
     return (
         <Modal {...props} centered show={props.show} style={{ zIndex: "1600" }}>
@@ -43,6 +133,7 @@ export const EditForm = (props) => {
                 <Modal.Title>Edit a Pin</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+
                 <Form>
                     <Form.Group>
                         <Form.Label>Title</Form.Label>
@@ -85,7 +176,15 @@ export const EditForm = (props) => {
                             onChange={handleInputChange}
                         />
                     </Form.Group>
+                    <Form.Group>
+                        <OpenFile base64data={props.base64data} setbase64data={props.setbase64data} imgurl={imgurl} setimgurl={setimgurl}></OpenFile>
+                        <img style={{
+                            height: '200px',
+                            width : '300px'
+                        }} src={imgurl}></img>
+                    </Form.Group>
                 </Form>
+
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={props.cancel}>
@@ -94,6 +193,50 @@ export const EditForm = (props) => {
                 <Button
                     variant="primary"
                     onClick={() => {
+      /*
+
+                        const title =
+                            document.getElementById("title").value || "";
+                        const hint =
+                            document.getElementById("hint").value || "";
+                        const description =
+                            document.getElementById("description").value || "";
+                        const destination =
+                            document.getElementById("destination").value || "";
+                        const query = { _id: props.objectID };
+                        const update = {
+                            $set: {
+                                title: title,
+                                description: description,
+                                hint: hint,
+                                destination: destination,
+                            },
+                        };
+                        // update a pin on the database
+                        db.collection("PINS")
+                            .findOneAndUpdate(query, update)
+                            .then((objectID) => {
+                                console.log(objectID._id.toString())
+                                console.log(base64data)
+                                if(base64data === "default")
+                                {}
+                                else{
+                                    //upload image
+                                    HandleUpload(base64data, objectID._id.toString())
+
+                                }
+                                
+                                setDefaultValues({
+                                    title: title,
+                                    description: description,
+                                    hint: hint,
+                                    destination: destination
+                                });
+                                setimgurl("https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + props.id + ".jpeg?versionid=latest&date=" + Date.now())
+                                props.cancel();
+                            });
+
+*/
                         props.save(pin);
                     }}
                 >
@@ -106,6 +249,8 @@ export const EditForm = (props) => {
 
 const PinMarker = (props) => {
     const [modalShow, setModalShow] = useState(false);
+    const [base64data, setbase64data] = useState("default");
+  
     return (
         <Marker
             key={globalPosition}
@@ -115,7 +260,9 @@ const PinMarker = (props) => {
             }}
         >
             <EditForm
+
                 pin={props.pin}
+
                 show={modalShow}
                 save={(pin) => {
                     const query = { _id: pin._id };
@@ -125,17 +272,29 @@ const PinMarker = (props) => {
                     // update a pin on the database
                     db.collection("PINS")
                         .findOneAndUpdate(query, update)
-                        .then(() => {
+                        .then((objectID) => {
+                            if(base64data === "default")
+                            {}
+                            else{
+                                //upload image
+                                HandleUpload(base64data, objectID._id.toString())
+
+                            }
                             setModalShow(false);
+                      
                         });
                 }}
                 cancel={() => setModalShow(false)}
+                
+                setbase64data={setbase64data}
+                base64data={base64data}
             />
         </Marker>
     );
 };
 
 const AddpinForm = (props) => {
+
     return (
         <Modal {...props} centered style={{ zIndex: "1600" }}>
             <Modal.Header>
@@ -158,6 +317,16 @@ const AddpinForm = (props) => {
                     Destination
                 </label>
                 <textarea className="w-100" id="destination" required />
+
+                <label className="d-block" htmlFor="pinImage">
+                    Image
+                </label>
+
+                <OpenFile base64data={props.base64data} setbase64data={props.setbase64data}> </OpenFile>
+                
+
+
+
             </Modal.Body>
             <Modal.Footer>
                 <button className="btn btn-secondary" onClick={props.onHide}>
@@ -189,13 +358,32 @@ const AddpinForm = (props) => {
                         db.collection("PINS")
                             .insertOne(pin)
                             .then((res) => {
+                                //console.log(res.insertedId.id)
+                                
+                                if(props.base64data === "default")
+                                {}
+                                else{
+                                    //upload image
+                                    HandleUpload(props.base64data, res.insertedId.toString())
+                                }
                                 // add the new pin to the map on success of adding the pin to
                                 // to the database
                                 props.setMarkers([
                                     ...props.markers,
                                     <PinMarker
+
+                                        id={res.insertedId.toString()}
+                                        description={description}
+                                        hint={hint}
+                                        destination={destination}
+                                        title={title}
+                                        objectID={res.insertedId}
+                                        lng={lng}
+                                        lat={lat}
+
                                         key={res.insertedId}
                                         pin={pin}
+
                                     />,
                                 ]);
 
@@ -230,6 +418,7 @@ const DropPin = (props) => {
     const [markers, setMarkers] = useState([]);
     const [canPlacePin, setCanPlacePin] = useState(false);
     const [modalShow, setModalShow] = useState(false);
+    const [base64data, setbase64data] = useState("default");
     const [module, setModule] = useState({
         _id: "",
         title: "",
@@ -241,6 +430,7 @@ const DropPin = (props) => {
         shared_array: [],
         public: false,
     });
+   
 
     // Getting the users current location
     useEffect(() => {
@@ -277,7 +467,13 @@ const DropPin = (props) => {
                     .then((res) => {
                         setMarkers(
                             res.map((pin) => {
-                                return <PinMarker key={pin._id} pin={pin} />;
+
+                                return <PinMarker 
+                                        key={pin._id} pin={pin}
+                                        setbase64data={setbase64data}
+                                        base64data={base64data}
+                                    />;
+
                             })
                         );
                     });
@@ -304,6 +500,9 @@ const DropPin = (props) => {
                 markers={markers}
                 setModule={setModule}
                 module={module}
+                
+                setbase64data={setbase64data}
+                base64data={base64data}
             />
             <button
                 style={{

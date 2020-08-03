@@ -139,9 +139,11 @@ export default class ViewModules extends Component {
     }
 
     add_module_cards(type) {
+        
         if (this.state.modules.length === 0) return;
 
         const mds = this.state.modules[type].map(function (module, idx) {
+            
             return (
                 <div className="col-md-6 col-lg-4 " key={idx}>
                     <Card
@@ -158,7 +160,7 @@ export default class ViewModules extends Component {
                         <Card.Body>
                             <Card.Img
                                 variant="top"
-                                src="https://capstoneusercontent.s3.amazonaws.com/ar.png"
+                                src={"https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + module.pins[0] + ".jpeg?versionid=latest&date=" + Date.now()}
                             />
                             <Card.Title>{module.title}</Card.Title>
                             <Card.Subtitle className="mb-2 text-muted">
@@ -171,7 +173,7 @@ export default class ViewModules extends Component {
                                     justifyContent: "center",
                                 }}
                             >
-                                <div className="btn-group mr-2">
+                                <div className="btn-group mr-1">
                                     <button
                                         className="btn btn-primary"
                                         onClick={() =>
@@ -183,7 +185,8 @@ export default class ViewModules extends Component {
                                         View Details
                                     </button>
                                 </div>
-                                <div className="btn-group mr-2">
+
+                                <div className="btn-group mr-1">
                                     <button className="btn btn-primary"
                                         onClick={() =>
                                             window.location.assign(
@@ -233,7 +236,9 @@ export default class ViewModules extends Component {
                 <div
                     style={{
                         top: "10px",
+                        bottom: '0px',
                         position: "relative",
+                        height: "100vh",
                         marginLeft: "auto",
                         marginRight: "auto",
                     }}

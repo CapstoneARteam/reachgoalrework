@@ -3,8 +3,10 @@ import React, { Component} from 'react'
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import {Container} from 'react-bootstrap'
 import 'leaflet/dist/leaflet.css'
-import {Stitch,RemoteMongoClient } from "mongodb-stitch-browser-sdk"
+import {Stitch,RemoteMongoClient,BSON} from "mongodb-stitch-browser-sdk"
+import {AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
 import {ObjectId} from 'mongodb'
+//const BSON = require('bson');
 
 export default class Module extends Component {
     constructor(props){
@@ -18,15 +20,19 @@ export default class Module extends Component {
                 owner_name: '',
                 description: '',
             },
+          
+            base64img:''
             user: {
                 _id: '',
                 user_id: '',
                 accessed_links: [],
             },
+
         }
 
         this.getUserPosition = this.getUserPosition.bind(this)
         this.fetch_userinfo = this.fetch_userinfo.bind(this)
+
         this.update_user = this.update_user.bind(this);
 
         const appId = "capstonear_app-xkqng"
@@ -47,7 +53,7 @@ export default class Module extends Component {
     }
 
     componentDidMount(){
-        
+
         this.getUserPosition()
         this.fetch_userinfo()
 
@@ -155,6 +161,20 @@ export default class Module extends Component {
     }
 
 
+    fileToBase64 = (filename, filepath) => {
+        return new Promise(resolve => {
+          var file = new File([filename], filepath);
+          var reader = new FileReader();
+          // Read file content on file loaded event
+          reader.onload = function(event) {
+            resolve(event.target.result);
+          };
+          
+          // Convert data to base64 
+          reader.readAsDataURL(file);
+        });
+      };
+
 
     render(){
       
@@ -190,7 +210,8 @@ export default class Module extends Component {
                 <br />
                 <br />
               
-
+             
+        
 
                 <button className='btn btn-primary' 
                         onClick={() =>

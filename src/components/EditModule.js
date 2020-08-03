@@ -684,7 +684,8 @@ export default class EditModule extends Component {
                 style={{
                     marginTop: "10px",
                     maxWidth: "540px",
-                    height: "100%",
+                    height:"100vh",
+
                 }}
             >
                 <Form style={{ height: "100%" }}>
@@ -698,6 +699,42 @@ export default class EditModule extends Component {
                     >
                         <Tab eventKey="Module Info" title="Module Info">
                             {this.module_form()}
+                                <Form.Group>
+                                <Button
+                                    variant="primary"
+                                    size="lg"
+                                    block
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        var id = this.state.module_info._id;
+                                        window.location.assign(
+                                            "#/module/" + id + "/pins/edit"
+                                        );
+                                    }}
+                                >
+                                    Pin Map
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    size="lg"
+                                    block
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        this.save_module();
+                                    }}
+                                >
+                                    Save
+                                </Button>
+                            </Form.Group>
+
+                            <Form.Group
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <Button variant="primary">Share</Button>
+                            </Form.Group>
                         </Tab>
                         <Tab
                             eventKey="Pins"
@@ -707,6 +744,7 @@ export default class EditModule extends Component {
                             {this.list_pins()}
                         </Tab>
                     </Tabs>
+
                     <Form.Group>
                         <Button
                             variant="primary"
@@ -753,6 +791,7 @@ export default class EditModule extends Component {
                             Share
                         </Button>
                     </Form.Group>
+
                 </Form>
                 {this.delete_pin_modal()}
                 {this.share_modal()}
