@@ -728,13 +728,23 @@ export default class EditModule extends Component {
                             </Form.Group>
 
                             <Form.Group
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <Button variant="primary">Share</Button>
-                            </Form.Group>
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            block
+                            onClick={(e) => {
+                                e.preventDefault();
+                                this.show_modal("share");
+                            }}
+                        >
+                            Share
+                        </Button>
+                    </Form.Group>
                         </Tab>
                         <Tab
                             eventKey="Pins"
