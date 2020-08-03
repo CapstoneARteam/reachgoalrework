@@ -68,8 +68,10 @@ class MapView extends Component{
       pins: [],
     }
 
-  this.drawpins = this.drawpins.bind(this)
+  this.getpins = this.getpins.bind(this)
   this.getUserPosition = this.getUserPosition.bind(this)
+  this.getDistance = this.getDistance.bind(this)
+  this.toRadian = this.toRadian.bind(this)
 
   const appId = "capstonear_app-xkqng"
   this.client = Stitch.hasAppClient(appId)
@@ -95,11 +97,37 @@ class MapView extends Component{
 
   componentDidMount(){
     this.getUserPosition()
-    this.drawpins()
+    this.getpins()
     
   }
 
-  async drawpins() {
+  //find distance between two points in meters. Returns true for less than meters or false if not
+  getDistance(origin, destination) {
+    var lon1 = this.toRadian(origin[1]);
+    var lat1 = this.toRadian(origin[0]);
+    var lon2 = this.toRadian(destination[1]);
+    var lat2 = this.toRadian(destination[0]);
+
+    var deltaLat = lat2 - lat1;
+    var deltaLon = lon2 - lon1;
+
+    var a = Math.pow(Math.sin(deltaLat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon/2), 2);
+    var c = 2 * Math.asin(Math.sqrt(a));
+    var EARTH_RADIUS = 6371;
+    var d = c * EARTH_RADIUS * 1000;
+
+    // 24000 meters ~ 15 miles
+    if(d < 24000)
+      return true;
+    else
+      return false;
+  }
+
+  toRadian(degree) {
+    return degree*Math.PI/180;
+  }
+
+  async getpins() {
     if(!this.client.auth.isLoggedIn){
       return
     }
@@ -136,6 +164,19 @@ class MapView extends Component{
         console.log("Pins: ", res);
         this.setState({ pins: res });
       });
+
+    // limits pins to only those within specific miles of userlocation
+    var pins = [...this.state.pins];
+    var modules = [...this.state.modules];
+    for(var i = 0; i < this.state.pins.length; i++) {
+      if(!this.getDistance(this.state.userLocation, this.state.pins[i])) {
+        if(i !== -1)
+          delete pins[i];
+          delete modules[i];
+      }
+    }
+    this.setState({ pins: pins });
+    this.setState({ modules: modules});
   }
 
   render(){
