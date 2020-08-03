@@ -8,11 +8,15 @@ import {
     Tabs,
     Tab,
     Modal,
+    FormControl,
+    FormGroup,
 } from "react-bootstrap";
 import { List, arrayMove } from "react-movable";
 import { Stitch, RemoteMongoClient } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
 import "./EditModule.css";
+
+import { EditForm } from "./DropPin";
 
 // @classdesc Used to make the Edit Module view.
 export default class EditModule extends Component {
@@ -30,20 +34,35 @@ export default class EditModule extends Component {
                 owner_name: "",
                 description: "",
                 pins: [],
-                shared_array: [],
+                shared_with: [],
                 public: false,
             },
+            email: "",
+            shared_with: [],
             pins: [],
-            modal: false,
             idx: -1,
+            ind: -1,
+            modal: null,
+            modal2: null,
+            copied: false,
+            link: "",
         };
 
         this.fetch_userinfo = this.fetch_userinfo.bind(this);
 
         this.show_modal = this.show_modal.bind(this);
+        this.show_modal2 = this.show_modal2.bind(this);
         this.hide_modal = this.hide_modal.bind(this);
-        this.modal_component = this.modal_component.bind(this);
+        this.hide_modal2 = this.hide_modal2.bind(this);
+        this.delete_pin_modal = this.delete_pin_modal.bind(this);
+        this.share_modal = this.share_modal.bind(this);
+        this.list_shared = this.list_shared.bind(this);
+        this.add_email = this.add_email.bind(this);
+        this.delete_email = this.delete_email.bind(this);
+        this.delete_email_modal = this.delete_email_modal.bind(this);
+        this.copy_clipboard = this.copy_clipboard.bind(this);
 
+        this.save_pin = this.save_pin.bind(this);
         this.delete_pin = this.delete_pin.bind(this);
         this.list_pins = this.list_pins.bind(this);
         this.module_form = this.module_form.bind(this);
@@ -101,18 +120,36 @@ export default class EditModule extends Component {
             .catch(console.error);
     }
 
+    // copies textarea to clipboard and sets copy state
+    copy_clipboard() {
+        const e = this.textArea;
+        e.select();
+        document.execCommand("copy");
+        this.setState({ copy: true });
+    }
+
     // Sets state.modal to true
-    show_modal() {
-        this.setState({ modal: true });
+    show_modal(id) {
+        this.setState({ modal: id });
+    }
+
+    // Sets state.modal2 to true
+    show_modal2(id) {
+        this.setState({ modal2: id });
     }
 
     // Sets state.modal to false
     hide_modal() {
-        this.setState({ modal: false });
+        this.setState({ modal: null });
+    }
+
+    // Sets state.modal2 to false
+    hide_modal2() {
+        this.setState({ modal2: null });
     }
 
     // @return {JSX.Element} Modal to confirm deletion
-    modal_component() {
+    delete_pin_modal() {
         var modal_message;
         if (this.state.idx < 0) modal_message = <p>Nothing to delete</p>;
         else
@@ -126,9 +163,8 @@ export default class EditModule extends Component {
         return (
             <Modal
                 // size="sm"
-                show={this.state.modal}
+                show={this.state.modal === "delete"}
                 onHide={(e) => {
-                    e.preventDefault();
                     this.hide_modal();
                 }}
                 style={{
@@ -160,6 +196,260 @@ export default class EditModule extends Component {
                     >
                         Cancel
                     </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+    // @return {JSX.Element} Modal to confirm deletion of email
+    delete_email_modal() {
+        var modal_message;
+        if (this.state.ind < 0) modal_message = <p>Nothing to delete</p>;
+        else
+            modal_message = (
+                <p>
+                    Are you sure you want to delete{" "}
+                    <b>{this.state.module_info.shared_with[this.state.ind]}</b>?
+                </p>
+            );
+
+        return (
+            <Modal
+                // size="sm"
+                show={this.state.modal2 === "delete_email"}
+                onHide={(e) => {
+                    this.hide_modal2();
+                }}
+                style={{
+                    marginTop: "50px",
+                }}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modal_message}</Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="danger"
+                        onClick={(e) => {
+                            if (this.state.ind > -1)
+                                this.delete_email(this.state.ind);
+                            this.hide_modal2();
+                        }}
+                    >
+                        Delete
+                    </Button>{" "}
+                    <Button
+                        variant="secondary"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.hide_modal2();
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+    // This function adds a email to MODULES.shared_with and avoids duplicates
+    add_email() {
+        const query = { _id: this.state.module_info._id };
+        const update = {
+            $addToSet: { shared_with: this.state.email },
+        };
+        const options = { upsert: false, returnNewDocument: true };
+
+        this.db
+            .collection("MODULES")
+            .findOneAndUpdate(query, update, options)
+            .then((res) => {
+                var shared_with = res.shared_with;
+                this.setState({ shared_with: shared_with });
+                this.setState({ module_info: res });
+                console.log("Save response: ", res);
+            })
+            .catch(console.error);
+    }
+
+    // This function will remove a email from MODULES.shared_with
+    // @param {number} ind - The index of the email to delete
+    delete_email(ind) {
+        const query = { _id: this.state.module_info._id };
+        const update = {
+            $pull: { shared_with: this.state.shared_with[ind] },
+        };
+        const options = { multi: false, returnNewDocument: true };
+
+        this.db
+            .collection("MODULES")
+            .findOneAndUpdate(query, update, options)
+            .then((res) => {
+                var shared_with = res.shared_with;
+                this.setState({ shared_with: shared_with, ind: -1 });
+                this.setState({ module_info: res });
+                console.log("Save response: ", res);
+            })
+            .catch(console.error);
+    }
+
+    // Creates the list of emails in MODULES.shared_with
+    // @return {JSX.Element} The list of emails.
+    list_shared() {
+        return this.state.module_info.shared_with.map((module_info, ind) => {
+            return (
+                <div key={ind}>
+                    <Row form>
+                        <Col xs="8">
+                            <FormGroup>
+                                <FormControl
+                                    plaintext
+                                    readOnly
+                                    type="text"
+                                    value={
+                                        this.state.module_info.shared_with[ind]
+                                    }
+                                />
+                            </FormGroup>
+                        </Col>
+                        <Col>
+                            <Button
+                                variant="danger"
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.setState({ ind: ind });
+                                    this.show_modal2("delete_email");
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </Col>
+                    </Row>
+                    {this.delete_email_modal()}
+                </div>
+            );
+        });
+    }
+
+    // Modal to display MODULE.shared_with emails to allow adding and deleting
+    share_modal() {
+        return (
+            <Modal
+                sz="lg"
+                show={this.state.modal === "share"}
+                onHide={(event) => {
+                    this.hide_modal();
+                }}
+                style={{
+                    maxHeight: "100vh",
+                    marginTop: "50px",
+                }}
+            >
+                <Modal.Header closeButton>Shared With</Modal.Header>
+                <Modal.Body>
+                    <div
+                        style={{
+                            maxHeight: "calc(100vh - 450px)",
+                            overflowY: "auto",
+                            overflowX: "hidden",
+                        }}
+                    >
+                        {this.list_shared()}
+                    </div>
+                </Modal.Body>
+                <Modal.Footer
+                    style={{
+                        maxHeight: "calc(100vh - 450px)",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                    }}
+                >
+                    <Form
+                        style={{
+                            position: "relative",
+                            margin: "auto",
+                        }}
+                    >
+                        <Form.Group>
+                            <FormControl
+                                id="email"
+                                type="email"
+                                value={this.state.email}
+                                onChange={(e) => {
+                                    var email = this.state.email;
+                                    email = e.target.value;
+                                    this.setState({ email: email });
+                                }}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                block
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    if (this.state.email !== "")
+                                        this.add_email();
+                                }}
+                            >
+                                Add
+                            </Button>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                block
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    this.hide_modal();
+                                }}
+                            >
+                                Save
+                            </Button>
+                            <Form.Group
+                                style={{
+                                    marginTop: "15px",
+                                }}
+                            >
+                                <textarea
+                                    ref={(textarea) =>
+                                        (this.textArea = textarea)
+                                    }
+                                    plaintext
+                                    readOnly
+                                    value={this.state.link}
+                                    placeholder="Sharing This Module Requires They Be Set To Public!"
+                                    style={{
+                                        width: "100%",
+                                        height: "80px",
+                                    }}
+                                />
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    block
+                                    onClick={(event) => {
+                                        event.preventDefault();
+                                        this.setState({
+                                            link:
+                                                window.location.origin +
+                                                "/ar-app/#/module/" +
+                                                this.state.module_info._id,
+                                        });
+                                        this.copy_clipboard();
+                                    }}
+                                >
+                                    Copy Link
+                                </Button>
+                                {this.state.copy ? (
+                                    <div style={{ color: "green" }}>
+                                        Copied to clipboard!
+                                    </div>
+                                ) : null}
+                            </Form.Group>
+                        </Form.Group>
+                    </Form>
                 </Modal.Footer>
             </Modal>
         );
@@ -282,7 +572,8 @@ export default class EditModule extends Component {
                                     variant="link"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        // TODO: Link to Edit Pin modal
+                                        this.setState({ idx: index });
+                                        this.show_modal("edit_pin_" + index);
                                     }}
                                 >
                                     Edit
@@ -294,17 +585,46 @@ export default class EditModule extends Component {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         this.setState({ idx: index });
-                                        this.show_modal();
+                                        this.show_modal("delete");
                                     }}
                                 >
                                     Delete
                                 </Button>
                             </Col>
                         </Row>
+
+                        <EditForm
+                            pin={this.state.pins[index]}
+                            show={this.state.modal === "edit_pin_" + index}
+                            save={(pin) => {
+                                this.save_pin(pin);
+                            }}
+                            cancel={() => this.hide_modal()}
+                        />
                     </li>
                 )}
             />
         );
+    }
+
+    save_pin(pin) {
+        const query = { _id: pin._id };
+        const update = {
+            $set: pin,
+        };
+        // update a pin on the database
+        this.db
+            .collection("PINS")
+            .findOneAndUpdate(query, update)
+            .then((res) => {
+                console.log("Pin update response: ", res);
+
+                // Update pin list
+                var pins = this.state.pins;
+                pins[this.state.idx] = pin;
+                this.setState({ pins: pins });
+                this.hide_modal();
+            });
     }
 
     // This function will remove a pin from the DB and state.pins
@@ -424,10 +744,57 @@ export default class EditModule extends Component {
                             {this.list_pins()}
                         </Tab>
                     </Tabs>
-                    
-                </Form>
 
-                {this.modal_component()}
+                    <Form.Group>
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            block
+                            onClick={(e) => {
+                                e.preventDefault();
+                                var id = this.state.module_info._id;
+                                window.location.assign(
+                                    "#/module/" + id + "/pins/edit"
+                                );
+                            }}
+                        >
+                            Pin Map
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            size="lg"
+                            block
+                            onClick={(e) => {
+                                e.preventDefault();
+                                this.save_module();
+                            }}
+                        >
+                            Save
+                        </Button>
+                    </Form.Group>
+
+                    <Form.Group
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            block
+                            onClick={(e) => {
+                                e.preventDefault();
+                                this.show_modal("share");
+                            }}
+                        >
+                            Share
+                        </Button>
+                    </Form.Group>
+
+                </Form>
+                {this.delete_pin_modal()}
+                {this.share_modal()}
             </Container>
         );
     }

@@ -20,12 +20,21 @@ export default class Module extends Component {
                 owner_name: '',
                 description: '',
             },
+          
             base64img:''
+            user: {
+                _id: '',
+                user_id: '',
+                accessed_links: [],
+            },
+
         }
 
         this.getUserPosition = this.getUserPosition.bind(this)
         this.fetch_userinfo = this.fetch_userinfo.bind(this)
-      
+
+        this.update_user = this.update_user.bind(this);
+
         const appId = "capstonear_app-xkqng"
         if (Stitch.hasAppClient(appId)) {
             this.client = Stitch.getAppClient(appId)
@@ -47,6 +56,7 @@ export default class Module extends Component {
 
         this.getUserPosition()
         this.fetch_userinfo()
+
         const appId = "capstonear_app-xkqng"
         if (Stitch.hasAppClient(appId)) {
             this.client = Stitch.getAppClient(appId)
@@ -84,7 +94,21 @@ export default class Module extends Component {
          console.log(err)
         }
         )
-       
+
+        const query = {
+            user_id: this.client.auth.authInfo.userId,
+        };
+        await this.db
+            .collection("USERS")
+            .findOne(query)
+            .then((res) => {
+                console.log("User: ", res);
+
+                this.setState({ user: res });
+            })
+            .catch(console.error);
+
+        this.update_user();
     }
 
     getUserPosition(){
@@ -94,6 +118,25 @@ export default class Module extends Component {
           console.log(this.state)
           
         })
+    }
+
+    update_user() {
+        if(
+            this.client.auth.authInfo.userId != this.state.module_info.owner_id && this.state.module_info.public == true && !this.state.module_info.shared_with.includes(this.client.auth.authInfo.userProfile.email)){
+            const query = {
+                _id: this.state.user._id,
+                user_id: this.client.auth.authInfo.userId,
+            };
+            const update = { $addToSet: { accessed_links: ObjectId(this.state.module_info._id) } };
+    
+            this.db
+                .collection("USERS")
+                .findOneAndUpdate(query, update)
+                .then((res) => {
+                    console.log("Update response: ", res);
+                })
+                .catch(console.error);
+        }
     }
 
     renderMap(){

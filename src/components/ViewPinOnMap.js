@@ -4,11 +4,9 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
-
-
+import './ViewPinOnMap.css'
 
 delete L.Icon.Default.prototype._getIconUrl;
-
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -39,9 +37,22 @@ var greenIcon = new L.Icon({
 
 var myIcon = new L.divIcon({
   className: 'my-div-icon',
-  html: '<span  class="my-div-span">YOU ARE HERE </span>'+
-        '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
+  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"/>'
 })
+
+const floatStyle = {
+  position: "fixed",
+  width: "60px",
+  height: "60px",
+  bottom: "40px",
+  right: "40px",
+  backgroundColor: "#0C9",
+  color: "#FFF",
+  borderRadius: "50px",
+  textAlign: "center",
+  boxShadow: "2px 2px 3px #999",
+  zIndex: 1500,
+};
 
 class ViewPinOnMap extends Component{
   constructor(props){
@@ -64,6 +75,8 @@ class ViewPinOnMap extends Component{
   this.drawpins = this.drawpins.bind(this)
   this.drawlines = this.drawlines.bind(this)
   this.openGoogle = this.openGoogle.bind(this)
+  this.centerMap = this.centerMap.bind(this)
+  this.bounds = undefined;
 
   const appId = "capstonear_app-xkqng"
   this.client = Stitch.hasAppClient(appId)
@@ -87,11 +100,34 @@ class ViewPinOnMap extends Component{
   
   }
 
+  boundingRect(coords) {
+    return coords
+      .reduce((acc, curr) => {
+        const [lat, lng] = curr;
+        acc[0][0] = lat < acc[0][0] ? lat : acc[0][0];
+        acc[0][1] = lng < acc[0][1] ? lng : acc[0][1];
+        acc[1][0] = lat > acc[1][0] ? lat : acc[1][0];
+        acc[1][1] = lng > acc[1][1] ? lng : acc[1][1];
+        return acc;
+      }, [[90, 180], [-90, -180]]);
+  }
+
+  AddPaddingToRect(rect, percent=0.10){
+    const [latMin, lngMin] = rect[0];
+    const [latMax, lngMax] = rect[1];
+    const lngPad = (lngMax - lngMin) * percent;
+    const latPad = (latMax - latMin) * percent;
+    return [
+      [latMin - latPad, lngMin - lngPad],
+      [latMax + latPad, lngMax + lngPad]
+    ];
+  }
+
   componentDidMount(){
     this.getUserPosition()
     this.drawpins()
   }
- 
+
   async drawpins() {
     if(!this.client.auth.isLoggedIn){
         return
@@ -99,8 +135,6 @@ class ViewPinOnMap extends Component{
     const query ={_id: ObjectId(this.props.match.params.id) };
     await this.db.collection("MODULES").findOne(query)
     .then((stitch_res) => {this.setState({stitch_res})
-      console.log(this.state.stitch_res)
-      var temp_array =[]
       const pipeline = [
         { $match: { _id: { $in: stitch_res.pins } } },
         {
@@ -111,13 +145,13 @@ class ViewPinOnMap extends Component{
         { $sort: { __order: 1 } },
     ];
     this.db.collection("PINS").aggregate(pipeline)
-    .toArray()
-    .then((res) => {
-        console.log("Pins: ", res);
-        this.setState ({ pins_array: res} )
+      .toArray()
+      .then((res) => {
+        this.bounds = this.AddPaddingToRect(
+          this.boundingRect([...res.map(elem => elem.coords), this.state.currentLocation]));
+        this.setState({ pins_array: res })
+      });
 
-    });      
-       
     }
     )
   }
@@ -138,16 +172,26 @@ class ViewPinOnMap extends Component{
     var win = window.open(url, '_blank');
     return
   }
+  centerMap(obj,coords)
+  {
+    console.log("center Map function")
+    const map = this.refs.map.leafletElement
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    map.setView(coords)
+  }
   render(){
     const userLocation = this.state.userLocationFound ? (
       <Marker  position={this.state.userLocation}  icon= {myIcon} >
-        <Popup>Your location</Popup>
+        <Popup>You are here</Popup>
       </Marker>
     ) : null
    
     return (
       <div>
-      <Map center={this.state.currentLocation} zoom={13} maxZoom={18} >
+      <Map ref='map' center={this.state.currentLocation} zoom={13} maxBounds={this.bounds} bounds={this.bounds}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -159,11 +203,11 @@ class ViewPinOnMap extends Component{
                            key = {idx} position={info.coords} 
                            icon= {new L.divIcon({
                                                   className: 'my-div-icon',
-                                                  html: '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'+
-                                                        '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
+                                                  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>' 
+                                                  + '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'
                                                 })} >
                         <Popup>
-                              <h1>{info.desc}</h1>
+                              <h1>{info.title}</h1>
                               <p>{info.description}</p>
                               <p>{info.hint}</p>
                               <p>{info.destination}</p>
@@ -175,6 +219,9 @@ class ViewPinOnMap extends Component{
                         </Popup>
                     </Marker>
           })}
+          <button style={floatStyle} onClick={()=>this.centerMap(this,this.state.currentLocation)} >
+                <div style={{ fontSize: "10px" }} >Center</div>
+          </button>
       </Map>
       </div>
     );
