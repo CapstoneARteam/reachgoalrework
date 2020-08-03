@@ -4,7 +4,6 @@ import "leaflet/dist/leaflet.css";
 
 import {Stitch,RemoteMongoClient,BSON} from "mongodb-stitch-browser-sdk"
 import {AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
-import { Modal } from "react-bootstrap";
 
 import { Button, Form, Modal } from "react-bootstrap";
 
@@ -262,7 +261,7 @@ const PinMarker = (props) => {
             <EditForm
 
                 pin={props.pin}
-
+                id={props.pin._id}
                 show={modalShow}
                 save={(pin) => {
                     const query = { _id: pin._id };

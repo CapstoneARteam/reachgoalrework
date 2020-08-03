@@ -21,7 +21,7 @@ export default class Module extends Component {
                 description: '',
             },
           
-            base64img:''
+            base64img:'',
             user: {
                 _id: '',
                 user_id: '',
