@@ -4,7 +4,9 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
-
+import { map } from 'jquery'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStreetView } from '@fortawesome/free-solid-svg-icons'
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -72,6 +74,7 @@ class MapView extends Component{
   this.getUserPosition = this.getUserPosition.bind(this)
   this.getDistance = this.getDistance.bind(this)
   this.toRadian = this.toRadian.bind(this)
+  this.centerMap = this.centerMap.bind(this)
 
   const appId = "capstonear_app-xkqng"
   this.client = Stitch.hasAppClient(appId)
@@ -179,6 +182,16 @@ class MapView extends Component{
     this.setState({ modules: modules});
   }
 
+  centerMap(obj,coords)
+  {
+    const map = this.refs.map.leafletElement;
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    map.setView(coords, 13);
+  }
+
   render(){
     const userLocation = this.state.userLocationFound ? (
       <Marker position={this.state.userLocation} icon= {myIcon} >
@@ -188,7 +201,7 @@ class MapView extends Component{
 
     return (
       <div id='leaflet-container'>
-      <Map center={this.state.currentLocation} zoom={13} maxZoom={18} >
+      <Map ref='map' center={this.state.currentLocation} zoom={13} maxZoom={18} >
         <TileLayer
           
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -216,6 +229,9 @@ class MapView extends Component{
               </Popup>
             </Marker>
           })}  
+          <button style={floatStyle} onClick={()=>this.centerMap(this,this.state.userLocation)} >
+            <div><FontAwesomeIcon icon={faStreetView} size="3x" /></div>
+          </button>
       </Map>
       </div>
     );
