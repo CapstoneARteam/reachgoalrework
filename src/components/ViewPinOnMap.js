@@ -4,7 +4,12 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
-import './ViewPinOnMap.css'
+import { map } from 'jquery'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowAltCircleRight,faArrowAltCircleLeft,faMapMarkerAlt,faStreetView } from '@fortawesome/free-solid-svg-icons'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -14,30 +19,10 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-const Style = {
-  position: "fixed",
-  width: "60px",
-  height: "60px",
-  bottom: "40px",
-  right: "40px",
-  backgroundColor: "#0C9",
-  color: "#FFF",
-  textAlign: "center",
-  boxShadow: "2px 2px 3px #999",
-  zIndex: 1500
-}
-var greenIcon = new L.Icon({
-  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
 
 var myIcon = new L.divIcon({
   className: 'my-div-icon',
-  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"/>'
+  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>'
 })
 
 const floatStyle = {
@@ -46,6 +31,45 @@ const floatStyle = {
   height: "60px",
   bottom: "40px",
   right: "40px",
+  backgroundColor: "#0C9",
+  color: "#FFF",
+  borderRadius: "50px",
+  textAlign: "center",
+  boxShadow: "2px 2px 3px #999",
+  zIndex: 1500,
+};
+const nextButtonStyle = {
+  position: "fixed",
+  width: "60px",
+  height: "60px",
+  bottom: "40px",
+  right: "120px",
+  backgroundColor: "#74E4E9",
+  color: "#000000",
+  borderRadius: "40px",
+  textAlign: "center",
+  boxShadow: "2px 2px 3px #999",
+  zIndex: 1500,
+};
+const previousButtonStyle = {
+  position: "fixed",
+  width: "60px",
+  height: "60px",
+  bottom: "40px",
+  right: "240px",
+  backgroundColor: "#74E4E9",
+  color: "#000000",
+  borderRadius: "40px",
+  textAlign: "center",
+  boxShadow: "2px 2px 3px #999",
+  zIndex: 1500,
+};
+const currentButtonStyle = {
+  position: "fixed",
+  width: "60px",
+  height: "60px",
+  bottom: "40px",
+  right: "180px",
   backgroundColor: "#0C9",
   color: "#FFF",
   borderRadius: "50px",
@@ -70,12 +94,16 @@ class ViewPinOnMap extends Component{
       pin:[],
       pins_line:[],
       pins_array:[],
+      current_pin_index: 0,
     }
   this.getUserPosition = this.getUserPosition.bind(this)
   this.drawpins = this.drawpins.bind(this)
   this.drawlines = this.drawlines.bind(this)
   this.openGoogle = this.openGoogle.bind(this)
-  this.centerMap = this.centerMap.bind(this)
+  this.centerMap=this.centerMap.bind(this)
+  this.nextPin=this.nextPin.bind(this)
+  this.previousPin=this.previousPin.bind(this)
+  this.currentPin=this.currentPin.bind(this)
   this.bounds = undefined;
 
   const appId = "capstonear_app-xkqng"
@@ -174,24 +202,69 @@ class ViewPinOnMap extends Component{
   }
   centerMap(obj,coords)
   {
-    console.log("center Map function")
     const map = this.refs.map.leafletElement
     map.doubleClickZoom.disable();
     setTimeout(function() {
          map.doubleClickZoom.enable();
     }, 1000);
     map.setView(coords)
+    const pin = this.refs.userloc.leafletElement
+    pin.openPopup()
+  }
+  nextPin()
+  {
+    const map = this.refs.map.leafletElement
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    var temp = this.state.current_pin_index+1
+    if(temp >= this.state.pins_array.length-1)
+    {
+      temp=this.state.pins_array.length-1
+    }
+    console.log("current pin index", this.state.current_pin_index)
+    map.setView(this.state.pins_array[temp].coords)
+    const pin =this.refs[temp].leafletElement
+    pin.openPopup()
+    this.setState({current_pin_index:temp})
+  }
+  previousPin()
+  {
+    const map = this.refs.map.leafletElement
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    var temp = this.state.current_pin_index-1
+    if(temp<=0)
+    {
+      temp=0
+    }
+    map.setView(this.state.pins_array[temp].coords)
+    const pin =this.refs[temp].leafletElement
+    pin.openPopup()
+    this.setState({current_pin_index:temp})
+  }
+  currentPin()
+  {
+    const map = this.refs.map.leafletElement
+    map.doubleClickZoom.disable();
+    setTimeout(function() {
+         map.doubleClickZoom.enable();
+    }, 1000);
+    map.setView(this.state.pins_array[this.state.current_pin_index].coords)
   }
   render(){
     const userLocation = this.state.userLocationFound ? (
-      <Marker  position={this.state.userLocation}  icon= {myIcon} >
+      <Marker ref='userloc' position={this.state.userLocation}  icon= {myIcon} >
         <Popup>You are here</Popup>
       </Marker>
     ) : null
    
     return (
       <div>
-      <Map ref='map' center={this.state.currentLocation} zoom={13} maxBounds={this.bounds} bounds={this.bounds}>
+      <Map ref='map' center={this.state.currentLocation} zoom={13} maxZoom={18}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -199,14 +272,26 @@ class ViewPinOnMap extends Component{
         {userLocation}
          
         {this.state.pins_array.map((info,idx) => {
+            var marker_icon;
+            if(idx==this.state.current_pin_index)
+            {
+              marker_icon=new L.divIcon({
+                                          className: 'my-div-icon',
+                                          html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png"/>' 
+              })
+            }
+            else
+            {
+              marker_icon=new L.divIcon({
+                                        className: 'my-div-icon',
+                                        html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"/>' 
+})
+            }
             return <Marker 
                            key = {idx} position={info.coords} 
-                           icon= {new L.divIcon({
-                                                  className: 'my-div-icon',
-                                                  html: '<img class="my-div-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"/>' 
-                                                  + '<span style={Style} class="my-div-span">'+(idx+1)+'</span>'
-                                                })} >
-                        <Popup>
+                           icon= {marker_icon} 
+                           ref = {idx}  >
+                        <Popup >
                               <h1>{info.title}</h1>
                               <p>{info.description}</p>
                               <p>{info.hint}</p>
@@ -218,10 +303,22 @@ class ViewPinOnMap extends Component{
                               <button onClick={()=>this.openGoogle(info.coords)} >Open Google Map</button>
                         </Popup>
                     </Marker>
+            
           })}
           <button style={floatStyle} onClick={()=>this.centerMap(this,this.state.currentLocation)} >
-                <div style={{ fontSize: "10px" }} >Center</div>
+                <div><FontAwesomeIcon icon={faStreetView} size="3x" /></div>
           </button>
+          <ButtonGroup>
+          <button style={nextButtonStyle} onClick={()=>this.nextPin()}  >
+                <div><FontAwesomeIcon icon={faArrowAltCircleRight} size="3x" /></div>
+          </button>
+          <button style={previousButtonStyle} onClick={()=>this.previousPin()} >
+                <div><FontAwesomeIcon icon={faArrowAltCircleLeft} size="3x" /></div>
+          </button>
+          <button style={currentButtonStyle} onClick={()=>this.currentPin()} >
+                <div><FontAwesomeIcon icon={faMapMarkerAlt} size="3x" /></div>
+          </button>
+          </ButtonGroup>
       </Map>
       </div>
     );
