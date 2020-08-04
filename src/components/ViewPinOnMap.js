@@ -207,7 +207,7 @@ class ViewPinOnMap extends Component{
     setTimeout(function() {
          map.doubleClickZoom.enable();
     }, 1000);
-    map.setView(coords)
+    map.setView(coords,13)
     const pin = this.refs.userloc.leafletElement
     pin.openPopup()
   }
@@ -224,7 +224,7 @@ class ViewPinOnMap extends Component{
       temp=this.state.pins_array.length-1
     }
     console.log("current pin index", this.state.current_pin_index)
-    map.setView(this.state.pins_array[temp].coords)
+    map.setView(this.state.pins_array[temp].coords,13)
     const pin =this.refs[temp].leafletElement
     pin.openPopup()
     this.setState({current_pin_index:temp})
@@ -241,7 +241,7 @@ class ViewPinOnMap extends Component{
     {
       temp=0
     }
-    map.setView(this.state.pins_array[temp].coords)
+    map.setView(this.state.pins_array[temp].coords,13)
     const pin =this.refs[temp].leafletElement
     pin.openPopup()
     this.setState({current_pin_index:temp})
