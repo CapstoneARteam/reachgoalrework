@@ -105,7 +105,7 @@ class Menu extends Component {
         const viewrmenu = this.state.usermode ? (
             <div>
                 <li>
-                <a href="#/modules">View Modules</a>
+                <a href="#/modules/student">View Modules</a>
                 </li>
                 <br />
             </div>
@@ -116,7 +116,7 @@ class Menu extends Component {
         const creatormenu = this.state.usermode ? null : (
             <div>
                 <li>
-                <a href="#/modules">View Modules</a>
+                    <a href="#/modules/instructor">View Modules</a>
                 </li>
                 <br />
                 <li>
@@ -125,11 +125,6 @@ class Menu extends Component {
                 <br />
             </div>
         ) 
-        
-
-
-
-
         return (
             <StyledMenu
                 open={this.props.open}
@@ -165,7 +160,7 @@ class Menu extends Component {
                                 checked={this.state.usermode} 
                                 onClick={()=>this.setState({usermode: !this.state.usermode})}
                                 />
-                                Viewer
+                                Student
                             </label>
                         </div>
                         <div className="radio">
@@ -173,7 +168,7 @@ class Menu extends Component {
                                 <input type="radio" value="option1" checked={!this.state.usermode}
                                 onClick={()=>this.setState({usermode: !this.state.usermode})}
                                 />
-                                Creator
+                                Instructor
                             </label>
                         </div>
                     </div>
