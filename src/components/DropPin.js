@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import {Stitch,RemoteMongoClient,BSON} from "mongodb-stitch-browser-sdk"
 import {AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
 
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Dropdown } from "react-bootstrap";
 
 import { ObjectId } from "mongodb";
 
@@ -18,9 +18,6 @@ const mongodb = client.getServiceClient(
     "mongodb-atlas"
 );
 const db = mongodb.db("APP");
-
-//image data
-var base64data = 'default'
 
 var globalPosition = {};
 
@@ -118,11 +115,9 @@ const OpenFile = (props) =>{
 
 export const EditForm = (props) => {
     const [pin, setPin] = useState(props.pin);
-
     const handleInputChange = (e) => {
         setPin({ ...pin, [e.target.name]: e.target.value });
-    };
-   
+    };   
     const [imgurl, setimgurl] = useState("https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + props.id + ".jpeg?versionid=latest&date=" + Date.now());
   
 
@@ -293,6 +288,17 @@ const PinMarker = (props) => {
 };
 
 const AddpinForm = (props) => {
+    const [placeholder, setPlaceHolder] = useState({
+        hint: "",
+        description: ""
+    });
+    const [categories, setCategories] = useState([]);
+    useEffect(()=>{
+       db.collection("CATEGORIES")
+            .find({})
+            .asArray()
+            .then(setCategories);
+    },[]);
 
     return (
         <Modal {...props} centered style={{ zIndex: "1600" }}>
@@ -300,6 +306,29 @@ const AddpinForm = (props) => {
                 <Modal.Title>Add a Pin</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                <Form.Group>
+                    <Form.Label>Category</Form.Label>
+                    <Dropdown
+                        onSelect={(e) => {
+                            setPlaceHolder(JSON.parse(e));
+                        }}
+                    >
+                        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                            Dropdown Button
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {categories.map(curr => {
+                                const placeholders = { description: curr.description, hint: curr.hint };
+                                return (<Dropdown.Item
+                                    eventKey={JSON.stringify(placeholders)}
+                                >
+                                    {curr.title}
+                                </Dropdown.Item>)
+                            }
+                            )}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Form.Group>
                 <label className="d-block" htmlFor="title">
                     Title
                 </label>
@@ -307,25 +336,19 @@ const AddpinForm = (props) => {
                 <label className="d-block" htmlFor="description">
                     Description
                 </label>
-                <textarea className="w-100" id="description" required />
+                <textarea className="w-100" id="description" placeHolder={placeholder.description} required />
                 <label className="d-block" htmlFor="hint">
                     Hint
                 </label>
-                <textarea className="w-100" id="hint" required />
+                <textarea className="w-100" id="hint" placeHolder={placeholder.hint} required />
                 <label className="d-block" htmlFor="destination">
-                    Destination
+                    Student Feedback
                 </label>
                 <textarea className="w-100" id="destination" required />
-
                 <label className="d-block" htmlFor="pinImage">
                     Image
                 </label>
-
                 <OpenFile base64data={props.base64data} setbase64data={props.setbase64data}> </OpenFile>
-                
-
-
-
             </Modal.Body>
             <Modal.Footer>
                 <button className="btn btn-secondary" onClick={props.onHide}>
