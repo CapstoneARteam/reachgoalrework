@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-
 import { Stitch, RemoteMongoClient, BSON } from "mongodb-stitch-browser-sdk"
 import { AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
-
 import { Button, Form, Modal, Dropdown } from "react-bootstrap";
-
 import { ObjectId } from "mongodb";
 
 const appId = "capstonear_app-xkqng";
@@ -35,30 +32,16 @@ const floatStyle = {
     zIndex: 1500,
 };
 
-
-
-
-
 var HandleFileChange = (props, e) => {
-    console.log(e.target.files)
-    console.log(e.target.files[0])
     let fileReader = new FileReader();
     fileReader.readAsDataURL(e.target.files[0])
     fileReader.onloadend = (e) => {
         props.setbase64data(e.target.result)
-
         return e.target.result
-
-
     }
-
-
 }
 
 const HandleUpload = (base64data, id) => {
-    console.log(base64data)
-    console.log(id)
-    // console.log(window.context)
     // Convert the base64 encoded image string to a BSON Binary object
     var basestring = base64data.replace(/^data:image\/\w+;base64,/, '');
     var fileBuffer = new Buffer(basestring, 'base64');
@@ -81,22 +64,15 @@ const HandleUpload = (base64data, id) => {
         .withAction("PutObject")
         .withRegion("us-west-2") // this is optional
         .withArgs(args); // depending on the service and action, this may be optional as well
-
-    console.log(request)
-
     aws.execute(request.build())
         .then(result => {
             console.log(result)
         }).catch(err => {
             console.log(err)
         });
-
 }
 
 const OpenFile = (props) => {
-    console.log("open file")
-
-    console.log(props.base64data)
     return (
         <div>
             <input type="file" multiple="single" onChange={(e) => {
@@ -107,11 +83,8 @@ const OpenFile = (props) => {
                 width: '300px'
             }} src={props.base64data}></img>
         </div>
-
     )
 }
-
-
 
 export const EditForm = (props) => {
     const [pin, setPin] = useState(props.pin);
@@ -229,7 +202,6 @@ export const EditForm = (props) => {
                                                   setimgurl("https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + props.id + ".jpeg?versionid=latest&date=" + Date.now())
                                                   props.cancel();
                                               });
-                  
                   */
                         props.save(pin);
                     }}
@@ -254,7 +226,6 @@ const PinMarker = (props) => {
             }}
         >
             <EditForm
-
                 pin={props.pin}
                 id={props.pin._id}
                 show={modalShow}
@@ -278,7 +249,6 @@ const PinMarker = (props) => {
                         });
                 }}
                 cancel={() => setModalShow(false)}
-
                 setbase64data={setbase64data}
                 base64data={base64data}
             />
@@ -379,8 +349,6 @@ const AddpinForm = (props) => {
                         db.collection("PINS")
                             .insertOne(pin)
                             .then((res) => {
-                                //console.log(res.insertedId.id)
-
                                 if (props.base64data === "default") { }
                                 else {
                                     //upload image
@@ -406,11 +374,9 @@ const AddpinForm = (props) => {
 
                                     />,
                                 ]);
-
                                 var module = props.module;
                                 module.pins = [...module.pins, res.insertedId];
                                 props.setModule(module);
-
                                 const query = { _id: module._id };
                                 const update = {
                                     $set: {
