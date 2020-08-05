@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import {Stitch, RemoteMongoClient, GoogleRedirectCredential} from "mongodb-stitch-browser-sdk"
 import { ObjectId } from 'mongodb'
-import { map } from 'jquery'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStreetView } from '@fortawesome/free-solid-svg-icons'
 
