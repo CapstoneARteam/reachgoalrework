@@ -16,6 +16,8 @@ class Menu extends Component {
             userID: "",
             stitch_res: [],
             menuOpen: this.props.open,
+            //usermode  true = viewer, false = creator
+            usermode: true,
         };
 
         //bind functions
@@ -98,6 +100,36 @@ class Menu extends Component {
     }
 
     render() {
+
+        //viewer menu
+        const viewrmenu = this.state.usermode ? (
+            <div>
+                <li>
+                <a href="#/modules">View Modules</a>
+                </li>
+                <br />
+            </div>
+        ) : null
+
+        //creator menu
+
+        const creatormenu = this.state.usermode ? null : (
+            <div>
+                <li>
+                <a href="#/modules">View Modules</a>
+                </li>
+                <br />
+                <li>
+                    <a href="#/modules/edit">Create Modules</a>
+                </li>
+                <br />
+            </div>
+        ) 
+        
+
+
+
+
         return (
             <StyledMenu
                 open={this.props.open}
@@ -121,7 +153,30 @@ class Menu extends Component {
                             top: "1rem",
                         }}
                     ></img>
-
+                    <div>
+                        <div className="radio">
+                            <label>
+                                <input style={{
+                                    
+                                }} 
+                                type="radio" 
+                                value="option1" 
+                                
+                                checked={this.state.usermode} 
+                                onClick={()=>this.setState({usermode: !this.state.usermode})}
+                                />
+                                Viewer
+                            </label>
+                        </div>
+                        <div className="radio">
+                            <label>
+                                <input type="radio" value="option1" checked={!this.state.usermode}
+                                onClick={()=>this.setState({usermode: !this.state.usermode})}
+                                />
+                                Creator
+                            </label>
+                        </div>
+                    </div>
                     <p
                         style={{
                             fontSize: "1.5rem",
@@ -133,27 +188,28 @@ class Menu extends Component {
                         {" "}
                         Welcome, <br /> {this.state.username}{" "}
                     </p>
+
                 </div>
 
+               
+                
+
                 <ul
-                    style={{ listStyleType: "none", paddingLeft: 0 }}
+                    style={{ listStyleType: "none", paddingLeft: 0}}
                     onClick={() => {
                         this.props.center_container.center_container.current.style.opacity = 1;
                         this.props.setOpen(!this.props.open);
                     }}
                 >
+                    
                     <li>
                         <a href="#/">Home</a>
                     </li>
                     <br />
-                    <li>
-                        <a href="#/modules">My Modules</a>
-                    </li>
-                    <br />
-                    <li>
-                        <a href="#/modules/edit">Manage Modules</a>
-                    </li>
-                    <br />
+                    
+                    {viewrmenu}
+                    {creatormenu}
+
                 </ul>
 
                 <a
