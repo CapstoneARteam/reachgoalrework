@@ -110,7 +110,8 @@ export default class App extends Component {
                             path="/modules/edit"
                             component={ManageModules}
                         />
-                        <Route exact path="/modules" component={ViewModules} />
+                        <Route exact path="/modules/student" component={ViewModules} />
+                        <Route exact path="/modules/instructor" component={ViewModules} />
 
                         <Route
                             exact

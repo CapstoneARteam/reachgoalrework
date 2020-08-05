@@ -48,7 +48,6 @@ export default class ViewModules extends Component {
     componentDidMount() {
         this.fetch_modules();
 
-        console.log(this.state);
     }
 
     async fetch_modules() {
@@ -223,6 +222,20 @@ export default class ViewModules extends Component {
     }
 
     render() {
+        const url =this.props.location.pathname
+        var defaultTab= null
+        var my_modules_tab=null
+        if(url=="/modules/student")
+        {
+            defaultTab="Shared Modules"
+        }
+        else
+        {
+            defaultTab="My Modules"
+            my_modules_tab= (<Tab eventKey="My Modules" title="My Modules">
+                                {this.add_module_cards(0)}
+                            </Tab>)
+        }
         return (
             <div
                 style={{
@@ -244,17 +257,14 @@ export default class ViewModules extends Component {
                     }}
                 >
                     <Tabs
-                        defaultActiveKey="My Modules"
+                        defaultActiveKey= {defaultTab}
                         transition={false}
                         style={{
                             textAlign: "center",
                             justifyContent: "center",
                         }}
                     >
-                        <Tab eventKey="My Modules" title="My Modules">
-                            {this.add_module_cards(0)}
-                        </Tab>
-
+                        {my_modules_tab}
                         <Tab eventKey="Shared Modules" title="Shared with me">
                             <div>
                                 {this.add_module_cards(1)}
