@@ -185,7 +185,7 @@ export default class ViewModules extends Component {
                                     </button>
                                 </div>
 
-                                <div className="btn-group mr-1">
+                                <div className="btn-group mr-1" style={{paddingTop: "10px"}}>
                                     <button className="btn btn-primary"
                                         onClick={() =>{
                                             window.location.assign(`#/module/${module._id}/pins/?user=${userid.user_id}`)
