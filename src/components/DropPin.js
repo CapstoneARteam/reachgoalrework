@@ -1,20 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Stitch, RemoteMongoClient, BSON } from "mongodb-stitch-browser-sdk"
+import { BSON } from "mongodb-stitch-browser-sdk"
 import { AwsServiceClient, AwsRequest } from 'mongodb-stitch-browser-services-aws'
 import { Button, Form, Modal, Dropdown } from "react-bootstrap";
 import { ObjectId } from "mongodb";
-
-const appId = "capstonear_app-xkqng";
-const client = Stitch.hasAppClient(appId)
-    ? Stitch.getAppClient(appId)
-    : Stitch.initializeDefaultAppClient(appId);
-const mongodb = client.getServiceClient(
-    RemoteMongoClient.factory,
-    "mongodb-atlas"
-);
-const db = mongodb.db("APP");
+import { client, db } from "./clientdb"
 
 var globalPosition = {};
 

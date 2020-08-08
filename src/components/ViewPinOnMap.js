@@ -6,8 +6,9 @@ import { Stitch, RemoteMongoClient, GoogleRedirectCredential } from "mongodb-sti
 import { ObjectId } from 'mongodb'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft, faMapMarkerAlt, faStreetView } from '@fortawesome/free-solid-svg-icons'
-import {ButtonGroup, Button, Modal, Form} from 'react-bootstrap'
+import { ButtonGroup, Button, Modal, Form } from 'react-bootstrap'
 import { userMode } from './mode'
+import { FacebookShareButton, FacebookIcon } from 'react-share'
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -96,6 +97,8 @@ class ViewPinOnMap extends Component {
       finish_modal: false,
     }
     this.bounds = undefined;
+    this.userID = this.props.location.search.split("user=")[1];
+    this.shareUrl = `${window.location.href.split("#")[0]}#/completed/${this.props.match.params.id}/${this.userID}`;
 
     const appId = "capstonear_app-xkqng"
     this.client = Stitch.hasAppClient(appId)
@@ -112,9 +115,6 @@ class ViewPinOnMap extends Component {
   getUserPosition() {
     navigator.geolocation.getCurrentPosition(position => {
       this.setState({ userLocation: [position.coords.latitude, position.coords.longitude], userLocationFound: true, currentLocation: [position.coords.latitude, position.coords.longitude] })
-
-      //console.log(this.state)
-
     })
 
   }
@@ -258,41 +258,47 @@ class ViewPinOnMap extends Component {
   finish_modal() {
     return (
       <Modal
-          show={this.state.finish_modal}
-          onHide={() => this.toggle_modal()}
-          style={{
-              marginTop: "50px",
-          }}
+        show={this.state.finish_modal}
+        onHide={() => this.toggle_modal()}
+        style={{
+          marginTop: "50px",
+        }}
       >
-          <Modal.Header closeButton>
-              <Modal.Title>Finish Module</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-                You finished {this.state.stitch_res.title}
-                <Form style={{
-                  position: "relative",
-                  margin: "auto",
-                }}
-                >
-                  <Form.Group>
-                    <Button block>Share</Button>
-                  </Form.Group>
-                  <Form.Group>
-                    <Button block>Scan QR</Button>
-                  </Form.Group>
-                  <Form.Group>
-                    <Button block onClick={() => this.go_home()}>End Module</Button>
-                  </Form.Group>
-                </Form>
-          </Modal.Body>
-          <Modal.Footer>
-              <Button
-                  variant="secondary"
-                  onClick={() => this.toggle_modal()}
-              >
-                  Cancel
-              </Button>
-          </Modal.Footer>
+        <Modal.Header closeButton>
+          <Modal.Title>Finish Module</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          You finished {this.state.stitch_res.title}
+          <FacebookShareButton
+            quote={"title"}
+            url={String(window.location)}
+          >
+            <FacebookIcon />
+          </FacebookShareButton>
+          <Form style={{
+            position: "relative",
+            margin: "auto",
+          }}
+          >
+            <Form.Group>
+              {/* <Button block onClick ={() => FacebookShareButton()}>Share</Button> */}
+            </Form.Group>
+            <Form.Group>
+              <Button block>Scan QR</Button>
+            </Form.Group>
+            <Form.Group>
+              <Button block onClick={() => this.go_home()}>End Module</Button>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => this.toggle_modal()}
+          >
+            Cancel
+          </Button>
+        </Modal.Footer>
       </Modal>)
   }
   render() {
@@ -336,8 +342,8 @@ class ViewPinOnMap extends Component {
                 <p>{info.hint}</p>
                 <p>{info.destination}</p>
                 <img style={{
-                  height: '100px',
-                  width: '150px'
+                  height: 'auto',
+                  width: '100%'
                 }} src={"https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + info._id.toString() + ".jpeg?versionid=latest&date=" + Date.now()}></img>
                 <Form style={{ paddingTop: "10px" }}>
                   {

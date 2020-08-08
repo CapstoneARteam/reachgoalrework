@@ -138,11 +138,11 @@ export default class ViewModules extends Component {
     }
 
     add_module_cards(type) {
-        
+        const userid = this.state.user; 
         if (this.state.modules.length === 0) return;
 
         const mds = this.state.modules[type].map(function (module, idx) {
-            
+
             return (
                 <div className="col-md-6 col-lg-4 " key={idx}>
                     <Card
@@ -187,10 +187,10 @@ export default class ViewModules extends Component {
 
                                 <div className="btn-group mr-1">
                                     <button className="btn btn-primary"
-                                        onClick={() =>
-                                            window.location.assign(
-                                                "#/module/" + module._id+"/pins"
-                                        )
+                                        onClick={() =>{
+                                            window.location.assign(`#/module/${module._id}/pins/?user=${userid.user_id}`)
+                                        }
+
                                     }>
                                         Start Module
                                     </button>

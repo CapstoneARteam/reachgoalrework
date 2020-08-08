@@ -5,6 +5,7 @@ import {
     GoogleRedirectCredential,
 } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
+import { db } from "../clientdb";
 import styled from "styled-components";
 import { userMode, toggle_usermode } from "../mode";
  
@@ -40,13 +41,22 @@ class Menu extends Component {
             this.client.auth.isLoggedIn &&
             this.client.auth.authInfo.userProfile
         ) {
+            const username = this.client.auth.authInfo.userProfile.data.first_name;
+            const userID = this.client.auth.authInfo.userId;
             this.setState({
-                username: this.client.auth.authInfo.userProfile.data.first_name,
+                username,
+                userID,
                 useremail: this.client.auth.authInfo.userProfile.data.email,
                 userID: this.client.auth.authInfo.userId,
                 userImg: this.client.auth.authInfo.userProfile.data.picture,
             });
-
+            db.collection("USERS")
+                .findOne({ $and: [ { user_id: userID }, { username }] })
+                .then((data)=> {
+                    if(data) return;
+                    db.collection("USERS")
+                        .findOneAndUpdate({ user_id: userID }, { $set: { username } })
+                })
             console.log(this.client.auth.authInfo.userProfile.data);
         }
     }
