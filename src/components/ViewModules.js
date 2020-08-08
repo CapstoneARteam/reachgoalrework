@@ -277,11 +277,11 @@ export default class ViewModules extends Component {
                         <Tab eventKey="Go To" title="Go To">
                             <Form>
                                 <Form.Group controlId="formModuleId">
-                                    <Form.Label>Module ID:</Form.Label>
+                                    <Form.Label>Module</Form.Label>
                                     <Form.Control
                                         required
                                         type="string"
-                                        placeholder="Enter module id"
+                                        placeholder="Enter module title or id"
                                         ref={this.goto_module_id}
                                     />
                                 </Form.Group>
@@ -289,11 +289,17 @@ export default class ViewModules extends Component {
                                 <Button
                                     variant="primary"
                                     onClick={() => {
-                                        window.location.assign(
-                                            "#/module/" +
-                                                this.goto_module_id.current
-                                                    .value
-                                        );
+                                        const gotoModule = modID => window.location.assign(`#/module/${modID}`);
+                                        const userQuery = this.goto_module_id.current.value;
+                                        try{
+                                            ObjectId(userQuery);
+                                            gotoModule(userQuery);
+                                        }
+                                        catch (err) {
+                                            this.db.collection("MODULES")
+                                                .findOne({title : { $regex: userQuery, $options: "i" }})
+                                                .then(doc => gotoModule(doc._id.toString()));
+                                        }
                                     }}
                                 >
                                     View Module
