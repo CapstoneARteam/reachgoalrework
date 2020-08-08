@@ -6,7 +6,8 @@ import {
 } from "mongodb-stitch-browser-sdk";
 import { ObjectId } from "mongodb";
 import styled from "styled-components";
-
+import { userMode, toggle_usermode } from "../mode";
+ 
 class Menu extends Component {
     constructor(props) {
         super(props);
@@ -16,15 +17,9 @@ class Menu extends Component {
             userID: "",
             stitch_res: [],
             menuOpen: this.props.open,
-            //usermode  true = viewer, false = creator
-            usermode: true,
+            usermode: userMode, //usermode  true = viewer, false = creator
         };
 
-        //bind functions
-        this.login = this.login.bind(this);
-        this.logout = this.logout.bind(this);
-        this.addamodule = this.addamodule.bind(this);
-        this.listmymodules = this.listmymodules.bind(this);
         console.log(props);
         const appId = "capstonear_app-xkqng";
         if (Stitch.hasAppClient(appId)) {
@@ -99,6 +94,10 @@ class Menu extends Component {
             });
     }
 
+    set_usermode() {
+        this.setState({usermode: toggle_usermode()})
+    }
+
     render() {
 
         //viewer menu
@@ -158,7 +157,7 @@ class Menu extends Component {
                                 value="option1" 
                                 
                                 checked={this.state.usermode} 
-                                onClick={()=>this.setState({usermode: !this.state.usermode})}
+                                onClick={()=>this.set_usermode()}
                                 />
                                 Student
                             </label>
@@ -166,7 +165,7 @@ class Menu extends Component {
                         <div className="radio">
                             <label>
                                 <input type="radio" value="option1" checked={!this.state.usermode}
-                                onClick={()=>this.setState({usermode: !this.state.usermode})}
+                                onClick={()=>this.set_usermode()}
                                 />
                                 Instructor
                             </label>

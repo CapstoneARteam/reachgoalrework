@@ -6,7 +6,8 @@ import { Stitch, RemoteMongoClient, GoogleRedirectCredential } from "mongodb-sti
 import { ObjectId } from 'mongodb'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft, faMapMarkerAlt, faStreetView } from '@fortawesome/free-solid-svg-icons'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import {ButtonGroup, Button, Modal, Form} from 'react-bootstrap'
+import { userMode } from './mode'
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -87,20 +88,13 @@ class ViewPinOnMap extends Component {
       username: "",
       useremail: "",
       userID: "",
-      stitch_res: [],
+      stitch_res: {},
       pin: [],
       pins_line: [],
       pins_array: [],
       current_pin_index: 0,
+      finish_modal: false,
     }
-    this.getUserPosition = this.getUserPosition.bind(this)
-    this.drawpins = this.drawpins.bind(this)
-    this.drawlines = this.drawlines.bind(this)
-    this.openGoogle = this.openGoogle.bind(this)
-    this.centerMap = this.centerMap.bind(this)
-    this.nextPin = this.nextPin.bind(this)
-    this.previousPin = this.previousPin.bind(this)
-    this.currentPin = this.currentPin.bind(this)
     this.bounds = undefined;
 
     const appId = "capstonear_app-xkqng"
@@ -245,6 +239,62 @@ class ViewPinOnMap extends Component {
     }, 1000);
     map.setView(this.state.pins_array[this.state.current_pin_index].coords)
   }
+  toggle_modal() {
+    var finish_modal = !this.state.finish_modal
+    this.setState({finish_modal: finish_modal})
+  }
+  go_home(){
+    if(userMode== true)
+    {
+      window.location.assign(
+        "#/modules/student");
+    }
+    else
+    {
+      window.location.assign(
+        "#/modules/instructor");
+    }
+  }
+  finish_modal() {
+    return (
+      <Modal
+          show={this.state.finish_modal}
+          onHide={() => this.toggle_modal()}
+          style={{
+              marginTop: "50px",
+          }}
+      >
+          <Modal.Header closeButton>
+              <Modal.Title>Finish Module</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+                You finished {this.state.stitch_res.title}
+                <Form style={{
+                  position: "relative",
+                  margin: "auto",
+                }}
+                >
+                  <Form.Group>
+                    <Button block>Share</Button>
+                  </Form.Group>
+                  <Form.Group>
+                    <Button block>Scan QR</Button>
+                  </Form.Group>
+                  <Form.Group>
+                    <Button block onClick={() => this.go_home()}>End Module</Button>
+                  </Form.Group>
+                </Form>
+          </Modal.Body>
+          <Modal.Footer>
+              <Button
+                  variant="secondary"
+                  onClick={() => this.toggle_modal()}
+              >
+                  Cancel
+              </Button>
+          </Modal.Footer>
+      </Modal>)
+  }
   render() {
     const userLocation = this.state.userLocationFound ? (
       <Marker ref='userloc' position={this.state.userLocation} icon={myIcon} >
@@ -262,6 +312,7 @@ class ViewPinOnMap extends Component {
           {userLocation}
 
           {this.state.pins_array.map((info, idx) => {
+            const len = this.state.pins_array.length;
             var marker_icon;
             if (idx == this.state.current_pin_index) {
               marker_icon = new L.divIcon({
@@ -288,7 +339,24 @@ class ViewPinOnMap extends Component {
                   height: '100px',
                   width: '150px'
                 }} src={"https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + info._id.toString() + ".jpeg?versionid=latest&date=" + Date.now()}></img>
-                <button onClick={() => this.openGoogle(info.coords)} >Open Google Map</button>
+                <Form style={{ paddingTop: "10px" }}>
+                  {
+                    (() => {
+                      if (idx === len - 1)
+                        return (
+                          <Form.Group>
+                            <Button onClick={() => this.toggle_modal()} block>
+                              Finish Module
+                            </Button>
+                          </Form.Group>)
+                    })()
+                  }
+                  <Form.Group>
+                    <Button onClick={() => this.openGoogle(info.coords)} variant="secondary" block>
+                      Open Google Map
+                    </Button>
+                  </Form.Group>
+                </Form>
               </Popup>
             </Marker>
 
@@ -308,6 +376,7 @@ class ViewPinOnMap extends Component {
             </button>
           </ButtonGroup>
         </Map>
+        {this.finish_modal()}
       </div>
     );
   }
