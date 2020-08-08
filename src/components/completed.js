@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "./clientdb";
 import { useParams } from "react-router-dom";
 import { ObjectId } from "mongodb";
 
-const imgsrc = pin => `https://capstoneusercontent.s3-us-west-2.amazonaws.com/${pin}.jpeg?versionid=latest&date=${Date.now()}`
+const imgSrc = pin => `https://capstoneusercontent.s3-us-west-2.amazonaws.com/${pin}.jpeg?versionid=latest`;
 
 const Completed = props => {
     const [ pin, setPin ] = useState();
-    const [ username, setUsername ] = useState("user");
+    const [ username, setUsername ] = useState("User");
     const { module, userid } = useParams();
     useEffect(() => {
         db.collection("MODULES")
@@ -19,27 +19,18 @@ const Completed = props => {
     }
     , []);
     return (
-        <div className="container"
+        <div 
+            className="container"
             style={{
                 display: "block",
-                width: "75%",
                 marginLeft: "auto",
                 marginRight: "auto",
                 textAlign: "center"
             }}
         >
-            <h1>
-                {`${username} has completed this module`}
-            </h1>
-            <img 
-                src={imgsrc(pin)}
-                style={{
-                    display: "block",
-                    width: "75%",
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                }}
-            />
-        </div>)
+            <h1> {`${username} has completed this module`} </h1>
+            <img src={imgSrc(pin)} style={{ width: "90%" }} />
+        </div>
+    );
 }
 export default Completed;
