@@ -14,6 +14,7 @@ import { Navbar } from "react-bootstrap";
 import ViewModules from "./components/ViewModules";
 import ManageModules from "./components/ManageModules";
 import ViewPinOnMap from "./components/ViewPinOnMap";
+import Completed from "./components/completed";
 
 import { Switch, Route, HashRouter } from "react-router-dom";
 
@@ -24,15 +25,13 @@ export default class App extends Component {
         this.client = Stitch.hasAppClient(appId)
             ? Stitch.getAppClient(appId)
             : Stitch.initializeDefaultAppClient(appId);
-
+        const hashRoute = window.location.href.split("#")[1];
         if (this.client.auth.hasRedirectResult()) {
-            console.log("has results");
-
             this.client.auth.handleRedirectResult().then((user) => {
                 window.location.assign("/");
             });
         } else {
-            //window.location.replace('#/login')
+            window.location.assign(`/ar-app#${hashRoute}`);
         }
         this.state = {
             isLoggedIn: false,
@@ -123,6 +122,11 @@ export default class App extends Component {
                             path="/module/:id/pins"
                             component={ViewPinOnMap}
                         />
+                        <Route
+                            path="/completed/:module/:userid"
+                        >
+                            <Completed/>
+                        </Route>
 
                         <Route
                             exact
