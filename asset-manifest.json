@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/ar-app/static/css/main.5851bee5.chunk.css",
-    "main.js": "/ar-app/static/js/main.256e7adb.chunk.js",
-    "main.js.map": "/ar-app/static/js/main.256e7adb.chunk.js.map",
-    "runtime-main.js": "/ar-app/static/js/runtime-main.2abd9314.js",
-    "runtime-main.js.map": "/ar-app/static/js/runtime-main.2abd9314.js.map",
-    "static/css/2.4c51a07b.chunk.css": "/ar-app/static/css/2.4c51a07b.chunk.css",
-    "static/js/2.706f9f14.chunk.js": "/ar-app/static/js/2.706f9f14.chunk.js",
-    "static/js/2.706f9f14.chunk.js.map": "/ar-app/static/js/2.706f9f14.chunk.js.map",
-    "index.html": "/ar-app/index.html",
-    "precache-manifest.c4377668afdc4794159c0aa66584834b.js": "/ar-app/precache-manifest.c4377668afdc4794159c0aa66584834b.js",
-    "service-worker.js": "/ar-app/service-worker.js",
-    "static/css/2.4c51a07b.chunk.css.map": "/ar-app/static/css/2.4c51a07b.chunk.css.map",
-    "static/css/main.5851bee5.chunk.css.map": "/ar-app/static/css/main.5851bee5.chunk.css.map",
-    "static/js/2.706f9f14.chunk.js.LICENSE.txt": "/ar-app/static/js/2.706f9f14.chunk.js.LICENSE.txt"
+    "main.css": "/reachgoalrework/static/css/main.5851bee5.chunk.css",
+    "main.js": "/reachgoalrework/static/js/main.702964df.chunk.js",
+    "main.js.map": "/reachgoalrework/static/js/main.702964df.chunk.js.map",
+    "runtime-main.js": "/reachgoalrework/static/js/runtime-main.8b55d0f9.js",
+    "runtime-main.js.map": "/reachgoalrework/static/js/runtime-main.8b55d0f9.js.map",
+    "static/css/2.4c51a07b.chunk.css": "/reachgoalrework/static/css/2.4c51a07b.chunk.css",
+    "static/js/2.6dd43fa8.chunk.js": "/reachgoalrework/static/js/2.6dd43fa8.chunk.js",
+    "static/js/2.6dd43fa8.chunk.js.map": "/reachgoalrework/static/js/2.6dd43fa8.chunk.js.map",
+    "index.html": "/reachgoalrework/index.html",
+    "precache-manifest.6d83923ea7ab9d881889958dcae26f5c.js": "/reachgoalrework/precache-manifest.6d83923ea7ab9d881889958dcae26f5c.js",
+    "service-worker.js": "/reachgoalrework/service-worker.js",
+    "static/css/2.4c51a07b.chunk.css.map": "/reachgoalrework/static/css/2.4c51a07b.chunk.css.map",
+    "static/css/main.5851bee5.chunk.css.map": "/reachgoalrework/static/css/main.5851bee5.chunk.css.map",
+    "static/js/2.6dd43fa8.chunk.js.LICENSE.txt": "/reachgoalrework/static/js/2.6dd43fa8.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.2abd9314.js",
+    "static/js/runtime-main.8b55d0f9.js",
     "static/css/2.4c51a07b.chunk.css",
-    "static/js/2.706f9f14.chunk.js",
+    "static/js/2.6dd43fa8.chunk.js",
     "static/css/main.5851bee5.chunk.css",
-    "static/js/main.256e7adb.chunk.js"
+    "static/js/main.702964df.chunk.js"
   ]
 }
