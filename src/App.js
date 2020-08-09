@@ -15,7 +15,6 @@ import ViewModules from "./components/ViewModules";
 import ManageModules from "./components/ManageModules";
 import ViewPinOnMap from "./components/ViewPinOnMap";
 import Completed from "./components/completed";
-
 import { Switch, Route, HashRouter } from "react-router-dom";
 
 export default class App extends Component {
@@ -25,11 +24,17 @@ export default class App extends Component {
         this.client = Stitch.hasAppClient(appId)
             ? Stitch.getAppClient(appId)
             : Stitch.initializeDefaultAppClient(appId);
+        const url = window.location.href;
+        const cleanUrl = url.split(/\?fbclid=.*#/).join("#");
         if (this.client.auth.hasRedirectResult()) {
+            if (cleanUrl !== url)
+                window.location.assign(cleanUrl);
             this.client.auth.handleRedirectResult().then((user) => {
                 window.location.assign("/");
             });
         }
+        if (cleanUrl !== url)
+            window.location.assign(cleanUrl);
         this.state = {
             isLoggedIn: false,
         };
