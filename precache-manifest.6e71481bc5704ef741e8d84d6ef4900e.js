@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8345b27e36c2f5092ee0c70bbb08aafe",
+    "revision": "b58e21bcc98a6987e225bba3b774add3",
     "url": "/reachgoalrework/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/reachgoalrework/static/css/2.4c51a07b.chunk.css"
   },
   {
-    "revision": "a770931f77ee80bfe392",
+    "revision": "95341537bcd7f4c4986d",
     "url": "/reachgoalrework/static/css/main.29dc47d3.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/reachgoalrework/static/js/2.88fc4bc1.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "a770931f77ee80bfe392",
-    "url": "/reachgoalrework/static/js/main.23d6e1c7.chunk.js"
+    "revision": "95341537bcd7f4c4986d",
+    "url": "/reachgoalrework/static/js/main.6a87b4b4.chunk.js"
   },
   {
     "revision": "79ce9d7aa977bf1302d3",
