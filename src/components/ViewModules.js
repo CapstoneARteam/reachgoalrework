@@ -285,18 +285,17 @@ export default class ViewModules extends Component {
                                     variant="primary"
                                     style={{marginBottom: "10px"}}
                                     onClick={() => {
-                                        const gotoModule = modID => window.location.assign(`#/module/${modID}`);
                                         const userQuery = this.goto_module_id.current.value;
                                         try{
                                             ObjectId(userQuery);
-                                            gotoModule(userQuery);
+                                            window.location.assign(`#/module/${userQuery}`);
                                         }
                                         catch (err) {
                                             this.db.collection("MODULES")
                                                 .find({title : { $regex: userQuery, $options: "i" }})
                                                 .asArray()
                                                 .then(docs => {
-                                                    this.module_results = docs.map(this.module_card ,this);
+                                                    this.module_results = docs.map(this.module_card, this);
                                                     this.forceUpdate();
                                                 });
                                         }
