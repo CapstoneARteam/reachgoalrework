@@ -98,7 +98,7 @@ class ViewPinOnMap extends Component {
     }
     this.bounds = undefined;
     this.userID = this.props.location.search.split("user=")[1];
-    this.shareUrl = `${window.location.href.split("#")[0]}#/completed/${this.props.match.params.id}/${this.userID}`;
+    this.shareUrl = `${window.location.host}/ar-app/#/completed/${this.props.match.params.id}/${this.userID}`;
 
     const appId = "capstonear_app-xkqng"
     this.client = Stitch.hasAppClient(appId)
@@ -271,7 +271,7 @@ class ViewPinOnMap extends Component {
           You finished {this.state.stitch_res.title}
           <FacebookShareButton
             quote={"title"}
-            url={String(window.location)}
+            url={this.shareUrl}
           >
             <FacebookIcon />
           </FacebookShareButton>
