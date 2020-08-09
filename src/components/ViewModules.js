@@ -21,6 +21,7 @@ export default class ViewModules extends Component {
             },
             accessed_modules: [],
         };
+        this.module_results = null;
         
 
         //refs
@@ -137,70 +138,64 @@ export default class ViewModules extends Component {
         window.location.assign("#/module/" + id);
     }
 
-    add_module_cards(type) {
-        const userid = this.state.user; 
-        if (this.state.modules.length === 0) return;
-
-        const mds = this.state.modules[type].map(function (module, idx) {
-
-            return (
-                <div className="col-md-6 col-lg-4 " key={idx}>
-                    <Card
-                        className="h-100"
-                        style={{
-                            display: "fixed",
-
-                            Width: "25rem",
-                            margin: "0.25rem",
-                            justifyContent: "center",
-                            textAlign: "center",
-                        }}
-                    >
-                        <Card.Body>
-                            <Card.Img
-                                variant="top"
-                                src={"https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + module.pins[0] + ".jpeg?versionid=latest&date=" + Date.now()}
-                            />
-                            <Card.Title>{module.title}</Card.Title>
-                            <Card.Subtitle className="mb-2 text-muted">
-                                by {module.owner_name} ({module.owner_email})
-                            </Card.Subtitle>
-                            <Card.Text>{module.description}</Card.Text>
-                            <div
-                                className="btn-toolbar"
-                                style={{
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <div className="btn-group mr-1">
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={() =>
-                                            window.location.assign(
-                                                "#/module/" + module._id
-                                            )
-                                        }
-                                    >
-                                        View Details
-                                    </button>
-                                </div>
-
-                                <div className="btn-group mr-1" style={{paddingTop: "10px"}}>
-                                    <button className="btn btn-primary"
-                                        onClick={() =>{
-                                            window.location.assign(`#/module/${module._id}/pins/?user=${userid.user_id}`)
-                                        }
-
-                                    }>
-                                        Start Module
-                                    </button>
-                                </div>
+    module_card (module, idx) {
+        const userid = this.state.user.user_id; 
+        return (
+            <div className="col-md-6 col-lg-4 " key={idx}>
+                <Card
+                    className="h-100"
+                    style={{
+                        display: "fixed",
+                        Width: "25rem",
+                        margin: "0.25rem",
+                        justifyContent: "center",
+                        textAlign: "center",
+                    }}
+                >
+                    <Card.Body>
+                        <Card.Img
+                            variant="top"
+                            src={"https://capstoneusercontent.s3-us-west-2.amazonaws.com/" + module.pins[0] + ".jpeg?versionid=latest&date=" + Date.now()}
+                        />
+                        <Card.Title>{module.title}</Card.Title>
+                        <Card.Subtitle className="mb-2 text-muted">
+                            by {module.owner_name} ({module.owner_email})
+                        </Card.Subtitle>
+                        <Card.Text>{module.description}</Card.Text>
+                        <div
+                            className="btn-toolbar"
+                            style={{
+                                justifyContent: "center",
+                            }}
+                        >
+                            <div className="btn-group mr-1" style={{paddingTop: "10px"}}>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => window.location.assign(`#/module/${module._id}`)}
+                                >
+                                    View Details
+                                </button>
                             </div>
-                        </Card.Body>
-                    </Card>
-                </div>
-            );
-        });
+                            <div className="btn-group mr-1" style={{paddingTop: "10px"}}>
+                                <button className="btn btn-primary"
+                                    onClick={() =>{
+                                        window.location.assign(`#/module/${module._id}/pins/?user=${userid}`)
+                                    }
+                                }>
+                                    Start Module
+                                </button>
+                            </div>
+                        </div>
+                    </Card.Body>
+                </Card>
+            </div>
+        );
+    }
+
+    add_module_cards(type) {
+        if (this.state.modules.length === 0) return;
+        console.log(this.state.modules[type])
+        const mds = this.state.modules[type].map(this.module_card, this);
         return (
             <div
                 style={{
@@ -274,7 +269,7 @@ export default class ViewModules extends Component {
                             </div>
                         </Tab>
 
-                        <Tab eventKey="Go To" title="Go To">
+                        <Tab eventKey="Go To" title="Search">
                             <Form>
                                 <Form.Group controlId="formModuleId">
                                     <Form.Label>Module</Form.Label>
@@ -288,6 +283,7 @@ export default class ViewModules extends Component {
 
                                 <Button
                                     variant="primary"
+                                    style={{marginBottom: "10px"}}
                                     onClick={() => {
                                         const gotoModule = modID => window.location.assign(`#/module/${modID}`);
                                         const userQuery = this.goto_module_id.current.value;
@@ -297,14 +293,19 @@ export default class ViewModules extends Component {
                                         }
                                         catch (err) {
                                             this.db.collection("MODULES")
-                                                .findOne({title : { $regex: userQuery, $options: "i" }})
-                                                .then(doc => gotoModule(doc._id.toString()));
+                                                .find({title : { $regex: userQuery, $options: "i" }})
+                                                .asArray()
+                                                .then(docs => {
+                                                    this.module_results = docs.map(this.module_card ,this);
+                                                    this.forceUpdate();
+                                                });
                                         }
                                     }}
                                 >
-                                    View Module
+                                    Search
                                 </Button>
                             </Form>
+                            {this.module_results}
                         </Tab>
                     </Tabs>
                 </div>
