@@ -231,6 +231,24 @@ export default class ViewModules extends Component {
                                 {this.add_module_cards(0)}
                             </Tab>)
         }
+
+        const query_modules = () => {
+            const userQuery = this.goto_module_id.current.value;
+            try {
+                ObjectId(userQuery);
+                window.location.assign(`#/module/${userQuery}`);
+            }
+            catch (err) {
+                this.db.collection("MODULES")
+                    .find({ title: { $regex: userQuery, $options: "i" } })
+                    .asArray()
+                    .then(docs => {
+                        this.module_results = docs.map(this.module_card, this);
+                        this.forceUpdate();
+                    });
+            }
+        }
+
         return (
             <div
                 style={{
@@ -270,7 +288,12 @@ export default class ViewModules extends Component {
                         </Tab>
 
                         <Tab eventKey="Go To" title="Search">
-                            <Form>
+                            <Form
+                                onSubmit={e => {
+                                    e.preventDefault();
+                                    query_modules();
+                                }}
+                            >
                                 <Form.Group controlId="formModuleId">
                                     <Form.Label>Module</Form.Label>
                                     <Form.Control
@@ -284,22 +307,7 @@ export default class ViewModules extends Component {
                                 <Button
                                     variant="primary"
                                     style={{marginBottom: "10px"}}
-                                    onClick={() => {
-                                        const userQuery = this.goto_module_id.current.value;
-                                        try{
-                                            ObjectId(userQuery);
-                                            window.location.assign(`#/module/${userQuery}`);
-                                        }
-                                        catch (err) {
-                                            this.db.collection("MODULES")
-                                                .find({title : { $regex: userQuery, $options: "i" }})
-                                                .asArray()
-                                                .then(docs => {
-                                                    this.module_results = docs.map(this.module_card, this);
-                                                    this.forceUpdate();
-                                                });
-                                        }
-                                    }}
+                                    onClick={query_modules}
                                 >
                                     Search
                                 </Button>
