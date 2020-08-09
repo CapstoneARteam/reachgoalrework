@@ -98,7 +98,7 @@ class ViewPinOnMap extends Component {
     }
     this.bounds = undefined;
     this.userID = this.props.location.search.split("user=")[1];
-    this.shareUrl = `${window.location.host}/ar-app/#/completed/${this.props.match.params.id}/${this.userID}`;
+    this.shareUrl = `${window.location.host}${window.location.pathname}/#/completed/${this.props.match.params.id}/${this.userID}`;
 
     const appId = "capstonear_app-xkqng"
     this.client = Stitch.hasAppClient(appId)

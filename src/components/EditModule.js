@@ -434,7 +434,7 @@ export default class EditModule extends Component {
                                         this.setState({
                                             link:
                                                 window.location.origin +
-                                                "/ar-app/#/module/" +
+                                                window.location.pathname+"/#/module/" +
                                                 this.state.module_info._id,
                                         });
                                         this.copy_clipboard();
