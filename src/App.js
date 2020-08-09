@@ -25,13 +25,10 @@ export default class App extends Component {
         this.client = Stitch.hasAppClient(appId)
             ? Stitch.getAppClient(appId)
             : Stitch.initializeDefaultAppClient(appId);
-        const hashRoute = window.location.href.split("#")[1] || "";
         if (this.client.auth.hasRedirectResult()) {
             this.client.auth.handleRedirectResult().then((user) => {
                 window.location.assign("/");
             });
-        } else {
-            window.location.assign(`/ar-app#${hashRoute}`);
         }
         this.state = {
             isLoggedIn: false,
