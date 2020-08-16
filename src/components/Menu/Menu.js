@@ -69,16 +69,6 @@ class Menu extends Component {
         console.log(this.state);
     }
 
-    async logout() {
-        await this.client.auth.logout();
-        this.setState({
-            username: "",
-            useremail: "",
-            userID: "",
-        });
-        window.location.reload();
-    }
-
     addamodule() {
         this.db
             .collection("MODULES")
@@ -218,7 +208,17 @@ class Menu extends Component {
 
                 <a
                     href="#/logout"
-                    onClick={this.logout}
+                    onClick={() => {
+                        this.client.auth.logout()
+                            .then(() => {
+                                this.setState({
+                                    username: "",
+                                    useremail: "",
+                                    userID: "",
+                                });
+                                window.location.reload();
+                            })
+                    }}
                     style={{
                         position: "absolute",
                         fontSize: "1rem",
